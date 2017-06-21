@@ -83,4 +83,9 @@ class Comments extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Clients::className(), ['id' => 'client_id']);
     }
+
+    public function getUser()
+    {
+        return $this->hasOne(Clients::className(), ['id' => 'created_by_user']);
+    }
 }
