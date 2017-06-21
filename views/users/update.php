@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 
-$this->title = 'Редактировать клиента: ' . $model->second_name." ".$model->first_name." ".$model->last_name;
-$this->params['breadcrumbs'][] = ['label' => 'Клиенты', 'url' => ['index']];
+$this->title = 'Редактировать пользователя: ' . $model->second_name." ".$model->first_name." ".$model->last_name;
+$this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->second_name." ".$model->first_name." ".$model->last_name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
 ?>
