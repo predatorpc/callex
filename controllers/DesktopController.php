@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 
+use app\models\Comments;
 use app\models\UsersClients;
 use yii\web\Controller;
 use Yii;
@@ -39,6 +40,25 @@ class DesktopController extends Controller{
             return $this->redirect(['index']);
         } else {
             return $this->render('client-card',['client'=>$client]);
+        }
+    }
+
+    public function actionAddComment(){
+        if(Yii::$app->request->isPost){
+            $request = Yii::$app->request->post('comment');
+            $comment = new Comments();
+            $comment->action_id = $request['action_id'];
+            $comment->type_id = $request['action_id'];
+            $comment->text = $request['text'];
+            $comment->created_by_user = Yii::$app->user->getId();
+            $comment->client_id = $request['client_id'];
+            $comment->date = date('Y-m-d H:i:s');
+            $comment->status = 1;
+            if($comment->save()){
+                return 'Success';
+            }else{
+                print_r($comment->getErrors());
+            }
         }
     }
 

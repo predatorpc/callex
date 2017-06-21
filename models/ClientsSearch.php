@@ -41,6 +41,7 @@ class ClientsSearch extends Clients
      */
     public function search($params)
     {
+        print_r($params);
         $query = Clients::find();
 
         // add conditions that should always apply here
@@ -57,6 +58,11 @@ class ClientsSearch extends Clients
             return $dataProvider;
         }
 
+        if(isset($this->first_name) && !empty($this->first_name)){
+            $query->orWhere(['LIKE','first_name',$this->first_name]);
+            $query->orWhere(['LIKE','second_name',$this->first_name]);
+            $query->orWhere(['LIKE','last_name',$this->first_name]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -73,11 +79,12 @@ class ClientsSearch extends Clients
             'status' => $this->status,
         ]);
 
-        $query->andFilterWhere(['like', 'first_name', $this->first_name])
-            ->andFilterWhere(['like', 'second_name', $this->second_name])
-            ->andFilterWhere(['like', 'last_name', $this->last_name])
-            ->andFilterWhere(['like', 'phone', $this->phone])
+        $query->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'district', $this->district]);
+            //->andFilterWhere(['like', 'first_name', $this->first_name])
+            //->andFilterWhere(['like', 'second_name', $this->second_name])
+            //->andFilterWhere(['like', 'last_name', $this->last_name])
+
 
         return $dataProvider;
     }

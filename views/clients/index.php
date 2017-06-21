@@ -116,7 +116,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             $text = 'М';
                         }
                         return $text;
-                    }
+                    },
+                    'filter' => ['1'=>'Ж','2'=>'М'],
             ],
              'phone',
              'district',
