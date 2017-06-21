@@ -43,10 +43,12 @@ class Clients extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['birthday', 'date_create', 'date_update'], 'safe'],
-            [['gender', 'car', 'children', 'call_status_id', 'client_shop_id', 'client_helper_id', 'client_fit_id', 'status'], 'integer'],
+            [['birthday', 'last_call', 'date_create', 'date_update'], 'safe'],
+            [['gender', 'car', 'children', 'client_shop_id', 'call_status_id', 'client_helper_id', 'client_fit_id', 'status'], 'integer'],
+            [['last_call'], 'required'],
             [['first_name', 'second_name', 'last_name', 'district'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 20],
+            [['call_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => CallStatuses::className(), 'targetAttribute' => ['call_status_id' => 'id']],
         ];
     }
 
@@ -57,30 +59,38 @@ class Clients extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'first_name' => 'First Name',
-            'second_name' => 'Second Name',
-            'last_name' => 'Last Name',
-            'birthday' => 'Birthday',
-            'gender' => 'Gender',
-            'phone' => 'Phone',
-            'district' => 'District',
-            'car' => 'Car',
-            'children' => 'Children',
+            'first_name' => 'Имя',
+            'second_name' => 'Отчество',
+            'last_name' => 'Фамилия',
+            'birthday' => 'Дата рождения',
+            'gender' => 'Пол',
+            'phone' => 'Телефон',
+            'district' => 'Район',
+            'car' => 'Машина',
+            'children' => 'Дети',
             'call_status_id' => 'Call Status ID',
             'client_shop_id' => 'Client Shop ID',
             'client_helper_id' => 'Client Helper ID',
             'client_fit_id' => 'Client Fit ID',
             'date_create' => 'Date Create',
             'date_update' => 'Date Update',
-            'status' => 'Status',
+            'status' => 'Статус',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDesktops()
+    public function getCallStatus()
     {
-        return $this->hasMany(Desktop::className(), ['client_id' => 'id']);
+        return $this->hasOne(CallStatuses::className(), ['id' => 'call_status_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsersClients()
+    {
+        return $this->hasMany(UsersClients::className(), ['client_id' => 'id']);
     }
 }
