@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\date\DatePicker;
+use yii\helpers\ArrayHelper;
+use app\models\CallStatuses;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Clients */
@@ -39,7 +41,7 @@ use kartik\date\DatePicker;
 
     <?= $form->field($model, 'children')->checkbox() ?>
 
-    <?= $form->field($model, 'call_status_id')->textInput() ?>
+    <?= $form->field($model, 'call_status_id')->dropDownList(ArrayHelper::map(CallStatuses::find()->All(),'id','name')) ?>
 
     <?= $form->field($model, 'client_shop_id')->textInput() ?>
 

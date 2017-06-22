@@ -51,7 +51,7 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'children')->checkbox() ?>
 
-    <?= $form->field($model, 'call_status_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\CallStatuses::find()->where(['status'=>1])->All(),'id','name'),['prompt' => 'Выберите...']) ?>
+    <?= $form->field($model, 'call_status_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\CallStatuses::find()->where(['status'=>1])->All(),'id','name')) ?>
 
     <?= $form->field($model, 'client_shop_id')->textInput() ?>
 
