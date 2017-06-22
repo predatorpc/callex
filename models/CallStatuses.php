@@ -30,7 +30,7 @@ class CallStatuses extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description'], 'required'],
+            [['name'], 'required'],
             [['description'], 'string'],
             [['status'], 'integer'],
             [['name'], 'string', 'max' => 255],
