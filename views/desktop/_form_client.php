@@ -21,6 +21,8 @@ use yii\helpers\ArrayHelper;
 
         <input type="hidden" name="client_id" value="<?=$model->id;?>">
 
+        <input type="hidden" name="comment_send" value="0">
+
         <?= $form->field($model, 'first_name')->textInput(['maxlength' => true]) ?>
 
         <?= $form->field($model, 'second_name')->textInput(['maxlength' => true]) ?>
@@ -112,20 +114,29 @@ use yii\helpers\ArrayHelper;
     $('#clients-call_status_id').change(function(){
 	    $('.btn.btn-success.client').prop("disabled", false)
     });
-$('form#comments').submit(function(){
-	if($(this).find('textarea').val() != ''){
-		$.ajax({
-            type: "POST",
-            url: "/desktop/add-comment",
-            data: $(this).serialize(),
-            success: function(data) {
-				$('ul#comments_list').prepend('<li>'+data+'</li>');
-				$('form#comments textarea').val('');
-            },
-        });
-	}
-	return false;
-});
+    $('.btn.btn-success.client').click(function(){
+        if($('#clients-call_status_id').val() != 1){
+            if($('input[name="comment_send"]').val() != 1){
+                alert('Оставьте комментарий');
+                return false;
+            }
+        }
+    });
+    $('form#comments').submit(function(){
+        if($(this).find('textarea').val() != ''){
+            $.ajax({
+                type: "POST",
+                url: "/desktop/add-comment",
+                data: $(this).serialize(),
+                success: function(data) {
+                    $('ul#comments_list').prepend('<li>'+data+'</li>');
+                    $('form#comments textarea').val('');
+                    $('input[name="comment_send"]').val(1);
+                },
+            });
+        }
+        return false;
+    });
 
 JS;
 
