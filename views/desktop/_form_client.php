@@ -79,7 +79,7 @@ use yii\helpers\ArrayHelper;
                 <?php
                 $comments = [];
                 foreach (Comments::find()->where(['client_id' => $model->id])->orderBy('date DESC')->limit(5)->All() as $comment) {
-                    $comments[] =
+                    $comments[] = $comment->user->second_name .
                         '(' . date('d.m.Y H:i:s', strtotime($comment->date)) .
                         '): '.(isset($actions[$comment->action_id])?$actions[$comment->action_id]:'')
                         .' - '. $comment->text;
@@ -112,6 +112,20 @@ use yii\helpers\ArrayHelper;
     $('#clients-call_status_id').change(function(){
 	    $('.btn.btn-success.client').prop("disabled", false)
     });
+$('form#comments').submit(function(){
+	if($(this).find('textarea').val() != ''){
+		$.ajax({
+            type: "POST",
+            url: "/desktop/add-comment",
+            data: $(this).serialize(),
+            success: function(data) {
+				$('ul#comments_list').prepend('<li>'+data+'</li>');
+				$('form#comments textarea').val('');
+            },
+        });
+	}
+	return false;
+});
 
 JS;
 
