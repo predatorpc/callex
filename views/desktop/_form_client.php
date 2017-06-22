@@ -63,7 +63,7 @@ use yii\helpers\ArrayHelper;
 
     <?php //= $form->field($model, 'date_update')->textInput() ?>
 
-    <?= $form->field($model, 'status')->checkbox() ?>
+    <?php //= $form->field($model, 'status')->checkbox() ?>
 
             <div class="form-group">
                 <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success client', 'disabled'=>'disabled']) ?>
