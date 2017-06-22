@@ -15,12 +15,21 @@ class DesktopController extends Controller{
 
     public function actionClientCard(){
         $session = Yii::$app->session;
-        if($edit_user_id = $session->get('edit_user_id')){
+        if($edit_user_id = $session->get('edit_client_id')){
             $client = Clients::find()->where(['id'=>$edit_user_id])->One();
         }else{
             $client = Clients::find()->where(['<>','call_status_id','4'])->orderBy('RAND()')->One();
-
-            $session->set('edit_user_id', $client->id);
+            $client->is_being_edited = 1;
+            $client->save();
+            $user_client = new UsersClients();
+            $user_client->user_id = Yii::$app->user->getId();
+            $user_client->client_id = $client->id;
+            $user_client->date = date('Y-m-d H:i:s');
+            $user_client->status = 0;
+            if(!$user_client->save()){
+                print_r($user_client->getErrors());die;
+            }
+            $session->set('edit_client_id', $client->id);
             if(!$client){
                     return 'Не обработанне клинты кончились';
 
@@ -28,14 +37,17 @@ class DesktopController extends Controller{
         }
 
         if ($client->load(Yii::$app->request->post()) && $client->save()) {
-            $user_client = new UsersClients();
-            $user_client->user_id = Yii::$app->user->getId();
-            $user_client->client_id = $client->id;
-            $user_client->date = date('Y-m-d H:i:s');
-            if(!$user_client->save()){
-                print_r($user_client->getErrors());die;
+            $client->is_being_edited = 0;
+            $client->save();
+            $user_client = UsersClients::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
+            if($user_client){
+                $user_client->status = 1;
+                if(!$user_client->save()){
+                    print_r($user_client->getErrors());die;
+                }
             }
-            $session->remove('edit_user_id');
+
+            $session->remove('edit_client_id');
 
             return $this->redirect(['index']);
         } else {
@@ -48,14 +60,17 @@ class DesktopController extends Controller{
             $request = Yii::$app->request->post('comment');
             $comment = new Comments();
             $comment->action_id = $request['action_id'];
-            $comment->type_id = $request['action_id'];
+            $comment->type_id = $request['type_id'];
             $comment->text = $request['text'];
             $comment->created_by_user = Yii::$app->user->getId();
             $comment->client_id = $request['client_id'];
             $comment->date = date('Y-m-d H:i:s');
             $comment->status = 1;
             if($comment->save()){
-                return 'Success';
+                return $comment->user->second_name .
+                    '(' . date('d.m.Y H:i:s', strtotime($comment->date)) .
+                    '): '.(isset($actions[$comment->action_id])?$actions[$comment->action_id]:'')
+                    .' - '. $comment->text;
             }else{
                 print_r($comment->getErrors());
             }

@@ -40,8 +40,8 @@ class Comments extends \yii\db\ActiveRecord
             [['text'], 'required'],
             [['text'], 'string'],
             [['date'], 'safe'],
-            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => Types::className(), 'targetAttribute' => ['type_id' => 'id']],
-            [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => Actions::className(), 'targetAttribute' => ['action_id' => 'id']],
+            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsTypes::className(), 'targetAttribute' => ['type_id' => 'id']],
+            [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsActions::className(), 'targetAttribute' => ['action_id' => 'id']],
         ];
     }
 
@@ -68,7 +68,7 @@ class Comments extends \yii\db\ActiveRecord
      */
     public function getType()
     {
-        return $this->hasOne(Types::className(), ['id' => 'type_id']);
+        return $this->hasOne(CommentsTypes::className(), ['id' => 'type_id']);
     }
 
     /**
@@ -76,7 +76,7 @@ class Comments extends \yii\db\ActiveRecord
      */
     public function getAction()
     {
-        return $this->hasOne(Actions::className(), ['id' => 'action_id']);
+        return $this->hasOne(CommentsActions::className(), ['id' => 'action_id']);
     }
 
     public function getClient()
@@ -86,6 +86,6 @@ class Comments extends \yii\db\ActiveRecord
 
     public function getUser()
     {
-        return $this->hasOne(Clients::className(), ['id' => 'created_by_user']);
+        return $this->hasOne(Users::className(), ['id' => 'created_by_user']);
     }
 }

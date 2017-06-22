@@ -44,7 +44,7 @@ class Clients extends \yii\db\ActiveRecord
     {
         return [
             [['birthday', 'last_call', 'date_create', 'date_update'], 'safe'],
-            [['gender', 'car', 'children', 'client_shop_id', 'call_status_id', 'client_helper_id', 'client_fit_id', 'status'], 'integer'],
+            [['gender', 'car', 'children', 'client_shop_id', 'call_status_id', 'client_helper_id', 'client_fit_id', 'status','is_being_edited'], 'integer'],
             [['last_call'], 'required'],
             [['first_name', 'second_name', 'last_name', 'district'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 20],
