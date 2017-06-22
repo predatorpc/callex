@@ -7,7 +7,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <br>
 <?php
-if(Yii::$app->user->can('GodMode')){?>
+if(Yii::$app->user->can('Manager')){?>
     <div class="row">
         <a href="/desktop/import" class="btn btn-danger ">Импорт клиентов</a>
 
