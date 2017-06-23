@@ -19,7 +19,7 @@ class CommentsSearch extends Comments
     {
         return [
             [['id', 'type_id', 'action_id', 'call_status_id', 'status'], 'integer'],
-            [['client_id','created_by_user'],'string'],
+            [['client_id','created_by_user','phone'],'string'],
             [['text', 'date'], 'safe'],
         ];
     }
@@ -72,6 +72,14 @@ class CommentsSearch extends Comments
                 $query->orWhere(['LIKE', 'users.last_name', $value]);
             }
         }
+
+        if(isset($this->phone) && !empty($this->phone)){
+            $query->orWhere(['LIKE', 'clients.phone', $this->phone]);
+        }
+
+        if(isset($this->call_status_id) && !empty($this->call_status_id)){
+            $query->orWhere(['clients.call_status_id'=>$this->call_status_id]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -80,7 +88,7 @@ class CommentsSearch extends Comments
             'action_id' => $this->action_id,
             //'created_by_user' => $this->created_by_user,
             'date' => $this->date,
-            'call_status_id' => $this->call_status_id,
+            //'call_status_id' => $this->call_status_id,
             'status' => $this->status,
         ]);
 

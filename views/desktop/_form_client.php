@@ -105,7 +105,7 @@ use yii\helpers\ArrayHelper;
                 <?= Html::submitButton('Оставить комментарий', ['class' => 'btn btn-success', "id"=>"sendcomment"]) ?>
             </div>
             </form>
-    <?php /*
+
             <form id="sms">
                 <?=Html::hiddenInput('sms[client_id]]',$model->id);?>
                 <div class="form-group">
@@ -116,7 +116,7 @@ use yii\helpers\ArrayHelper;
                     <?= Html::submitButton('Сохранить смс', ['class' => 'btn btn-warning', "id"=>"savesms"]) ?>
                     <?= Html::submitButton('Сохранить и отправить смс', ['class' => 'btn btn-warning', "id"=>"sendsms"]) ?>
                 </div>
-            </form> */?>
+            </form>
         </div>
     </div>
 
