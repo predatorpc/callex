@@ -13,14 +13,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-
+    <?php
+    $layoutGrid= '
+        <div> {toolbar}</div>
+        {items}
+        <div class="clearfix"></div>
+        ';
+    ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'layout' => $layoutGrid,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+//            'id',
             [
                 'attribute'=>'client_id',
                 'label' => 'Клиент',
