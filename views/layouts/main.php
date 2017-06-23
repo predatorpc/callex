@@ -74,7 +74,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Callex TM of ExtremeFitess, Ltd. <?= date('Y') ?></p>
+        <p class="pull-left">&copy; Callex TM of ExtremeFitness, Ltd. <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

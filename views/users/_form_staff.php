@@ -67,18 +67,18 @@ $rolesar = ArrayHelper::map($modelRole,'name','name');
     <?php //= $form->field($model, 'company_id')->DropDownList(ArrayHelper::map(
     //      array_merge([['id' =>0,'name' => ' -- Выбрать компанию']],$companies),'id','name'));  ?>
 
-    <?=$form->field($model, 'club_id')->DropDownList(ArrayHelper::map( array_merge([['id' => 0,'name' => ' -- Выбрать клуб']],$clubs),'id','name')
-    );
-    ?>
+    <?php //=$form->field($model, 'club_id')->DropDownList(ArrayHelper::map( array_merge([['id' => 0,'name' => ' -- Выбрать клуб']],$clubs),'id','name')   ?>
     <?=$form->field($model, 'gender')->DropDownList(ArrayHelper::map($gender,'id','name'));  ?>
 
     <?php //= $form->field($model, 'birthday')->textInput() ?>
-    <?= $form->field($model, 'birthday')->widget(DateControl::classname(), [
+    <?php /* = $form->field($model, 'birthday')->widget(DateControl::classname(), [
         'options' => ['placeholder' => 'День рождения'],
         'pluginOptions' => [
             'autoclose' => true
         ]
-    ]);?>
+    ]);
+    
+    */?>
 
     <?php //= $form->field($model, 'bonus')->textInput() ?>
     <?php //= $form->field($model, 'money')->textInput() ?>
