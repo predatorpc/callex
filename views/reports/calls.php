@@ -4,6 +4,7 @@ use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;
 use app\models\CommentsActions;
 use app\models\CommentsTypes;
+use app\models\CallStatuses;
 
 $this->title = 'Отчет по звонкам';
 $this->params['breadcrumbs'][] = $this->title;
@@ -26,6 +27,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model){
                     return $model->client->last_name.' '.$model->client->first_name.' '.$model->client->second_name;
                 }
+            ],
+            [
+                    'attribute' => 'phone',
+                    'header' => 'Телефон',
+                    'value' => function($model){
+                        if(isset($model->client) && isset($model->client->phone)){
+                            return $model->client->phone;
+                        }else{
+                            return '';
+                        }
+                    }
             ],
             [
                 'attribute'=>'type_id',
@@ -60,13 +72,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
+                'attribute'=>'call_status_id',
+                'header'=> 'Статус звонка',
+                'value' => function($model){
+
+                    return $model->client->callStatus->name;
+                },
+                'filter' => ArrayHelper::map(CallStatuses::find()->all(),'id','name'),
+            ],
+            [
                 'attribute'=>'date',
                 'value' => function($model){
                     return date('d.m.Y H:i:s',strtotime($model->date));
                 },
                 'filter' => false,
             ],
-            // 'call_status_id',
+
             // 'status',
 
             //['class' => 'yii\grid\ActionColumn'],

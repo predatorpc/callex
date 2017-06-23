@@ -22,6 +22,7 @@ use Yii;
  */
 class Comments extends \yii\db\ActiveRecord
 {
+    public $phone;
     /**
      * @inheritdoc
      */
@@ -38,7 +39,7 @@ class Comments extends \yii\db\ActiveRecord
         return [
             [['client_id', 'type_id', 'action_id', 'created_by_user', 'call_status_id', 'status'], 'integer'],
             [['text'], 'required'],
-            [['text'], 'string'],
+            [['text','phone'], 'string'],
             [['date'], 'safe'],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsTypes::className(), 'targetAttribute' => ['type_id' => 'id']],
             [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsActions::className(), 'targetAttribute' => ['action_id' => 'id']],
