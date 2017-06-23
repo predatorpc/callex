@@ -6,6 +6,8 @@ use app\models\UsersClients;
 use yii\web\Controller;
 use Yii;
 use app\models\Clients;
+use app\models\System;
+use app\models\Sentsms;
 
 class DesktopController extends Controller{
 
@@ -17,6 +19,10 @@ class DesktopController extends Controller{
         $session = Yii::$app->session;
         if($edit_user_id = $session->get('edit_client_id')){
             $client = Clients::find()->where(['id'=>$edit_user_id])->One();
+            $sms = false;
+            if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
+                $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
+            }
         }else{
             $client = Clients::find()->where(['<>','call_status_id','4'])->orderBy('RAND()')->One();
             $client->is_being_edited = 1;
@@ -51,7 +57,7 @@ class DesktopController extends Controller{
 
             return $this->redirect(['index']);
         } else {
-            return $this->render('client-card',['client'=>$client]);
+            return $this->render('client-card',['client'=>$client,'sms'=>$sms]);
         }
     }
 
@@ -137,5 +143,66 @@ class DesktopController extends Controller{
         }
         \Yii::$app->getSession()->setFlash('error', 'Добавлено '.$n.' клиентов.');
         return $this->render('import');
+    }
+
+    public function actionSmsSend(){
+
+        $params = Yii::$app->request->post('sms');
+        $result = ['status'=>'false'];
+        if(!empty($params)){
+            if(!empty($params['sms']) && !empty($params['client_id'])){
+                $client = Clients::find()->where(['id'=>$params['client_id']])->one();
+                if(!empty($client) && !empty($client->phone)){
+                    if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
+                        $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
+                    }else{
+                        $sms = new Sentsms();
+                    }
+                    $sms->client_id = $params['client_id'];
+                    $sms->text = $params['sms'];
+                    $sms->user_id = (!empty(Yii::$app->user->id)?Yii::$app->user->id:0);
+                    $sms->date = date('Y-m-d H:i:s');
+                    $sms->status = 1;
+                    if(!$sms->save()){
+                        print_r($sms->getErrors());
+                    }
+                    System::sendSms('7'.$client->phone, $params['sms']);
+                    $result = ['status'=>'save & send'];
+                }
+
+            }
+        }
+        return json_encode($result);
+
+    }
+
+    public function actionSmsSave(){
+
+        $params = Yii::$app->request->post('sms');
+        $result = ['status'=>'false'];
+        if(!empty($params)){
+            if(!empty($params['sms']) && !empty($params['client_id'])){
+                $client = Clients::find()->where(['id'=>$params['client_id']])->one();
+                if(!empty($client) && !empty($client->phone)){
+                    if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
+                        $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
+                    }else{
+                        $sms = new Sentsms();
+                    }
+                    $sms->client_id = $params['client_id'];
+                    $sms->text = $params['sms'];
+                    $sms->user_id = (!empty(Yii::$app->user->id)?Yii::$app->user->id:0);
+                    $sms->date = date('Y-m-d H:i:s');
+                    $sms->status = 0;
+                    if(!$sms->save()){
+                        print_r($sms->getErrors());
+                    }
+                    $result = ['status'=>'save'];
+                }
+
+            }
+        }
+        return json_encode($result);
+
     }
 }
