@@ -63,7 +63,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute'=>'date',
                 'value' => function($model){
                     return date('d.m.Y H:i:s',strtotime($model->date));
-                }
+                },
+                'filter' => false,
             ],
             // 'call_status_id',
             // 'status',
