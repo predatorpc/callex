@@ -105,18 +105,18 @@ use yii\helpers\ArrayHelper;
                 <?= Html::submitButton('Оставить комментарий', ['class' => 'btn btn-success', "id"=>"sendcomment"]) ?>
             </div>
             </form>
-
+    <?php /*
             <form id="sms">
                 <?=Html::hiddenInput('sms[client_id]]',$model->id);?>
                 <div class="form-group">
                     <?= Html::label('Текст','',['class'=>'control-label']);?>
-                    <?= Html::input('text','sms[sms]',(isset($sms))?$sms->text : '',['class'=>'form-control']) ?>
+                    <?= Html::input('text','sms[sms]',(isset($sms)) ? $sms : '',['class'=>'form-control']) ?>
                 </div>
                 <div class="form-group">
                     <?= Html::submitButton('Сохранить смс', ['class' => 'btn btn-warning', "id"=>"savesms"]) ?>
                     <?= Html::submitButton('Сохранить и отправить смс', ['class' => 'btn btn-warning', "id"=>"sendsms"]) ?>
                 </div>
-            </form>
+            </form> */?>
         </div>
     </div>
 
