@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'password_hash',
             // 'password',
             // 'auth_key',
-            [
+        /*    [
                 'attribute' => 'club_id',
                 'content' => function($model)
                 {
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     return 'Нет привязки';
                 }
-            ],            [
+            ],         */   [
                 'attribute' => 'company_id',
                 'content' => function($model)
                 {
