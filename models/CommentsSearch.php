@@ -42,7 +42,7 @@ class CommentsSearch extends Comments
      */
     public function search($params)
     {
-        $query = Comments::find();
+        $query = Comments::find()->leftJoin('clients','clients.id = comments.client_id')->leftJoin('users','users.id = comments.created_by_user');
 
         // add conditions that should always apply here
 
@@ -57,14 +57,28 @@ class CommentsSearch extends Comments
             // $query->where('0=1');
             return $dataProvider;
         }
+        if(isset($this->client_id) && !empty($this->client_id)){
+            foreach (explode(' ',$this->client_id) as $key => $value) {
+                $query->orWhere(['LIKE', 'clients.first_name', $value]);
+                $query->orWhere(['LIKE', 'clients.second_name', $value]);
+                $query->orWhere(['LIKE', 'clients.last_name', $value]);
+            }
+        }
 
+        if(isset($this->created_by_user) && !empty($this->created_by_user)){
+            foreach (explode(' ',$this->created_by_user) as $key => $value) {
+                $query->orWhere(['LIKE', 'users.first_name', $value]);
+                $query->orWhere(['LIKE', 'users.second_name', $value]);
+                $query->orWhere(['LIKE', 'users.last_name', $value]);
+            }
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'client_id' => $this->client_id,
+            //'client_id' => $this->client_id,
             'type_id' => $this->type_id,
             'action_id' => $this->action_id,
-            'created_by_user' => $this->created_by_user,
+            //'created_by_user' => $this->created_by_user,
             'date' => $this->date,
             'call_status_id' => $this->call_status_id,
             'status' => $this->status,
