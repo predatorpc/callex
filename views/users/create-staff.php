@@ -17,8 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form_staff', [
         'model' => $model,
         'model_file' => $model_file,
-        'clubs' => $clubs,
-        'companies' => $companies,
+    //    'clubs' => $clubs,
+    //    'companies' => $companies,
 	'modelRole' => $modelRole,
 		
     ]) ?>

@@ -304,9 +304,9 @@ class UsersController extends Controller
         return $this->render('create-staff', [
                 'model' => $model,
                 'model_file' => $model_file,
-                'clubs' => $clubs,
+            //    'clubs' => $clubs,
             //    'companies' => $companies,
-            //    'modelRole' => $modelRole,
+                'modelRole' => $modelRole,
             ]);
 
     }

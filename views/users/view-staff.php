@@ -50,28 +50,5 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 
-    <h2>Карты принадлежащие <?=$this->title?></h2>
-
-    <?php
-
-    foreach ($cards as $card) {
-
-        echo "<h3>ID Карты".$card->card_id."</h3><br>";
-
-        echo DetailView::widget(
-            [
-                'model' => $card,
-                'attributes' => [
-                    'card_id',
-                    'company_id',
-                    'corporative',
-                    'created_at',
-                    'expires_at',
-                    'status',
-                ],
-            ]
-        );
-
-    }
-    ?>
+    
 </div>

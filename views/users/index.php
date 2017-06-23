@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Добавить пользователя', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Добавить пользователя', ['create-staff'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     if($model->staff==1){
                         return Html::a($model->id,'/users/update-staff?id='.$model->id);
                     }
-                    return Html::a($model->id,'/users/update?id='.$model->id);
+                    return Html::a($model->id,'/users/update-staff?id='.$model->id);
                 },
             ],
             [
@@ -58,9 +58,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' =>['data-label' => 'Фамилия'],
                 'content' => function($model){
                     if($model->staff==1){
-                        return Html::a($model->second_name,'/users/update?id='.$model->id);
+                        return Html::a($model->second_name,'/users/update-staff?id='.$model->id);
                     }
-                    return Html::a($model->second_name,'/users/update?id='.$model->id);
+                    return Html::a($model->second_name,'/users/update-staff?id='.$model->id);
                 },
             ],
             [

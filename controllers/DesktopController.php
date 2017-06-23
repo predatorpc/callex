@@ -17,11 +17,14 @@ class DesktopController extends Controller{
 
     public function actionClientCard(){
         $session = Yii::$app->session;
+        $sms = '';
         if($edit_user_id = $session->get('edit_client_id')){
             $client = Clients::find()->where(['id'=>$edit_user_id])->One();
-            $sms = false;
             if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
-                $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
+                $smsDB = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
+                if(isset($smsDB) && !empty($smsDB->text)){
+                    $sms = $smsDB->text;
+                }
             }
         }else{
             $client = Clients::find()->where(['<>','call_status_id','4'])->orderBy('RAND()')->One();
