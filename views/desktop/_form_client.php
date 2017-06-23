@@ -105,6 +105,18 @@ use yii\helpers\ArrayHelper;
                 <?= Html::submitButton('Оставить комментарий', ['class' => 'btn btn-success', "id"=>"sendcomment"]) ?>
             </div>
             </form>
+
+            <form id="sms">
+                <?=Html::hiddenInput('sms[client_id]]',$model->id);?>
+                <div class="form-group">
+                    <?= Html::label('Текст','',['class'=>'control-label']);?>
+                    <?= Html::input('text','sms[sms]',(isset($sms))?$sms->text : '',['class'=>'form-control']) ?>
+                </div>
+                <div class="form-group">
+                    <?= Html::submitButton('Сохранить смс', ['class' => 'btn btn-warning', "id"=>"savesms"]) ?>
+                    <?= Html::submitButton('Сохранить и отправить смс', ['class' => 'btn btn-warning', "id"=>"sendsms"]) ?>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -121,6 +133,34 @@ use yii\helpers\ArrayHelper;
                 return false;
             }
         }
+    });
+    $('form#sms #sendsms').click(function(){
+        if($(this).find('input').val() != ''){
+            $.ajax({
+                type: "POST",
+                url: "/desktop/sms-send",
+                data: $('form#sms').serialize(),
+                success: function(data) {
+                    alert(data);
+                    
+                },
+            });
+        }
+        return false;
+    });
+    $('form#sms #savesms').click(function(){
+        if($(this).find('input').val() != ''){
+            $.ajax({
+                type: "POST",
+                url: "/desktop/sms-save",
+                data: $('form#sms').serialize(),
+                success: function(data) {
+                    alert(data);
+                    
+                },
+            });
+        }
+        return false;
     });
     $('form#comments').submit(function(){
         if($(this).find('textarea').val() != ''){
