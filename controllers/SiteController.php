@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Codeception\Module\Cli;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -9,6 +10,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Anketa;
+use app\models\Clients;
 
 class SiteController extends Controller
 {
@@ -122,5 +125,28 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionAnketa()
+    {
+
+        $this->layout = 'clean';
+        $model = new Anketa();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $client = new Clients();
+            $client->first_name = $model->first_name;
+            $client->second_name = $model->second_name;
+            $client->last_name = $model->last_name;
+            $client->phone = $model->phone;
+            $client->last_call = '0000-00-00 00:00:00';
+            $client->anketa = 1;
+            $client->save();
+            return $this->redirect(['anketa']);
+        } else {
+            return $this->render('anketa', [
+                'model' => $model,
+            ]);
+        }
     }
 }

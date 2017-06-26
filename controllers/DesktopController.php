@@ -16,6 +16,7 @@ class DesktopController extends Controller{
     }
 
     public function actionClientCard(){
+
         $session = Yii::$app->session;
         $sms = '';
         if($edit_user_id = $session->get('edit_client_id')){
