@@ -18,9 +18,9 @@ class ReportsController extends Controller{
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['calls'],
+                        'actions' => ['calls','power'],
                         'allow' => true,
-                        'roles' => ['GodMode','Manager'],
+                        'roles' => ['Manager'],
                     ],
                 ],
             ],
@@ -38,5 +38,15 @@ class ReportsController extends Controller{
             'dataProvider' => $dataProvider,
         ]);
 
+    }
+
+    public function actionPower(){
+        $searchModel = new CommentsSearch();
+        $dataProvider = $searchModel->searchPower(Yii::$app->request->queryParams);
+
+        return $this->render('power', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
