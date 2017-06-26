@@ -1,4 +1,5 @@
 <?php
+use app\components\WClietsList;
 $this->title = 'Рабочий стол';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -18,3 +19,7 @@ if(Yii::$app->user->can('Manager')){?>
         <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>
     </div>
 <?php } ?>
+
+<?= WClietsList::widget() ?>
+
+<spans style="font-weight: bold;font-size: 50px; float: right;"><?=$todayCountCalls;?></spans>
