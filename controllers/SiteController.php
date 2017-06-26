@@ -129,7 +129,7 @@ class SiteController extends Controller
 
     public function actionAnketa()
     {
-
+        
         $this->layout = 'clean';
         $model = new Anketa();
 

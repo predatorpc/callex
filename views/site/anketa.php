@@ -1,16 +1,26 @@
 <?php
 use yii\helpers\Html;
+use yii\base\Widget;
 use yii\widgets\ActiveForm;
 $this->title = 'Анкета';
 ?>
 
 <div class="clients-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <div class="anketa-form">
 
-        <?php $form = ActiveForm::begin(); ?>
+        <?php
+        $form = ActiveForm::begin(
+            [
+                'options' => ['class' => 'form-normal border anketa-form'],
+                'enableAjaxValidation'   => false,
+                'enableClientValidation' => true,
+                'validateOnBlur'         => false,
+                'validateOnType'         => false,
+                'validateOnChange'       => false,
+                'validateOnSubmit'       => false,
+            ]);  ?>
+          <div class="title-form">Заполните анкету и мы обязательно свяжемся с вами!</div>
+          <div class="text-min">* Обязательные поля</div>
 
         <?= $form->field($model, 'first_name')->textInput(['maxlength' => true]) ?>
 
@@ -18,7 +28,8 @@ $this->title = 'Анкета';
 
         <?= $form->field($model, 'last_name')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+
+        <?= $form->field($model, 'phone')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions'=>['clearIncomplete'=>false],'mask' => ['+7 999 999 9999']])?>
 
         <?= $form->field($model, 'fitness')->checkbox() ?>
 
@@ -26,7 +37,7 @@ $this->title = 'Анкета';
 
         <?= $form->field($model, 'gender')->dropDownList(['1' => 'Жен.', '2' => 'Муж.']) ?>
 
-        <?= $form->field($model, 'commnet')->textarea(['rows' => 6]) ?>
+        <?= $form->field($model, 'commnet')->textarea(['rows' => 2]) ?>
 
         <?php //= $form->field($model, 'date')->textInput() ?>
 
