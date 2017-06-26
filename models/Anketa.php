@@ -52,7 +52,7 @@ class Anketa extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'first_name' => '*Имя',
-            'second_name' => '*Отчество',
+            'second_name' => 'Отчество',
             'last_name' => '*Фамилия',
             'phone' => '*Телефон',
             'fitness' => 'Экстрифитнесс',

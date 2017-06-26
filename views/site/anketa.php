@@ -35,7 +35,7 @@ $this->title = 'Анкета';
 
         <?= $form->field($model, 'shop')->checkbox() ?>
 
-        <?= $form->field($model, 'gender')->dropDownList(['1' => 'Жен.', '2' => 'Муж.']) ?>
+        <?= $form->field($model, 'gender')->dropDownList(['1' => 'Жен.', '2' => 'Муж.'],['prompt' => 'Выберите...']) ?>
 
         <?= $form->field($model, 'commnet')->textarea(['rows' => 2]) ?>
 

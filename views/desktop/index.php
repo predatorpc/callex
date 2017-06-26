@@ -21,3 +21,5 @@ if(Yii::$app->user->can('Manager')){?>
 <?php } ?>
 
 <?= WClietsList::widget() ?>
+
+<spans style="font-weight: bold;font-size: 50px; float: right;"><?=$todayCountCalls;?></spans>
