@@ -129,6 +129,8 @@ class SiteController extends Controller
 
     public function actionAnketa()
     {
+
+        $this->layout = 'clean';
         $model = new Anketa();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
