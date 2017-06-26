@@ -8,8 +8,30 @@ use Yii;
 use app\models\Clients;
 use app\models\System;
 use app\models\Sentsms;
+use yii\filters\AccessControl;
 
 class DesktopController extends Controller{
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['import'],
+                        'allow' => true,
+                        'roles' => ['GodMode'],
+                    ],
+                    [
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save'],
+                        'allow' => true,
+                        'roles' => ['Manager'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionIndex(){
         $todayCountCalls = Clients::find()

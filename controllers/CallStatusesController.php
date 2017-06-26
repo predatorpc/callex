@@ -7,7 +7,7 @@ use app\models\CallStatuses;
 use app\models\CallStatusesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * CallStatusesController implements the CRUD actions for CallStatuses model.
@@ -17,17 +17,23 @@ class CallStatusesController extends Controller
     /**
      * @inheritdoc
      */
+
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index','view','create','update'],
+                        'allow' => true,
+                        'roles' => ['Manager'],
+                    ],
                 ],
             ],
         ];
     }
+
 
     /**
      * Lists all CallStatuses models.

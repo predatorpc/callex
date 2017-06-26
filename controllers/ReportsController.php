@@ -20,7 +20,7 @@ class ReportsController extends Controller{
                     [
                         'actions' => ['calls'],
                         'allow' => true,
-                        'roles' => ['GodMode'],
+                        'roles' => ['GodMode','Manager'],
                     ],
                 ],
             ],

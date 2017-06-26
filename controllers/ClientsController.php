@@ -7,7 +7,7 @@ use app\models\Clients;
 use app\models\ClientsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use app\models\Comments;
 use yii\helpers\Json;
 
@@ -22,10 +22,14 @@ class ClientsController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index','view','create','update'],
+                        'allow' => true,
+                        'roles' => ['Manager'],
+                    ],
                 ],
             ],
         ];
