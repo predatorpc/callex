@@ -113,3 +113,11 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+.clients-create {
+    width: 100%;
+    height: 700px;
+}
+.anketa-form {
+    position: absolute;
+    top: 20px;
+}

@@ -1,0 +1,59 @@
+
+.bg{
+    background: url("/images/bg1.jpg") no-repeat;
+    background-size: 100%;
+    background-color: #dfdbdc;
+}
+
+.form-normal.border {
+    margin: 0;
+    padding: 10px 15px;
+    border-radius: 3px;
+    width: 400px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0px 0px 10px -4px #000;
+}
+.form-normal .form-group.phone, .form-normal .form-inline.phone {
+    position: relative;
+}
+.form-normal .form-group.phone .pl, .form-normal .form-inline.phone .pl {
+    color: #747474;
+    display: none;
+    left: 5px;
+    position: absolute;
+    top: 9px;
+}
+.form-normal .form-group .form-control.pin, .form-normal .form-inline .form-control.pin {
+    margin-right: 5px;
+    width: 85px;
+}
+.form-normal .form-group label, .form-normal .form-inline label {
+    margin: 0px;
+    font-size: 12px;
+}
+.form-normal.min {
+    max-width: 300px;
+}
+.form-normal.center {
+    margin: 0 auto;
+}
+.form-normal .title-form{
+    width: 100%;
+    font-weight: bold;
+    margin: 10px 0;
+
+    font-size: 18px;
+}
+.form-normal .text-min{
+   color: #757575;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+/*Поле*/
+.form-normal .form-group {
+    margin-bottom: 5px;
+}
+.form-normal .form-group textarea {
+    max-height: 80px;
+    width: 100%;
+}
