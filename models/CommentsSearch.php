@@ -80,6 +80,15 @@ class CommentsSearch extends Comments
         if(isset($this->call_status_id) && !empty($this->call_status_id)){
             $query->orWhere(['clients.call_status_id'=>$this->call_status_id]);
         }
+        if(isset($params['dateStart'])){
+            echo 123456;
+            $dateStart = $params['dateStart'];
+            $query->andWhere(['>=','date',date('Y-m-d 00:00:00',strtotime($dateStart))]);
+        }
+        if(isset($params['dateEnd'])){
+            $dateEnd = $params['dateEnd'];
+            $query->andWhere(['<=','date',date('Y-m-d 23:59:59',strtotime($dateEnd))]);
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -87,7 +96,7 @@ class CommentsSearch extends Comments
             'type_id' => $this->type_id,
             'action_id' => $this->action_id,
             //'created_by_user' => $this->created_by_user,
-            'date' => $this->date,
+            //'date' => $this->date,
             //'call_status_id' => $this->call_status_id,
             'status' => $this->status,
         ]);

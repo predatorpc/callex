@@ -127,7 +127,7 @@ use yii\helpers\ArrayHelper;
 	    $('.btn.btn-success.client').prop("disabled", false)
     });
     $('.btn.btn-success.client').click(function(){
-        if($('#clients-call_status_id').val() != 1){
+        if($('#clients-call_status_id').val() != 1 && $('#clients-call_status_id').val() != 6){
             if($('input[name="comment_send"]').val() != 1){
                 alert('Оставьте комментарий');
                 return false;
