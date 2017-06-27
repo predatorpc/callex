@@ -26,7 +26,7 @@ class DesktopController extends Controller{
                     [
                         'actions' => ['index','client-card','add-comment','sms-send','sms-save'],
                         'allow' => true,
-                        'roles' => ['Manager'],
+                        'roles' => ['Manager','Operator'],
                     ],
                 ],
             ],
