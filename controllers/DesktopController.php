@@ -40,7 +40,7 @@ class DesktopController extends Controller{
             ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
             ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
             ->andWhere(['`users_clients`.status'=>1])
-            ->count();;
+            ->count();
 
         return $this->render('index',['todayCountCalls'=>$todayCountCalls]);
     }

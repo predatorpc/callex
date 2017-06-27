@@ -1,5 +1,6 @@
 <?php
 namespace app\controllers;
+use app\models\ClientsSearch;
 use app\models\Comments;
 use app\models\CommentsSearch;
 use app\models\Clients;
@@ -41,7 +42,7 @@ class ReportsController extends Controller{
     }
 
     public function actionPower(){
-        $searchModel = new CommentsSearch();
+        $searchModel = new ClientsSearch();
         $dataProvider = $searchModel->searchPower(Yii::$app->request->queryParams);
 
         return $this->render('power', [

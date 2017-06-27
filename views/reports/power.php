@@ -41,10 +41,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [
-                'attribute' => 'created_by_user',
+                'attribute' => 'user_id',
                 'header' => 'Оператор',
                 'value' => function($model){
-                    $user = \app\models\User::find()->where(['id'=>$model->created_by_user])->One();
+                    $user = \app\models\User::find()->where(['id'=>$model->user_id])->One();
                     if($user){
                         return $user->second_name;
                     }else{
