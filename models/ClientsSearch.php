@@ -109,6 +109,15 @@ class ClientsSearch extends Clients
             return $dataProvider;
         }
 
+        if(isset($params['dateStart'])){
+            $dateStart = $params['dateStart'];
+            $query->andWhere(['>=','users_clients.date',date('Y-m-d 00:00:00',strtotime($dateStart))]);
+        }
+        if(isset($params['dateEnd'])){
+            $dateEnd = $params['dateEnd'];
+            $query->andWhere(['<=','users_clients.date',date('Y-m-d 23:59:59',strtotime($dateEnd))]);
+        }
+
         if(isset($this->first_name) && !empty($this->first_name)){
             $query->orWhere(['LIKE','first_name',$this->first_name]);
             $query->orWhere(['LIKE','second_name',$this->first_name]);
