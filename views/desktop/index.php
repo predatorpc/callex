@@ -34,18 +34,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <a href="/desktop/import" class="btn btn-danger ">Импорт клиентов</a>
 
-        <a href="/call-statuses" class="btn btn-warning">Статусы звонков</a>
+                    <a href="/call-statuses" class="btn btn-warning">Статусы звонков</a>
 
-        <a href="/comments-actions" class="btn btn-warning">Действия к комментариям</a>
+                    <a href="/comments-actions" class="btn btn-warning">Действия к комментариям</a>
 
-        <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>
+                    <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>
+            <?php } ?>
+    <?= WClietsList::widget() ?>
+    <spans style="font-weight: bold;font-size: 50px; float: right;"><?=$todayCountCalls;?></spans>
     </div>
-<?php } ?>
-
-<?= WClietsList::widget() ?>
-
-<spans style="font-weight: bold;font-size: 50px; float: right;"><?=$todayCountCalls;?></spans>
+        <div class="clear"></div>
     </div>
-    <div class="clear"></div>
-</div>
 </div>
