@@ -5,12 +5,15 @@ body {
 
 .wrap {
     min-height: 100%;
-    height: auto;
+    height: 100%;
+    width: 100%;
+    display: table;
+    /*
     margin: 0 auto -60px;
-    padding: 0 0 60px;
+    padding: 0 0 60px;*/
 }
 
-.wrap > .container {
+.wrap > .container,.wrap > .container-fluid {
     padding: 70px 15px 20px;
 }
 
@@ -19,8 +22,11 @@ body {
     background-color: #f5f5f5;
     border-top: 1px solid #ddd;
     padding-top: 20px;
+    display: table-row;
 }
-
+.footer .container-fluid {
+    padding-top: 25px;
+}
 .jumbotron {
     text-align: center;
     background-color: transparent;
@@ -120,4 +126,15 @@ a.desc:after {
 .anketa-form {
     position: absolute;
     top: 20px;
+}
+.site-index {
+    max-width: 1024px;
+    margin: 0 auto;
+}
+.index-desktop{
+    height: 100%;
+    width: 100%;
+}
+.side_bar{
+    width: 100%;
 }

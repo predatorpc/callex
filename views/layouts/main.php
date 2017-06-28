@@ -35,10 +35,7 @@ AppAsset::register($this);
         ],
     ]);
     ?>
-    
-    
     <a href="/"><img src="/images/callex.png"></a>
-    
     <?php
     
     echo Nav::widget([
@@ -64,21 +61,21 @@ AppAsset::register($this);
     NavBar::end();
     ?>
 
-    <div class="container"><br>
+    <div class="container-fluid"><br>
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= $content ?>
     </div>
+    <footer class="footer">
+        <div class="container-fluid">
+            <p class="pull-left">&copy; Callex TM of ExtremeFitness, Ltd. <?= date('Y') ?></p>
+            <p class="pull-right"><?= Yii::powered() ?></p>
+        </div>
+    </footer>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; Callex TM of ExtremeFitness, Ltd. <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
-    </div>
-</footer>
 
 <?php $this->endBody() ?>
 </body>

@@ -33,7 +33,7 @@ $this->title = 'Колл-центр v1.01a';
                 <?= Yii::$app->user->can('Operator') ? Html::a('Мои звонки', '/desktop/calls', ['class' => 'btn btn-primary']) : ''  ?>
                 <?= Yii::$app->user->can('Operator') ? Html::a('Скрипты разговоров', '/desktop/scripts', ['class' => 'btn btn-primary'])  : '' ?>
                 <?= Yii::$app->user->can('Operator') ? Html::a('Справочная информация', '/desktop/docs', ['class' => 'btn btn-success']) : '' ?>
-            
+            </div>
     	<?php } ?>
         
 
