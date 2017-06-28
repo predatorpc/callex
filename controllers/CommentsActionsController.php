@@ -7,7 +7,7 @@ use app\models\CommentsActions;
 use app\models\CommentsActionsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * CommentsActionsController implements the CRUD actions for CommentsActions model.
@@ -20,10 +20,14 @@ class CommentsActionsController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index','view','create','update'],
+                        'allow' => true,
+                        'roles' => ['Manager'],
+                    ],
                 ],
             ],
         ];

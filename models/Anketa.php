@@ -35,7 +35,7 @@ class Anketa extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['first_name', 'second_name', 'last_name', 'phone' ], 'required'],
+            [['first_name', 'last_name', 'phone' ], 'required'],
             [['fitness', 'shop', 'gender', 'status'], 'integer'],
             [['commnet'], 'string'],
             [['date'], 'safe'],
@@ -52,7 +52,7 @@ class Anketa extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'first_name' => '*Имя',
-            'second_name' => '*Отчество',
+            'second_name' => 'Отчество',
             'last_name' => '*Фамилия',
             'phone' => '*Телефон',
             'fitness' => 'Экстрифитнесс',

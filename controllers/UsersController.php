@@ -28,7 +28,6 @@ use app\models\Visits;
 use app\models\VisitsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\File;
 use yii\web\UploadedFile;

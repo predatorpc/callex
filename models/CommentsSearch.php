@@ -15,6 +15,7 @@ class CommentsSearch extends Comments
     /**
      * @inheritdoc
      */
+    public $count;
     public function rules()
     {
         return [
@@ -105,4 +106,5 @@ class CommentsSearch extends Comments
 
         return $dataProvider;
     }
+
 }

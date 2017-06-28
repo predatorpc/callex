@@ -8,11 +8,41 @@ use Yii;
 use app\models\Clients;
 use app\models\System;
 use app\models\Sentsms;
+use yii\filters\AccessControl;
 
 class DesktopController extends Controller{
 
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['import'],
+                        'allow' => true,
+                        'roles' => ['GodMode'],
+                    ],
+                    [
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save'],
+                        'allow' => true,
+                        'roles' => ['Manager','Operator'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex(){
-        return $this->render('index');
+        $todayCountCalls = Clients::find()
+            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
+            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
+            ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
+            ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
+            ->andWhere(['`users_clients`.status'=>1])
+            ->count();
+
+        return $this->render('index',['todayCountCalls'=>$todayCountCalls]);
     }
 
     public function actionClientCard(){

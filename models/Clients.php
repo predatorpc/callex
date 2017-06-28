@@ -29,6 +29,9 @@ use Yii;
  */
 class Clients extends \yii\db\ActiveRecord
 {
+
+    public $user_id;
+    public $count;
     /**
      * @inheritdoc
      */

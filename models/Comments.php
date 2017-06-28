@@ -23,6 +23,7 @@ use Yii;
 class Comments extends \yii\db\ActiveRecord
 {
     public $phone;
+    public $count;
     /**
      * @inheritdoc
      */

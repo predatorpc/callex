@@ -15,6 +15,7 @@ class ClientsSearch extends Clients
     /**
      * @inheritdoc
      */
+    public $count;
     public function rules()
     {
         return [
@@ -41,7 +42,7 @@ class ClientsSearch extends Clients
      */
     public function search($params)
     {
-        print_r($params);
+
         $query = Clients::find();
 
         // add conditions that should always apply here
@@ -84,6 +85,65 @@ class ClientsSearch extends Clients
             //->andFilterWhere(['like', 'first_name', $this->first_name])
             //->andFilterWhere(['like', 'second_name', $this->second_name])
             //->andFilterWhere(['like', 'last_name', $this->last_name])
+
+
+        return $dataProvider;
+    }
+
+    public function searchPower($params)
+    {
+
+        $query = Clients::find()->select('count(clients.id) as count,users_clients.user_id as user_id')->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')->groupBy('users_clients.user_id');
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        if(isset($params['dateStart'])){
+            $dateStart = $params['dateStart'];
+            $query->andWhere(['>=','users_clients.date',date('Y-m-d 00:00:00',strtotime($dateStart))]);
+        }
+        if(isset($params['dateEnd'])){
+            $dateEnd = $params['dateEnd'];
+            $query->andWhere(['<=','users_clients.date',date('Y-m-d 23:59:59',strtotime($dateEnd))]);
+        }
+
+        if(isset($this->first_name) && !empty($this->first_name)){
+            $query->orWhere(['LIKE','first_name',$this->first_name]);
+            $query->orWhere(['LIKE','second_name',$this->first_name]);
+            $query->orWhere(['LIKE','last_name',$this->first_name]);
+        }
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'birthday' => $this->birthday,
+            'gender' => $this->gender,
+            'car' => $this->car,
+            'children' => $this->children,
+            'call_status_id' => $this->call_status_id,
+            'client_shop_id' => $this->client_shop_id,
+            'client_helper_id' => $this->client_helper_id,
+            'client_fit_id' => $this->client_fit_id,
+            'date_create' => $this->date_create,
+            'date_update' => $this->date_update,
+            'status' => $this->status,
+        ]);
+
+        $query->andFilterWhere(['like', 'phone', $this->phone])
+            ->andFilterWhere(['like', 'district', $this->district]);
+        //->andFilterWhere(['like', 'first_name', $this->first_name])
+        //->andFilterWhere(['like', 'second_name', $this->second_name])
+        //->andFilterWhere(['like', 'last_name', $this->last_name])
 
 
         return $dataProvider;
