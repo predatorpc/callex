@@ -182,14 +182,18 @@ class DesktopController extends Controller{
     public function actionSmsSend(){
 
         $params = Yii::$app->request->post('sms');
-        $result = ['status'=>'false'];
+        $result = [
+            'status'=>'true',
+            'message'=>'Не отправлено'
+        ];
         if(!empty($params)){
             if(!empty($params['sms']) && !empty($params['client_id'])){
                 $client = Clients::find()->where(['id'=>$params['client_id']])->one();
                 if(!empty($client) && !empty($client->phone)){
                     if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
                         $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
-                    }else{
+                    }
+                    else{
                         $sms = new Sentsms();
                     }
                     $sms->client_id = $params['client_id'];
@@ -198,10 +202,19 @@ class DesktopController extends Controller{
                     $sms->date = date('Y-m-d H:i:s');
                     $sms->status = 1;
                     if(!$sms->save()){
-                        print_r($sms->getErrors());
+                        $result = [
+                            'status'=>'true',
+                            'message'=>'Сохранено с ошибками'
+                        ];
+                        //print_r($sms->getErrors());
+                    }
+                    else{
+                        $result = [
+                            'status'=>'true',
+                            'message'=>'Сохранено и отправлено'
+                        ];
                     }
                     System::sendSms('7'.$client->phone, $params['sms']);
-                    $result = ['status'=>'save & send'];
                 }
 
             }

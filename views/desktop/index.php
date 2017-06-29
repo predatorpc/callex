@@ -6,7 +6,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="index-desktop">
     <div class="row">
         <div class="col-xs-3">
-           <div class="side_bar">
+            <?php /*<div class="side_bar">
                <div class="list-group">
                    <a href="#" class="list-group-item">
                        <b class="list-group-item-heading" style="font-size: 16px;">Иванов Иван Иванович</b>
@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
                        <p class="list-group-item-text">Перезвноить через 2 часа</p>
                    </a>
                </div>
-           </div>
+           </div>*/?>
         </div>
         <div class="col-xs-9">
                 <a href="/desktop/client-card" class="btn btn-success center-block">Получить карточку клиента</a>
