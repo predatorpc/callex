@@ -22,7 +22,8 @@
                 url: "/desktop/sms-send",
                 data: $('form#sms').serialize(),
                 success: function(data) {
-                    alert(data);
+                    var res = JSON.parse(data);
+                    alert(res.message);
 
                 },
             });

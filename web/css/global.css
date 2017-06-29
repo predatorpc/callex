@@ -1,4 +1,36 @@
 
+img {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: top;
+}
+/*Устаревший класс*/
+.clear {
+    font-size: 0px;
+    clear: both;
+}
+.hidden {
+    display: none  !important;
+}
+.hidden_r {
+    display: none;
+}
+.show_d {
+    display: block;
+}
+.show_r {
+    display: block !important;;
+}
+.text {
+    font-size: 14px;
+    line-height: 20px;
+}
+.min-text {
+    color: #888888;
+    font-size: 14px;
+    line-height: 17px;
+}
 .bg{
     background: url("/images/bg1.jpg") no-repeat;
     background-size: 100%;
