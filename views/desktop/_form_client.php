@@ -7,6 +7,7 @@ use app\models\CommentsTypes;
 use app\models\CommentsActions;
 use app\models\Comments;
 use yii\helpers\ArrayHelper;
+use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Clients */
@@ -52,6 +53,18 @@ use yii\helpers\ArrayHelper;
     <?= $form->field($model, 'children')->checkbox() ?>
 
     <?= $form->field($model, 'call_status_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\CallStatuses::find()->where(['status'=>1])->All(),'id','name')) ?>
+
+    <div id="next_call"style="display: none;">
+            <?php /*= DateTimePicker::widget([
+                'name' => 'Clients[next_call]',
+                'type' => DateTimePicker::TYPE_COMPONENT_APPEND,
+                'value' => '',
+                'pluginOptions' => [
+                    'autoclose'=>true,
+                    'format' => 'dd.mm.yyyy HH:ii',
+                ],
+            ]);*/?>
+    </div>
 
     <?= $form->field($model, 'client_shop_id')->textInput() ?>
 
