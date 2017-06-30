@@ -40,7 +40,7 @@ class Anketa extends \yii\db\ActiveRecord
             [['commnet'], 'string'],
             [['date'], 'safe'],
             [['first_name', 'second_name', 'last_name'], 'string', 'max' => 255],
-            [['phone'], 'string', 'max' => 10],
+            [['phone'], 'string', 'max' => 15],
         ];
     }
 
