@@ -1,5 +1,10 @@
 
     $('#clients-call_status_id').change(function(){
+        if($(this).val() == 2){
+            $('div#next_call').show();
+        }else{
+            $('div#next_call').hide();
+        }
         $('.btn.btn-success.client').prop("disabled", false)
     });
     $('.btn.btn-success.client').click(function(){

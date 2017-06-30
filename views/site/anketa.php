@@ -24,9 +24,13 @@ $this->title = 'Анкета';
 
         <?= $form->field($model, 'first_name')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'second_name')->textInput(['maxlength' => true]) ?>
+        <?php //= $form->field($model, 'second_name')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'last_name')->textInput(['maxlength' => true]) ?>
+        <?php //= $form->field($model, 'last_name')->textInput(['maxlength' => true]) ?>
+
+        <?php //= $form->field($model, 'last_name')->textInput(['maxlength' => true]) ?>
+
+        <?= $form->field($model, 'age')->textInput() ?>
 
 
         <?= $form->field($model, 'phone')->widget(\yii\widgets\MaskedInput::className(), ['clientOptions'=>['clearIncomplete'=>false],'mask' => ['+7 999 999 9999']])?>
@@ -35,9 +39,9 @@ $this->title = 'Анкета';
 
         <?= $form->field($model, 'shop')->checkbox() ?>
 
-        <?= $form->field($model, 'gender')->dropDownList(['1' => 'Жен.', '2' => 'Муж.'],['prompt' => 'Выберите...']) ?>
+        <?php //= $form->field($model, 'gender')->dropDownList(['1' => 'Жен.', '2' => 'Муж.'],['prompt' => 'Выберите...']) ?>
 
-        <?= $form->field($model, 'commnet')->textarea(['rows' => 2]) ?>
+        <?php //= $form->field($model, 'commnet')->textarea(['rows' => 2]) ?>
 
         <?php //= $form->field($model, 'date')->textInput() ?>
 
