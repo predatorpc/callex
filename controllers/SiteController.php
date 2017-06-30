@@ -139,7 +139,7 @@ class SiteController extends Controller
             $client->second_name = $model->second_name;
             $client->last_name = $model->last_name;
             $client->phone = $model->phone;
-            $client->last_call = '0000-00-00 00:00:00';
+            //$client->last_call = '0000-00-00 00:00:00';
             $client->anketa = 1;
             $client->save();
             return $this->redirect(['anketa']);
