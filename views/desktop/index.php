@@ -6,24 +6,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="index-desktop">
     <div class="row">
         <div class="col-xs-3">
-            <?php /*<div class="side_bar">
-               <div class="list-group">
-                   <a href="#" class="list-group-item">
-                       <b class="list-group-item-heading" style="font-size: 16px;">Иванов Иван Иванович</b>
-                       <p class="list-group-item-text">
-                         Перезвноить через 5 минут
-                       </p>
-                   </a>
-                   <a href="#" class="list-group-item">
-                       <b class="list-group-item-heading" style="font-size: 16px;">Иванов Иван Иванович</b>
-                       <p class="list-group-item-text">Перезвноить через 10 минут</p>
-                   </a>
-                   <a href="#" class="list-group-item">
-                       <b class="list-group-item-heading" style="font-size: 16px;">Иванов Иван Иванович</b>
-                       <p class="list-group-item-text">Перезвноить через 2 часа</p>
-                   </a>
-               </div>
-           </div>*/?>
+            <?= WClietsList::widget() ?>
         </div>
         <div class="col-xs-9">
                 <a href="/desktop/client-card" class="btn btn-success center-block">Получить карточку клиента</a>
@@ -40,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>
             <?php } ?>
-    <?= WClietsList::widget() ?>
+
     <spans style="font-weight: bold;font-size: 50px; float: right;"><?=$todayCountCalls;?></spans>
     </div>
         <div class="clear"></div>

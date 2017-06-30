@@ -55,7 +55,7 @@ use kartik\datetime\DateTimePicker;
     <?= $form->field($model, 'call_status_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\CallStatuses::find()->where(['status'=>1])->All(),'id','name')) ?>
 
     <div id="next_call"style="display: none;">
-            <?php /*= DateTimePicker::widget([
+            <?= DateTimePicker::widget([
                 'name' => 'Clients[next_call]',
                 'type' => DateTimePicker::TYPE_COMPONENT_APPEND,
                 'value' => '',
@@ -63,7 +63,7 @@ use kartik\datetime\DateTimePicker;
                     'autoclose'=>true,
                     'format' => 'dd.mm.yyyy HH:ii',
                 ],
-            ]);*/?>
+            ]);?>
     </div>
 
     <?= $form->field($model, 'client_shop_id')->textInput() ?>

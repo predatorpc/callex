@@ -9,6 +9,7 @@ use app\models\Clients;
 use app\models\System;
 use app\models\Sentsms;
 use yii\filters\AccessControl;
+use app\models\Scripts;
 
 class DesktopController extends Controller{
 
@@ -24,7 +25,7 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save'],
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script'],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -49,16 +50,50 @@ class DesktopController extends Controller{
 
         $session = Yii::$app->session;
         $sms = '';
-        if($edit_user_id = $session->get('edit_client_id')){
-            $client = Clients::find()->where(['id'=>$edit_user_id])->One();
-            if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
-                $smsDB = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
-                if(isset($smsDB) && !empty($smsDB->text)){
+        if($edit_user_id = $session->get('edit_client_id')) {
+            $client = Clients::find()->where(['id' => $edit_user_id])->One();
+            if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
+                $smsDB = Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One();
+                if (isset($smsDB) && !empty($smsDB->text)) {
                     $sms = $smsDB->text;
                 }
             }
+        }elseif (Clients::find()
+            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
+            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
+            ->andWhere(['clients.call_status_id'=>2])
+            ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
+            ->orderBy('next_call')
+            ->One()){
+            $client = Clients::find()
+                ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
+                ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
+                ->andWhere(['clients.call_status_id'=>2])
+                ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
+                ->orderBy('next_call')
+                ->One();
+                if(!$client){
+                    return 'Не обработанне клинты кончились';
+
+                }
+                $client->is_being_edited = 1;
+                $client->save();
+                $user_client = new UsersClients();
+                $user_client->user_id = Yii::$app->user->getId();
+                $user_client->client_id = $client->id;
+                $user_client->date = date('Y-m-d H:i:s');
+                $user_client->status = 0;
+                if(!$user_client->save()){
+                    print_r($user_client->getErrors());die;
+                }
+                $session->set('edit_client_id', $client->id);
+
         }else{
-            $client = Clients::find()->where(['<>','call_status_id','4'])->orderBy('RAND()')->One();
+            $client = Clients::find()->where(['<>','call_status_id','4'])->andWhere(['is_being_edited'=> 0])->orderBy('RAND()')->One();
+            if(!$client){
+                return 'Не обработанне клинты кончились';
+
+            }
             $client->is_being_edited = 1;
             $client->save();
             $user_client = new UsersClients();
@@ -70,14 +105,21 @@ class DesktopController extends Controller{
                 print_r($user_client->getErrors());die;
             }
             $session->set('edit_client_id', $client->id);
-            if(!$client){
-                    return 'Не обработанне клинты кончились';
 
-            }
         }
 
-        if ($client->load(Yii::$app->request->post()) && $client->save()) {
+
+        if ($client->load(Yii::$app->request->post()) && (strtotime('now') - $session->get('time_start')>=10)) {
+            $client->next_call = date('Y-m-d H:i:s',strtotime($client->next_call));
+            if(!$client->save()){
+                $session['time_start'] = strtotime('now');
+                return $this->render('client-card',['client'=>$client,'sms'=>$sms]);
+            }
+            $session->remove('time_start');
             $client->is_being_edited = 0;
+            if($client->call_status_id != 2){
+                $client->next_call =  '';
+            }
             $client->save();
             $user_client = UsersClients::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
             if($user_client){
@@ -91,6 +133,7 @@ class DesktopController extends Controller{
 
             return $this->redirect(['index']);
         } else {
+            $session['time_start'] = strtotime('now');
             return $this->render('client-card',['client'=>$client,'sms'=>$sms]);
         }
     }
@@ -251,5 +294,19 @@ class DesktopController extends Controller{
         }
         return json_encode($result);
 
+    }
+
+    public function actionScripts(){
+
+        $scripts = Scripts::find()->where(['status'=>1])->All();
+
+        return $this->render('scripts',['scripts'=>$scripts]);
+    }
+
+    public function actionViewScript($id)
+    {
+        return $this->render('view-script', [
+            'model' => Scripts::findOne($id),
+        ]);
     }
 }
