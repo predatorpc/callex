@@ -10,6 +10,7 @@ use app\models\System;
 use app\models\Sentsms;
 use yii\filters\AccessControl;
 use app\models\Scripts;
+use app\models\UsersClientsSearch;
 
 class DesktopController extends Controller{
 
@@ -25,7 +26,7 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script'],
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls'],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -35,6 +36,17 @@ class DesktopController extends Controller{
     }
 
     public function actionIndex(){
+        $statistic = Clients::find()
+            ->select('count(clients.id) as count,call_status_id')
+            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
+            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
+            ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
+            ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
+            ->andWhere(['`users_clients`.status'=>1])
+            ->groupBy('clients.call_status_id')
+            ->All();
+
+
         $todayCountCalls = Clients::find()
             ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
             ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
@@ -43,13 +55,14 @@ class DesktopController extends Controller{
             ->andWhere(['`users_clients`.status'=>1])
             ->count();
 
-        return $this->render('index',['todayCountCalls'=>$todayCountCalls]);
+        return $this->render('index',['todayCountCalls'=>$todayCountCalls,'statistic'=>$statistic]);
     }
 
     public function actionClientCard(){
 
         $session = Yii::$app->session;
         $sms = '';
+
         if($edit_user_id = $session->get('edit_client_id')) {
             $client = Clients::find()->where(['id' => $edit_user_id])->One();
             if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
@@ -307,6 +320,16 @@ class DesktopController extends Controller{
     {
         return $this->render('view-script', [
             'model' => Scripts::findOne($id),
+        ]);
+    }
+
+    public function actionCalls(){
+        $searchModel = new UsersClientsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('calls',[
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 }
