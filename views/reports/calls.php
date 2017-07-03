@@ -58,6 +58,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'layout' => $layoutGrid,
+        'responsive'=>false,
+        'responsiveWrap'=>false,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 

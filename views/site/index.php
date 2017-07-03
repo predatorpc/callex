@@ -46,7 +46,7 @@ $this->title = 'Колл-центр v1.01a';
             </div>
 	    <div class="form-group">
                 <?= Yii::$app->user->can('Manager') ? Html::a('Типы коментариев', '/settings/comment-types', ['class' => 'btn btn-primary']) : '' ?>
-                <?= Yii::$app->user->can('Manager') ? Html::a('Загрузка скриптов', '/settings/script-load', ['class' => 'btn btn-primary']) : '' ?> 
+                <?= Yii::$app->user->can('Manager') ? Html::a('Загрузка скриптов', '/scripts', ['class' => 'btn btn-primary']) : '' ?>
                 <?= Yii::$app->user->can('Manager') ? Html::a('Управление списками', '/settings/lists', ['class' => 'btn btn-primary']) : '' ?>
                 <?= Yii::$app->user->can('Manager') ? Html::a('Настроки автораздачи', '/settings/auto-load', ['class' => 'btn btn-primary']) : '' ?>
 	    </div>

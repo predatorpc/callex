@@ -1,5 +1,9 @@
 <?php
 use app\components\WClietsList;
+use yii\helpers\ArrayHelper;
+use app\models\CallStatuses;
+use yii\bootstrap\BootstrapAsset;
+$callStatuses = ArrayHelper::map(CallStatuses::find()->All(),'id','name');
 $this->title = 'Рабочий стол';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -11,8 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-xs-9">
                 <a href="/desktop/client-card" class="btn btn-success center-block">Получить карточку клиента</a>
                <br>
-            <?php
 
+            <?php
             if(Yii::$app->user->can('Manager')){?>
 
                     <a href="/desktop/import" class="btn btn-danger ">Импорт клиентов</a>
@@ -24,8 +28,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>
             <?php } ?>
 
-    <spans style="font-weight: bold;font-size: 50px; float: right;"><?=$todayCountCalls;?></spans>
+            <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left"  style="float: right;" id="statistic" data-content="<?php
+                    foreach ($statistic as $item){
+                        echo $callStatuses[$item->call_status_id].' : ';
+                        echo $item->count.' | ';
+                    }?>">
+                <?=$todayCountCalls;?>
+            </button>
     </div>
         <div class="clear"></div>
     </div>
 </div>
+<?php
+$script = <<< JS
+    $('#statistic').popover();
+JS;
+$this->registerJs($script, yii\web\View::POS_READY);
+
+?>
