@@ -67,7 +67,12 @@ class UsersClientsSearch extends UsersClients
             $query->andWhere(['clients.call_status_id'=>$this->call_status_id]);
         }
         if(isset($this->client_name) && !empty($this->client_name)){
-            $query->andWhere(['LIKE','clients.last_name',$this->client_name]);
+            foreach (explode(' ',trim($this->client_name)) as $key => $value){
+//                $query->orWhere(['LIKE','clients.first_name',$value]);
+//                $query->orWhere(['LIKE','clients.second_name',$value]);
+//                $query->orWhere(['LIKE','clients.last_name',$value]);
+                $query->andWhere('`clients`.`first_name` LIKE "%'.$value.'%" OR `clients`.`second_name` LIKE "%'.$value.'%" OR `clients`.`last_name` LIKE "%'.$value.'%"');
+            }
         }
         if(isset($params['dateStart']) && strtotime($params['dateStart'])>0){
             $query->andWhere(['>=','users_clients.date',date('Y-m-d 00:00:00',strtotime($params['dateStart']))]);

@@ -42,7 +42,7 @@ $this->title = 'Мои звонки';
                 'header' => 'Клинет',
                 'value' => function($model){
                     if(isset($model->client) && isset($model->client->last_name)){
-                        return $model->client->last_name;
+                        return $model->client->last_name.' '.$model->client->first_name.' '.$model->client->second_name;;
                     }
                 }
             ],
