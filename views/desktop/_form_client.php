@@ -8,6 +8,8 @@ use app\models\CommentsActions;
 use app\models\Comments;
 use yii\helpers\ArrayHelper;
 use kartik\datetime\DateTimePicker;
+use app\models\UserFitness;
+use app\models\UserShop;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Clients */
@@ -66,11 +68,29 @@ use kartik\datetime\DateTimePicker;
             ]);?>
     </div>
 
-    <?= $form->field($model, 'client_shop_id')->textInput() ?>
+    <?php //= $form->field($model, 'client_shop_id')->textInput() ?>
+            <?php
+            if(isset($model->phone) && !empty($model->phone)){
+                $phone = $model->phone;
+                $user = UserShop::find()->where(['LIKE','phone',$phone])->One();
+                if($user){
+                    echo '<a target="_blank" style="font-size: 25px;font-weight: bold;" href="https://www.extremeshop.ru/user/view?id='.$user->id.'">Профиль в extremeshop</a>';
+                }
+            }
+            ?>
 
-    <?= $form->field($model, 'client_helper_id')->textInput() ?>
-
-    <?= $form->field($model, 'client_fit_id')->textInput() ?>
+    <?php //= $form->field($model, 'client_helper_id')->textInput() ?>
+    <br>
+    <?php //= $form->field($model, 'client_fit_id')->textInput() ?>
+            <?php
+                if(isset($model->phone) && !empty($model->phone)){
+                    $phone = $model->phone;
+                    $user = UserFitness::find()->where(['LIKE','phone',$phone])->One();
+                    if($user){
+                        echo '<a target="_blank" style="font-size: 25px;font-weight: bold;" href="http://web.extremefitness.ru/users/view?id='.$user->id.'">Профиль в фитнессе</a>';
+                    }
+                }
+            ?>
 
     <?= $form->field($model, 'last_call')->hiddenInput(['value'=> date('Y-m-d H:i:s')])->label(false) ?>
 
