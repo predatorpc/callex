@@ -39,7 +39,7 @@ $this->title = 'Мои звонки';
             ['class' => 'yii\grid\SerialColumn'],
             [
                 'attribute' => 'client_name',
-                'header' => 'Клинет',
+                'header' => 'Клиент',
                 'value' => function($model){
                     if(isset($model->client) && isset($model->client->last_name)){
                         return $model->client->last_name.' '.$model->client->first_name.' '.$model->client->second_name;;
