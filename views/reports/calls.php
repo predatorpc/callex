@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'responsive'=>false,
         'responsiveWrap'=>false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'kartik\grid\SerialColumn'],
 
 //            'id',
             [
