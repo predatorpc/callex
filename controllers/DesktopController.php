@@ -43,6 +43,7 @@ class DesktopController extends Controller{
             ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
             ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
             ->andWhere(['`users_clients`.status'=>1])
+            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6]])
             ->groupBy('clients.call_status_id')
             ->All();
 
@@ -52,6 +53,7 @@ class DesktopController extends Controller{
             ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
             ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
             ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
+            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6]])
             ->andWhere(['`users_clients`.status'=>1])
             ->count();
 
