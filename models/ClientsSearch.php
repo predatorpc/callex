@@ -58,7 +58,7 @@ class ClientsSearch extends Clients
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $query->andWhere(['NOT IN','call_status_id',[0,1,5,6]]);
         if(isset($this->first_name) && !empty($this->first_name)){
             $query->orWhere(['LIKE','first_name',$this->first_name]);
             $query->orWhere(['LIKE','second_name',$this->first_name]);
@@ -109,6 +109,7 @@ class ClientsSearch extends Clients
             return $dataProvider;
         }
 
+        $query->andWhere(['NOT IN','call_status_id',[0,1,5,6]]);
         if(isset($params['dateStart'])){
             $dateStart = $params['dateStart'];
             $query->andWhere(['>=','users_clients.date',date('Y-m-d 00:00:00',strtotime($dateStart))]);
