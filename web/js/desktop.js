@@ -46,6 +46,11 @@
     });
     $('form#comments').submit(function(){
         if($(this).find('textarea').val() != ''){
+            if($('select#action').val() == ''){
+                alert('Выберите действие');
+                return false;
+
+            }
             $.ajax({
                 type: "POST",
                 url: "/desktop/add-comment",

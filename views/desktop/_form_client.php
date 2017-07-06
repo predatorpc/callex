@@ -124,7 +124,7 @@ use app\models\UserShop;
             </div>
             <div class="form-group">
                 <?= Html::label('Действие','',['class'=>'control-label']);?>
-                <?= Html::dropDownList('comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выбиретe..','class'=>'form-control']);?>
+                <?= Html::dropDownList('comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выбиретe..','class'=>'form-control','id'=> 'action']);?>
             </div>
             <div class="form-group">
                 <?= Html::label('Тип','',['class'=>'control-label']);?>
