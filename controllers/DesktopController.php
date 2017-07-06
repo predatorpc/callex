@@ -102,7 +102,7 @@ class DesktopController extends Controller{
                 $session->set('edit_client_id', $client->id);
 
         }else{
-            $client = Clients::find()->where(['<>','call_status_id','4'])->andWhere(['<>','call_status_id','3'])->andWhere(['is_being_edited'=> 0])->orderBy('RAND()')->One();
+            $client = Clients::find()->where(['<>','call_status_id','4'])->andWhere(['<>','call_status_id','3'])->andWhere(['call_status_id'=>'0'])->andWhere(['is_being_edited'=> 0])->orderBy('RAND()')->One();
             if(!$client){
                 return 'Не обработанне клинты кончились';
 

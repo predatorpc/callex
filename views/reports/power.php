@@ -40,8 +40,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'layout' => $layoutGrid,
         'responsive'=>false,
         'responsiveWrap'=>false,
+        'showPageSummary'=> true,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class'=>'kartik\grid\SerialColumn',],
             [
                 'attribute' => 'user_id',
                 'header' => 'Оператор',
@@ -54,10 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                 },
                 'filter' => false,
+                'pageSummary'=>'Всего',
             ],
             [
                 'attribute' => 'count',
-                'header' => 'Количсетво звонков'
+                'header' => 'Количсетво звонков',
+                'pageSummary'=>true,
             ],
         ],
     ]); ?>
