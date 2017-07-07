@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use app\models\Comments;
 use app\models\UsersClients;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use Yii;
 use app\models\Clients;
@@ -64,7 +65,6 @@ class DesktopController extends Controller{
 
         $session = Yii::$app->session;
         $sms = '';
-
         if($edit_user_id = $session->get('edit_client_id')) {
             $client = Clients::find()->where(['id' => $edit_user_id])->One();
             if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
@@ -104,7 +104,8 @@ class DesktopController extends Controller{
                 $session->set('edit_client_id', $client->id);
 
         }else{
-            $client = Clients::find()->where(['<>','call_status_id','4'])->andWhere(['<>','call_status_id','3'])->andWhere(['call_status_id'=>'0'])->andWhere(['is_being_edited'=> 0])->orderBy('RAND()')->One();
+            $usedClient = ArrayHelper::getColumn(Comments::find()->select('client_id')->distinct()->all(),'client_id');
+            $client = Clients::find()->where(['<>','call_status_id','4'])->andWhere(['<>','call_status_id','3'])->andWhere(['call_status_id'=>'0'])->andWhere(['is_being_edited'=> 0])->andWhere(['NOT IN','id',$usedClient])->orderBy('RAND()')->One();
             if(!$client){
                 return 'Не обработанне клинты кончились';
 
