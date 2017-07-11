@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <a href="/comments-actions" class="btn btn-warning">Действия к комментариям</a>
 
-                    <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>
+<!--                    <a href="/comments-types" class="btn btn-warning">Типы к комментариям</a>-->
             <?php } ?>
 
             <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left"  style="float: right;" id="statistic" data-content="<?php
