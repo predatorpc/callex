@@ -159,7 +159,7 @@ class DesktopController extends Controller{
             $request = Yii::$app->request->post('comment');
             $comment = new Comments();
             $comment->action_id = $request['action_id'];
-            $comment->type_id = $request['type_id'];
+            //$comment->type_id = $request['type_id'];
             $comment->text = $request['text'];
             $comment->created_by_user = Yii::$app->user->getId();
             $comment->client_id = $request['client_id'];

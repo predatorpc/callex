@@ -82,18 +82,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
             ],
-            [
-                'attribute'=>'type_id',
-                'value' => function($model){
-                    if(isset($model->type)){
-                        return $model->type->name;
-                    }else{
-                        return '';
-                    }
-
-                },
-                'filter' => ArrayHelper::map(CommentsTypes::find()->all(),'id','name')
-            ],
+//            [
+//                'attribute'=>'type_id',
+//                'value' => function($model){
+//                    if(isset($model->type)){
+//                        return $model->type->name;
+//                    }else{
+//                        return '';
+//                    }
+//
+//                },
+//                'filter' => ArrayHelper::map(CommentsTypes::find()->all(),'id','name')
+//            ],
             [
                 'attribute'=>'action_id',
                 'value' => function($model) {
