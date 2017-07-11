@@ -22,13 +22,13 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="bg">
+<body>
 <?php $this->beginBody() ?>
 
 <div class="wrap">
-    <div class="container"><br>
+<div style="margin-left: 3%; margin-right: 3%; padding-top: 2%;">
         <?= $content ?>
-    </div>
+</div>
 </div>
 <?php $this->endBody() ?>
 </body>
