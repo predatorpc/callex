@@ -198,16 +198,16 @@ class DesktopController extends Controller{
                         $value['phone'] = substr($value['phone'],1);
                     }
                     $value['phone'] = str_replace('+7','',$value['phone']);
-                    if(Clients::find()->where(['phone'=>$value['phone']])->count() == 0){
+                    if(Clients::find()->where(['LIKE','phone',$value['phone']])->count() == 0){
                         $client = new Clients();
-                        $name = explode(' ',$value['name']);
-                        $client->first_name = $name[1];
-                        $client->second_name = $name[2];
-                        $client->last_name = $name[0];
-                        $client->birthday = $value['birthday'];
+                        //$name = explode(' ',$value['name']);
+                        $client->first_name = isset($value['first_name']) ? $value['first_name'] : '';
+                        $client->second_name = isset($value['second_name']) ? $value['second_name'] : '';
+                        $client->last_name = isset($value['last_name']) ? $value['last_name'] : '';
+                        $client->birthday = isset($value['birthday']) ? $value['birthday'] : '';
                         $client->phone = $value['phone'];
                         $client->call_status_id = 0;
-                        $client->last_call = '0000-00-00 00:00:00';
+                        //$client->last_call = '0000-00-00 00:00:00';
                         if(isset($value['car'])){
                             $client->car = $value['car'];
                         }
