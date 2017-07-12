@@ -1,5 +1,10 @@
 
     $('#clients-call_status_id').change(function(){
+        if($(this).val() == 2){
+            $('div#next_call').show();
+        }else{
+            $('div#next_call').hide();
+        }
         $('.btn.btn-success.client').prop("disabled", false)
     });
     $('.btn.btn-success.client').click(function(){
@@ -17,7 +22,8 @@
                 url: "/desktop/sms-send",
                 data: $('form#sms').serialize(),
                 success: function(data) {
-                    alert(data);
+                    var res = JSON.parse(data);
+                    alert(res.message);
 
                 },
             });
@@ -40,6 +46,11 @@
     });
     $('form#comments').submit(function(){
         if($(this).find('textarea').val() != ''){
+            if($('select#action').val() == ''){
+                alert('Выберите действие');
+                return false;
+
+            }
             $.ajax({
                 type: "POST",
                 url: "/desktop/add-comment",

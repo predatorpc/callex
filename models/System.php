@@ -15,6 +15,7 @@ class System extends \yii\db\ActiveRecord
     }
     public static function sendSms($phone, $message){
         // Загрузка данных;
+        $phone = '7'.preg_replace('/\D|(\G7)|(\G8)/','',$phone);
         $c = curl_init(Yii::$app->params['smsUrl']);
         curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($c, CURLOPT_TIMEOUT, 30);

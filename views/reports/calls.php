@@ -58,8 +58,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'layout' => $layoutGrid,
+        'responsive'=>false,
+        'responsiveWrap'=>false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'kartik\grid\SerialColumn'],
 
 //            'id',
             [
@@ -80,18 +82,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
             ],
-            [
-                'attribute'=>'type_id',
-                'value' => function($model){
-                    if(isset($model->type)){
-                        return $model->type->name;
-                    }else{
-                        return '';
-                    }
-
-                },
-                'filter' => ArrayHelper::map(CommentsTypes::find()->all(),'id','name')
-            ],
+//            [
+//                'attribute'=>'type_id',
+//                'value' => function($model){
+//                    if(isset($model->type)){
+//                        return $model->type->name;
+//                    }else{
+//                        return '';
+//                    }
+//
+//                },
+//                'filter' => ArrayHelper::map(CommentsTypes::find()->all(),'id','name')
+//            ],
             [
                 'attribute'=>'action_id',
                 'value' => function($model) {
