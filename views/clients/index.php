@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'size' => 'md',
                         'options' => ['class' => 'form-control', 'placeholder' => 'Enter person name...'],
 
-                        'header' => 'Баланс',
+                        'header' => 'Комментарий',
                         'inputType' => Editable::INPUT_HIDDEN,
                         'beforeInput' => function ($form, $widget) use ($modelComment, $model) {
                             $actions = ArrayHelper::map(\app\models\CommentsActions::find()->where(['status'=>1])->all(),'id','name');
@@ -85,8 +85,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             echo '<label>Добавление комментария</label><br>';
                             echo '<ul>';
                             foreach (Comments::find()->where(['client_id' => $model->id])->orderBy('date DESC')->limit(5)->All() as $comment) {
-                                echo '<li><b>' . $comment->client->second_name .
-                                    '(' . date('d.m.Y H:i:s', strtotime($comment->date)) .
+                                echo '<li><b>' . $comment->user->second_name .
+                                    ' (' . date('d.m.Y H:i:s', strtotime($comment->date)) .
                                     ')</b>: '.(isset($actions[$comment->action_id])?$actions[$comment->action_id]:'')
                                     .' - '. $comment->text . '</li>';
                             }
