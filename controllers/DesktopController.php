@@ -178,6 +178,7 @@ class DesktopController extends Controller{
 
     public function actionImport(){
         $n = 0;
+        //print_r($_FILES);die;
         if(isset($_FILES['csv'])){
             $csv = file_get_contents($_FILES['csv']['tmp_name']);
             $lines = explode( "\n", $csv );
