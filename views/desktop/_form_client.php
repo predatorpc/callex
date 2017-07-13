@@ -70,7 +70,7 @@ use app\models\UserShop;
     </div>
 
     <?php //= $form->field($model, 'client_shop_id')->textInput() ?>
-            <?php
+            <?php /*
             if(isset($model->phone) && !empty($model->phone)){
                 $phone = $model->phone;
                 $user = UserShop::find()->where(['LIKE','phone',$phone])->One();
@@ -78,7 +78,7 @@ use app\models\UserShop;
                     echo '<a target="_blank" style="font-size: 25px;font-weight: bold;" href="https://www.extremeshop.ru/user/view?id='.$user->id.'">Профиль в extremeshop</a>';
                 }
             }
-            ?>
+            */?>
 
     <?php //= $form->field($model, 'client_helper_id')->textInput() ?>
     <br>
