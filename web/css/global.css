@@ -89,3 +89,8 @@ img {
     max-height: 80px;
     width: 100%;
 }
+a.disabled {
+    pointer-events: none; /* делаем ссылку некликабельной */
+    cursor: default;  /* устанавливаем курсор в виде стрелки */
+    color: #999; /* цвет текста для нективной ссылки */
+}

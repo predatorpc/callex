@@ -114,7 +114,7 @@ class Users extends \yii\db\ActiveRecord
             [['passwordNew', 'confirmPassword'], 'validPass'],
         //    [['club_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clubs::className(), 'targetAttribute' => ['club_id' => 'id']],
             [['cardId', 'type_id'], 'integer'],
-    	    [['club_id'], 'safe'],
+    	    [['club_id', 'phone_id'], 'safe'],
         ];
     }
 
@@ -148,6 +148,7 @@ class Users extends \yii\db\ActiveRecord
             'check_phone' => 'Check Phone',
             'agree' => Yii::t('app', 'Прочитал Договор/Лицензионное соглашение'),
             'typeof' => Yii::t('app', 'Тип сотрудника'),
+            'phone_id' => Yii::t('app', 'id звонилки'),
 
         ];
     }
