@@ -44,7 +44,8 @@ use app\models\UserShop;
 
         <?= $form->field($model, 'gender')->dropDownList(['1' => 'Ж', '2' => 'М'], ['prompt' => 'Выберите...']) ?>
 
-        <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+        <?php //= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+        <?= Html::a('Позвонить клиенту', '#', ['class'=>'btn btn-success', 'rel'=>'100', 'onclick'=>'call('.$model->phone.','.(!empty(\app\models\Users::find()->where(['id'=>Yii::$app->user->id])->one()->phone_id)?\app\models\Users::find()->where(['id'=>Yii::$app->user->id])->one()->phone_id:'0').');'])?>
     </div>
         <div class="col-md-3">
 

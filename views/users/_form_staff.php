@@ -80,7 +80,7 @@ $rolesar = ArrayHelper::map($modelRole,'name','name');
     
     */?>
 
-    <?php //= $form->field($model, 'bonus')->textInput() ?>
+    <?= $form->field($model, 'phone_id')->textInput() ?>
     <?php //= $form->field($model, 'money')->textInput() ?>
 
     <?php
@@ -97,16 +97,21 @@ $rolesar = ArrayHelper::map($modelRole,'name','name');
 
 //        echo $form->field($model->role, 'item_name')->dropDownList($rolesar)->label('Права доступа');
 
-	    if(!empty($model->role)){
+
+
+    }
+
+    if(Yii::$app->user->can('GodMode')){
+        if(!empty($model->role)){
             echo $form->field($model->role, 'item_name')->DropDownList($rolesar);
         }
         else{
             $roles= \app\models\AuthItem::find()->all();
             unset($roles['0'], $roles['1'], $roles['4']);
             $roleNew = ArrayHelper::map($roles,'name','name');
-
             echo $form->field(new \app\models\AuthItem(), 'name')->DropDownList($roleNew)->label('Role');
         }
+
     }
 
 

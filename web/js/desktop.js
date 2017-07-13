@@ -64,5 +64,38 @@
         }
         return false;
     });
+    var phoneGlob = '';
+    function call(phone, user){
+        //console.log(user);
+        //console.log(phone);
+        //console.log(phoneGlob);
+        if(phoneGlob!=phone){
+            phoneGlob = phone;
+            //console.log(phoneGlob);
+            $.post('/phone/index', {
+                    'phone': phone,
+                    'user':user},
+                function(result) {
+                    // Логирование;
+                    resultAr = JSON.parse(result);
+                    if(resultAr.status=='true'){
+                        console.log('вызов сделан');
+                    }
+                    else{
+                        console.log(resultAr.message);
+                        phoneGlob = '';
+                    }
+                });
+        }
+        //console.log($(this).attr('class'));
+        //if($(this).attr('rel')==='false'){
+            //$(this).attr('rel', 'true');
+            //console.log($(this).attr('calldone'));
+
+        //}
+        return false;
+
+
+    }
     console.log('desktop.js OK');
 

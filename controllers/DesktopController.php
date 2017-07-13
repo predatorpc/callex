@@ -148,9 +148,13 @@ class DesktopController extends Controller{
             $session->remove('edit_client_id');
 
             return $this->redirect(['index']);
-        } else {
+        }
+        else {
             $session['time_start'] = strtotime('now');
-            return $this->render('client-card',['client'=>$client,'sms'=>$sms]);
+            return $this->render('client-card',[
+                'client'=>$client,
+                'sms'=>$sms
+            ]);
         }
     }
 
