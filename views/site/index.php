@@ -41,6 +41,7 @@ $this->title = 'Колл-центр v1.01a';
             
             <h3>Отчеты и настроки работы</h3>
             <div class="form-group">
+                <?= Yii::$app->user->can('Manager') ? Html::a('Пользователи', '/users', ['class' => 'btn btn-primary']) : '' ?>
                 <?= Yii::$app->user->can('Manager') ? Html::a('Отчет по звонкам', '/reports/calls', ['class' => 'btn btn-warning']) : '' ?>            
                 <?= Yii::$app->user->can('Manager') ? Html::a('Отчет по производительности', '/reports/power', ['class' => 'btn btn-warning']) : '' ?>
             </div>

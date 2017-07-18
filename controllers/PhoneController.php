@@ -7,15 +7,12 @@
  */
 
 namespace app\controllers;
-
 use app\models\BeelinePhone;
 use app\models\System;
-use Codeception\Module\Cli;
+
 use Yii;
-use yii\filters\AccessControl;
+
 use yii\web\Controller;
-use yii\web\Response;
-use yii\filters\VerbFilter;
 
 
 class PhoneController extends Controller
@@ -28,24 +25,22 @@ class PhoneController extends Controller
      */
     public function actionIndex()
     {
-        $result=[
-            'status'=>'false',
-            'error'=>'1',
-            'message'=>'ошибка'
-        ];
+        //$beeline = new BeelinePhone();
+        //System::mesprint($beeline->getCall(9237042936, 229));die();
+        //$beeline = new BeelinePhone();
+        //System::mesprint($beeline->setPhoneNumber(9237042936));
+        //System::mesprint($beeline->setUserId(9607967813));
+        //System::mesprint($beeline->getCall());
+        //System::mesprint($beeline->getCall(9237042936, 9607967813));
+
         $params = Yii::$app->request->post();
         if(!empty($params['phone']) && !empty($params['user'])){
             $beeline = new BeelinePhone();
-            $result = $beeline->getCall($params['phone'], $params['user']);
-            if(!empty($result)){
-                $result=[
-                    'status'=>'true',
-                    'error'=>'0',
-                    'message'=>'вызов сделан, возьми трубку'
-                ];
-            }
+            //return $beeline->getCall(9237042936, 9607967813);
+            return $beeline->getCall($params['phone'], $params['user']);
+
         }
-        return json_encode($result);
+        return false;
 
     }
 

@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'count',
-                'header' => 'Количсетво звонков',
+                'header' => 'Количество звонков',
                 'pageSummary'=>true,
             ],
         ],

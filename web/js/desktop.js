@@ -66,26 +66,11 @@
     });
     var phoneGlob = '';
     function call(phone, user){
-        //console.log(user);
-        //console.log(phone);
-        //console.log(phoneGlob);
         if(phoneGlob!=phone){
             phoneGlob = phone;
-            //console.log(phoneGlob);
             $.post('/phone/index', {
                     'phone': phone,
-                    'user':user},
-                function(result) {
-                    // Логирование;
-                    resultAr = JSON.parse(result);
-                    if(resultAr.status=='true'){
-                        console.log('вызов сделан');
-                    }
-                    else{
-                        console.log(resultAr.message);
-                        phoneGlob = '';
-                    }
-                });
+                    'user':user});
         }
         //console.log($(this).attr('class'));
         //if($(this).attr('rel')==='false'){

@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use Codeception\Module\Cli;
+//use Codeception\Module\Cli;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;

@@ -97,24 +97,23 @@ class BeelinePhone
 
     private function requestV2PaymentPost($url){
         $curl = curl_init($url);
-        $options = array(
+        $options = [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_POST => 1,
-            CURLOPT_FOLLOWLOCATION => 1,
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
+            //CURLOPT_FOLLOWLOCATION => 1,
+            //CURLOPT_SSL_VERIFYHOST => 0,
+            //CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_HTTPHEADER =>[
                 'X-MPBX-API-AUTH-TOKEN:'.$this->token
             ],
 
-        );
+        ];
         curl_setopt_array($curl, $options);
 
-        //curl_setopt($curl, CURLOPT_POSTFIELDS, urlencode(http_build_query($params)));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, urlencode(http_build_query(['d'=>'d'])));
         $response = curl_exec($curl);
-        print_r($response);
         curl_close($curl);
-        return json_decode($response);
+        return $response;
     }
 
     private function requestV2PaymentGet($url){
