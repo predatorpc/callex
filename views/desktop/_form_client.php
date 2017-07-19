@@ -44,7 +44,7 @@ use app\models\UserShop;
 
         <?= $form->field($model, 'gender')->dropDownList(['1' => 'Ж', '2' => 'М'], ['prompt' => 'Выберите...']) ?>
 
-        <?php //= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
         <?= Html::a('Позвонить клиенту', '#', ['class'=>'btn btn-success', 'rel'=>'100', 'onclick'=>'call('.$model->phone.','.(!empty(\app\models\Users::find()->where(['id'=>Yii::$app->user->id])->one()->phone_id)?\app\models\Users::find()->where(['id'=>Yii::$app->user->id])->one()->phone_id:'0').');'])?>
     </div>
         <div class="col-md-3">
@@ -125,7 +125,7 @@ use app\models\UserShop;
             </div>
             <div class="form-group">
                 <?= Html::label('Действие','',['class'=>'control-label']);?>
-                <?= Html::dropDownList('comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выбиретe..','class'=>'form-control','id'=> 'action']);?>
+                <?= Html::dropDownList('comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выберитe..','class'=>'form-control','id'=> 'action']);?>
             </div>
             <?php /*
                 <div class="form-group">
