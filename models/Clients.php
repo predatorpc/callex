@@ -70,7 +70,7 @@ class Clients extends \yii\db\ActiveRecord
             'district' => 'Район',
             'car' => 'Машина',
             'children' => 'Дети',
-            'call_status_id' => 'Стаутус звонка',
+            'call_status_id' => 'Статус звонка',
             'client_shop_id' => 'ID клиента шопа',
             'client_helper_id' => 'ID клиента хелпера',
             'client_fit_id' => 'ID клиента фитнесса',
