@@ -27,7 +27,7 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls'],
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client'],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -61,11 +61,23 @@ class DesktopController extends Controller{
         return $this->render('index',['todayCountCalls'=>$todayCountCalls,'statistic'=>$statistic]);
     }
 
-    public function actionClientCard(){
-
+    public function actionClientCard($id = false){
         $session = Yii::$app->session;
         $sms = '';
-        if($edit_user_id = $session->get('edit_client_id')) {
+        if($id != false){
+            $client = Clients::find()->where(['id'=>$id])->One();
+            $client->is_being_edited = 1;
+            $client->save();
+            $user_client = new UsersClients();
+            $user_client->user_id = Yii::$app->user->getId();
+            $user_client->client_id = $client->id;
+            $user_client->date = date('Y-m-d H:i:s');
+            $user_client->status = 0;
+            if(!$user_client->save()){
+                print_r($user_client->getErrors());die;
+            }
+
+        }elseif($edit_user_id = $session->get('edit_client_id')) {
             $client = Clients::find()->where(['id' => $edit_user_id])->One();
             if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
                 $smsDB = Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One();
@@ -339,5 +351,20 @@ class DesktopController extends Controller{
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+
+    public function actionFindClient()
+    {
+        if(Yii::$app->request->post('phone')){
+            $phone = Yii::$app->request->post('phone');
+            if(strlen($phone)== 10){
+                $client = Clients::find()->where(['LIKE','phone',$phone])->One();
+                if($client){
+                    $this->redirect(['client-card','id'=> $client->id]);
+                }
+            }
+        }
+        return $this->render('find-client');
     }
 }
