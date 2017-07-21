@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-xs-9">
                 <a href="/desktop/client-card" class="btn btn-success center-block">Получить карточку клиента</a>
                <br>
+                <a href="/desktop/find-client" class="btn btn-default ">Найти по номеру</a>
 
             <?php
             if(Yii::$app->user->can('Manager')){?>
