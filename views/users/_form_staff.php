@@ -30,8 +30,29 @@ $gender = [
 ];
 
 
-unset($modelRole['0'], $modelRole['1'], $modelRole['4']);
-$rolesar = ArrayHelper::map($modelRole,'name','name');
+//unset($modelRole['0'], $modelRole['1'], $modelRole['4']);
+//$rolesar = ArrayHelper::map($modelRole,'name','name');
+
+unset($modelRole['0'], $modelRole['1'], $modelRole['4'], $modelRole['5']);
+$youRole = Yii::$app->authManager->getRolesByUser(Yii::$app->user->id);
+$rolesForCurrent = array_fill_keys(app\models\AuthAssignment::getRoleTreeName(key($youRole)), 'true');
+foreach ($rolesForCurrent as $keyRole=>$itemRole){
+    $rolesForCurrent[$keyRole]=$keyRole;
+    }
+    
+    if(key($youRole)=='ClubManager'){
+        unset($rolesForCurrent['Admin'], $rolesForCurrent['Booker'], $rolesForCurrent['GodMode'], $rolesForCurrent['Manager']);
+        }
+        elseif(key($youRole)=='Booker'){
+            unset($rolesForCurrent['Admin'], $rolesForCurrent['GodMode']);
+            }
+            elseif(key($youRole)=='Admin'){
+                unset($rolesForCurrent['Booker'], $rolesForCurrent['GodMode']);
+                }
+                elseif(key($youRole)!='GodMode'){
+                    $rolesForCurrent['User']='User';
+                    }
+
 
 //var_dump($modelRole);
 //var_dump($roles);die();
@@ -101,8 +122,18 @@ $rolesar = ArrayHelper::map($modelRole,'name','name');
 
     }
 
-    if(Yii::$app->user->can('GodMode')){
-        if(!empty($model->role)){
+    if(Yii::$app->user->can('Admin')){
+    if(!empty($model->role)){
+                echo $form->field($model->role, 'item_name')->DropDownList($rolesForCurrent);
+                        }
+                                else{
+                                            $roles= app\models\AuthItem::find()->all();
+                                                        unset($roles['0'], $roles['1'], $roles['4']);
+                                                                    $roleNew = ArrayHelper::map($roles,'name','name');
+                                                                    
+                                                                                echo $form->field(new app\models\AuthAssignment(), 'item_name')->DropDownList($rolesForCurrent)->label('Role');
+                                                                                        }
+/*        if(!empty($model->role)){
             echo $form->field($model->role, 'item_name')->DropDownList($rolesar);
         }
         else{
@@ -111,7 +142,7 @@ $rolesar = ArrayHelper::map($modelRole,'name','name');
             $roleNew = ArrayHelper::map($roles,'name','name');
             echo $form->field(new \app\models\AuthItem(), 'name')->DropDownList($roleNew)->label('Role');
         }
-
+        */
     }
 
 

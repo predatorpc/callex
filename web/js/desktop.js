@@ -68,9 +68,13 @@
     function call(phone, user){
         if(phoneGlob!=phone){
             phoneGlob = phone;
+            console.log('call');
             $.post('/phone/index', {
                     'phone': phone,
                     'user':user});
+        }
+        else{
+         console.log('call cancel');
         }
         //console.log($(this).attr('class'));
         //if($(this).attr('rel')==='false'){

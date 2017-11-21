@@ -46,12 +46,13 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <?php ActiveForm::end(); ?>
     <?php
+
     $layoutGrid= '
-        <div> {toolbar}</div>
+        <div style="float:right;">{toolbar}</div>
         {summary}
         {items}
-        <div class="clearfix"></div>
         {pager}
+        <div class="clearfix"></div>
         ';
     ?>
     <?= GridView::widget([
@@ -60,6 +61,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'layout' => $layoutGrid,
         'responsive'=>false,
         'responsiveWrap'=>false,
+        'toolbar'=>[
+            '{export}',
+            '{toggleData}'
+        ],
         'columns' => [
             ['class' => 'kartik\grid\SerialColumn'],
 

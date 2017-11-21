@@ -49,6 +49,7 @@ class Clients extends \yii\db\ActiveRecord
             [['birthday', 'last_call', 'next_call', 'date_create', 'date_update'], 'safe'],
             [['gender', 'car', 'children', 'client_shop_id', 'call_status_id', 'client_helper_id', 'client_fit_id', 'is_being_edited', 'anketa', 'status'], 'integer'],
             [['first_name', 'second_name', 'last_name', 'district'], 'string', 'max' => 255],
+            ['email', 'email'],
             [['phone'], 'string', 'max' => 20],
             [['call_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => CallStatuses::className(), 'targetAttribute' => ['call_status_id' => 'id']],
         ];
@@ -77,6 +78,7 @@ class Clients extends \yii\db\ActiveRecord
             'date_create' => 'Date Create',
             'date_update' => 'Date Update',
             'status' => 'Статус',
+            'email'=>'email'
         ];
     }
 
