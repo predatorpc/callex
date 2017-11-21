@@ -265,25 +265,22 @@ class UsersController extends Controller
         $model_file = new File();
     //    $companies = Corporative::find()->select('id, name')->where('status = 1')->asArray()->all();
     //    $clubs = Clubs::find()->select('id, name')->where('status = 1')->asArray()->all();
-	    $modelRole = AuthItem::find()->all();
+	$modelRole = AuthItem::find()->all();
 
 
         if ($model->load(Yii::$app->request->post())) {
             if($model->save(true)){
                 if($model->staff==1){
                     if(Yii::$app->user->can('Admin')){
-                        $modelAuthItems = new AuthItem();
-                        $modelAuthItems->load(Yii::$app->request->post());
-                        if(!empty($modelAuthItems->name)){
-                            $auth = AuthAssignment::find()->where(['user_id'=>$model->id])->one();
-                            if(empty($auth)){
-                                $auth = new AuthAssignment();
-                                $auth->user_id = $model->id;
-                            }
-                            $auth->item_name = $modelAuthItems->name;
-                            $auth->description = $modelAuthItems->name;
-                            $auth->save(true);
+                        $auth = AuthAssignment::find()->where(['user_id'=>$model->id])->one();
+                        if(empty($auth)){
+                            $auth = new AuthAssignment();
                         }
+                        $auth->load(Yii::$app->request->post());
+                        $auth->user_id=$model->id;
+                        //$auth->item_name = $modelAuthItems->name;
+                        $auth->description = 'callex';
+                        $auth->save(true);
                     }
                     else{
                         $model->staff=0;
@@ -295,7 +292,6 @@ class UsersController extends Controller
                 return $this->redirect(['view-staff', 'id' => $model->id]);
             }
             else{
-        	
                 $model->password = $model->confirmPassword;
             }
 
@@ -322,20 +318,20 @@ class UsersController extends Controller
         $model_file = new File();
     //    $companies = Corporative::find()->select('id, name')->where('status = 1')->asArray()->all();
     //    $clubs = Clubs::find()->select('id, name')->where('status = 1')->asArray()->all();
-        $modelRole = AuthItem::find()->all();
+        $modelRole = false;AuthItem::find()->all();
         
         if(Yii::$app->request->isPost){
             if(Yii::$app->user->can('Admin')){
                 if(!empty(Yii::$app->request->post('AuthAssignment'))){
-                    $updatedUserRole = Yii::$app->authManager->getRolesByUser($id);
-                    if(empty($updatedUserRole['Admin'])){
+                    //$updatedUserRole = Yii::$app->authManager->getRolesByUser($id);
+                    //if(empty($updatedUserRole['Admin'])){
                         $auth = AuthAssignment::find()->where(['user_id'=>$id])->one();
                         if(empty($auth)){
                             $auth = new AuthAssignment();
                         }
                         $auth->load(Yii::$app->request->post());
                         $auth->save(true);
-                    }
+                    //}
                 }
             }
         }

@@ -92,7 +92,7 @@ class BeelinePhone
     }
 
     private function call(){
-        return $this->requestV2PaymentPost(self::URL.'/abonents'.'/'.urlencode($this->userId).'/call?phoneNumber='.$this->phoneNumber);
+        return $this->requestV2PaymentPost(self::URL.'/abonents'.'/'.urlencode($this->userId).'/call?phoneNumber=8'.$this->phoneNumber);
     }
 
     private function requestV2PaymentPost($url){
@@ -112,6 +112,7 @@ class BeelinePhone
 
         curl_setopt($curl, CURLOPT_POSTFIELDS, urlencode(http_build_query(['d'=>'d'])));
         $response = curl_exec($curl);
+//        var_dump($response);
         curl_close($curl);
         return $response;
     }

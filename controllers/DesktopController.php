@@ -44,7 +44,7 @@ class DesktopController extends Controller{
             ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
             ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
             ->andWhere(['`users_clients`.status'=>1])
-            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6]])
+            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6,9]])
             ->groupBy('clients.call_status_id')
             ->All();
 
@@ -54,7 +54,7 @@ class DesktopController extends Controller{
             ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
             ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
             ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
-            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6]])
+            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6,9]])
             ->andWhere(['`users_clients`.status'=>1])
             ->count();
 
@@ -89,6 +89,7 @@ class DesktopController extends Controller{
             ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
             ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
             ->andWhere(['clients.call_status_id'=>2])
+            ->andWhere(['clients.status'=>1])
             ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
             ->orderBy('next_call')
             ->One()){
@@ -96,6 +97,7 @@ class DesktopController extends Controller{
                 ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
                 ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
                 ->andWhere(['clients.call_status_id'=>2])
+                ->andWhere(['clients.status'=>1])
                 ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
                 ->orderBy('next_call')
                 ->One();

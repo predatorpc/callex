@@ -70,4 +70,36 @@ class AuthAssignment extends \yii\db\ActiveRecord
     {
         return new AuthAssignmentQuery(get_called_class());
     }
+    
+    public static function getRoleTreeName($name=false){
+            //отдает дерово ролей
+                    $roleTree = [];
+                            if(!empty($name)){
+                                        $childRoles = Yii::$app->authManager->getChildren($name);
+                                                    $roleTree = array_keys($childRoles);
+                                                                //var_dump($roleTree);
+                                                                            while($childRolesCur = current($childRoles)){
+                                                                                            //$roleTree[$childRolesCur->name] = $childRolesCur;
+                                                                                                            $roleTree = array_merge($roleTree, self::getRoleTreeName($childRolesCur->name));
+                                                                                                                            next($childRoles);
+                                                                                                                                        }
+                                                                                                                                                }
+                                                                                                                                                        //var_dump(array_keys($roleTree));
+                                                                                                                                                                return $roleTree;
+                                                                                                                                                                    }
+                                                                                                                                                                    
+                                                                                                                                                                        public static function getRoleTree($name=false){
+                                                                                                                                                                                //отдает дерово ролей
+                                                                                                                                                                                        $roleTree = [];
+                                                                                                                                                                                                if(!empty($name)){
+                                                                                                                                                                                                            $childRoles = Yii::$app->authManager->getChildren($name);
+                                                                                                                                                                                                                        while($childRolesCur = current($childRoles)){
+                                                                                                                                                                                                                                        $roleTree[$childRolesCur->name] = $childRolesCur;
+                                                                                                                                                                                                                                                        $roleTree[] = self::getRoleTree($childRolesCur->name);
+                                                                                                                                                                                                                                                                        next($childRoles);
+                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                    //var_dump(array_keys($roleTree));
+                                                                                                                                                                                                                                                                                                            return $roleTree;
+                                                                                                                                                                                                                                                                                                                }
 }
