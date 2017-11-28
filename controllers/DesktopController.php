@@ -163,7 +163,7 @@ class DesktopController extends Controller{
             if($client->call_status_id != 2){
                 $client->next_call =  '';
             }
-            $client->save();
+            $client->save(true);
             $user_client = UsersClients::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
             if($user_client){
                 $user_client->status = 1;
