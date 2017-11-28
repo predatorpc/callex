@@ -78,21 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     return 'Нет привязки';
                 }
-            ],         */   [
-                'attribute' => 'company_id',
-                'content' => function($model)
-                {
-                    if(!empty($model->company_id)) {
-                        $corporative = \app\models\Corporative::find()->where(
-                            'id = ' . $model->company_id
-                        )->one();
-                        return $corporative['name'];
-
-
-                    }
-                    return 'Нет привязки';
-                }
-            ],
+            ],         */
             [
                 'attribute'=>'status',
                 'label' => 'Статус',

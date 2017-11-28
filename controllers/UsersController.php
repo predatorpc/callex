@@ -17,7 +17,6 @@ use app\models\AuthAssignment;
 use app\models\AuthItem;
 use app\models\Cards;
 use app\models\Clubs;
-use app\models\Corporative;
 use app\models\System;
 use app\models\UsersPhotos;
 use Yii;

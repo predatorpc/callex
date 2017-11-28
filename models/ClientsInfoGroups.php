@@ -5,23 +5,22 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "actions".
+ * This is the model class for table "clients_info_groups".
  *
  * @property int $id
  * @property string $name
- * @property string $desctiption
  * @property int $status
  *
- * @property Comments[] $comments
+ * @property ClientsInfo[] $clientsInfos
  */
-class Actions extends \yii\db\ActiveRecord
+class ClientsInfoGroups extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'actions';
+        return 'clients_info_groups';
     }
 
     /**
@@ -30,10 +29,9 @@ class Actions extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'desctiption'], 'required'],
-            [['desctiption'], 'string'],
+            [['name'], 'required'],
             [['status'], 'integer'],
-            [['name'], 'string', 'max' => 255],
+            [['name'], 'string', 'max' => 128],
         ];
     }
 
@@ -45,7 +43,6 @@ class Actions extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
-            'desctiption' => 'Desctiption',
             'status' => 'Status',
         ];
     }
@@ -53,8 +50,8 @@ class Actions extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getComments()
+    public function getClientsInfos()
     {
-        return $this->hasMany(Comments::className(), ['action_id' => 'id']);
+        return $this->hasMany(ClientsInfo::className(), ['group_id' => 'id']);
     }
 }

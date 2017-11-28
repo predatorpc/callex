@@ -1,6 +1,9 @@
 <?php
 namespace app\controllers;
 
+use app\components\WTest;
+use app\models\ClientsInfo;
+use app\models\ClientsInfoLinks;
 use app\models\Comments;
 use app\models\UsersClients;
 use yii\helpers\ArrayHelper;
@@ -27,7 +30,7 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client'],
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client', 'client-old-info', 'client-change-info'],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -37,6 +40,7 @@ class DesktopController extends Controller{
     }
 
     public function actionIndex(){
+
         $statistic = Clients::find()
             ->select('count(clients.id) as count,call_status_id')
             ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
@@ -77,7 +81,8 @@ class DesktopController extends Controller{
                 print_r($user_client->getErrors());die;
             }
 
-        }elseif($edit_user_id = $session->get('edit_client_id')) {
+        }
+        elseif($edit_user_id = $session->get('edit_client_id')) {
             $client = Clients::find()->where(['id' => $edit_user_id])->One();
             if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
                 $smsDB = Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One();
@@ -85,14 +90,15 @@ class DesktopController extends Controller{
                     $sms = $smsDB->text;
                 }
             }
-        }elseif (Clients::find()
+        }
+        elseif (Clients::find()
             ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
             ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
             ->andWhere(['clients.call_status_id'=>2])
             ->andWhere(['clients.status'=>1])
             ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
             ->orderBy('next_call')
-            ->One()){
+            ->One()) {
             $client = Clients::find()
                 ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
                 ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
@@ -117,9 +123,16 @@ class DesktopController extends Controller{
                 }
                 $session->set('edit_client_id', $client->id);
 
-        }else{
+        }
+        else{
             $usedClient = ArrayHelper::getColumn(Comments::find()->select('client_id')->distinct()->all(),'client_id');
-            $client = Clients::find()->where(['<>','call_status_id','4'])->andWhere(['<>','call_status_id','3'])->andWhere(['call_status_id'=>'0'])->andWhere(['is_being_edited'=> 0])->andWhere(['NOT IN','id',$usedClient])->orderBy('RAND()')->One();
+            $client = Clients::find()
+                ->where(['<>','call_status_id','4'])
+                ->andWhere(['<>','call_status_id','3'])
+                ->andWhere(['call_status_id'=>'0'])
+                ->andWhere(['is_being_edited'=> 0])
+                ->andWhere(['NOT IN','id',$usedClient])
+                ->orderBy('RAND()')->One();
             if(!$client){
                 return 'Не обработанне клинты кончились';
 
@@ -355,7 +368,6 @@ class DesktopController extends Controller{
         ]);
     }
 
-
     public function actionFindClient()
     {
         if(Yii::$app->request->post('phone')){
@@ -368,5 +380,97 @@ class DesktopController extends Controller{
             }
         }
         return $this->render('find-client');
+    }
+
+    public function actionClientOldInfo(){
+        $clientInfo = Yii::$app->request->post('ClientInfoId');
+        $clientId = Yii::$app->request->post('ClientId');
+
+        $result = [
+            'status'=>'false',
+            'message'=>'Нет данных',
+            'id'=>''
+        ];
+        if(!empty($clientInfo) && is_numeric($clientInfo) && !empty($clientId) && is_numeric($clientId)){
+            $info = ClientsInfo::find()->where(['status'=>1, 'id'=>$clientInfo])->one();
+            if(!empty($info)){
+                $clientInfoLinks = ClientsInfoLinks::find()->where(['info_id'=>$info->id, 'client_id'=>$clientId, 'status_show'=>0, 'status'=>1])->andWhere(['<>', 'date_disable', 0])->all();
+                if(!empty($clientInfoLinks)){
+                    foreach ($clientInfoLinks as $clientInfoLink){
+                        $result['oldInfos'][]='Интересовался с '.Date('d.m.Y H:i', strtotime($clientInfoLink->date_creation)).' до '.Date('d.m.Y H:i', strtotime($clientInfoLink->date_disable));
+                    }
+                    $result['status'] = 'true';
+                }
+                else{
+                    $result = [
+                        'status'=>'true',
+                        'message'=>'',
+                    ];
+                }
+
+            }
+            else{
+                $result = [
+                    'status'=>'false',
+                    'message'=>'Данные не верные',
+                ];
+            }
+        }
+        //print_r($result);
+        return json_encode($result);
+    }
+
+    //изменение значения чекбокса
+    public function actionClientChangeInfo(){
+        $result = [
+            'status'=>'false',
+            'message'=>'Нет данных',
+            'id'=>''
+        ];
+
+        $clientInfo = Yii::$app->request->post('ClientInfoLinksId');
+        $clientId = Yii::$app->request->post('ClientInfoLinksClientId');
+        if(!empty($clientInfo) && is_numeric($clientInfo) && !empty($clientId) && is_numeric($clientId)){
+            $info = ClientsInfo::find()->where(['status'=>1, 'id'=>$clientInfo])->one();
+            if(!empty($info)){
+                $clientInfoLinkUpd = ClientsInfoLinks::find()->where(['info_id'=>$info->id, 'client_id'=>$clientId, 'date_disable'=>null, 'status_show'=>1, 'status'=>1])->one();
+                if(!empty($clientInfoLinkUpd)){//деактивировать инетерес
+                    $clientInfoLinkUpd->date_disable = Date('Y-m-d H:i:s');
+                    $clientInfoLinkUpd->status_show = 0;
+                }
+                else{//добавить новый
+                    $clientInfoLinkUpd = new ClientsInfoLinks();
+                    $clientInfoLinkUpd->client_id = $clientId;
+                    $clientInfoLinkUpd->info_id = $info->id;
+                    $clientInfoLinkUpd->status_show=1;
+                    $clientInfoLinkUpd->status=1;
+                }
+
+                if($clientInfoLinkUpd->save(true)){
+                    $result = [
+                        'status'=>'true',
+                        'message'=>'Vip',
+                        'newval'=>$clientInfoLinkUpd->status_show,
+                        'id' =>$clientId.'-'.$info,
+                    ];
+                }
+                else{
+                    $result = [
+                        'status'=>'false',
+                        'message'=>'Данные не сохранены',
+                        'id' =>$clientId.'-'.$info,
+                    ];
+                }
+
+            }
+            else{
+                $result = [
+                    'status'=>'false',
+                    'message'=>'Данные не верные',
+                    'id'=>''
+                ];
+            }
+        }
+        return json_encode($result);
     }
 }

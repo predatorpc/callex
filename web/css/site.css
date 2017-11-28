@@ -138,3 +138,9 @@ a.desc:after {
 .side_bar{
     width: 100%;
 }
+.greenText{
+    color:#73C563;
+}
+.greyText{
+    color:#BBBBBB;
+}

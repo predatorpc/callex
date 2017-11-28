@@ -8,8 +8,8 @@ use app\models\CommentsActions;
 use app\models\Comments;
 use yii\helpers\ArrayHelper;
 use kartik\datetime\DateTimePicker;
-use app\models\UserFitness;
-use app\models\UserShop;
+use app\models\fitness\UserFitness;
+use app\models\shop\UserShop;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Clients */

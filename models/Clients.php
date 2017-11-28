@@ -1,63 +1,31 @@
 <?php
-
 namespace app\models;
 
 use Yii;
 
-/**
- * This is the model class for table "clients".
- *
- * @property int $id
- * @property string $first_name
- * @property string $second_name
- * @property string $last_name
- * @property string $birthday
- * @property int $gender
- * @property string $phone
- * @property string $district
- * @property int $car
- * @property int $children
- * @property int $call_status_id
- * @property int $client_shop_id
- * @property int $client_helper_id
- * @property int $client_fit_id
- * @property string $date_create
- * @property string $date_update
- * @property int $status 1
- *
- * @property Desktop[] $desktops
- */
 class Clients extends \yii\db\ActiveRecord
 {
 
     public $user_id;
     public $count;
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
+
+    public static function tableName(){
         return 'clients';
     }
 
-    /**
-     * @inheritdoc
-     */
+
     public function rules()
     {
         return [
             [['birthday', 'last_call', 'next_call', 'date_create', 'date_update'], 'safe'],
-            [['gender', 'car', 'children', 'client_shop_id', 'call_status_id', 'client_helper_id', 'client_fit_id', 'is_being_edited', 'anketa', 'status'], 'integer'],
+            [['gender', 'client_fit_id', 'client_shop_id', 'call_status_id', 'client_helper_id', 'is_being_edited', 'children', 'car', 'anketa', 'status'], 'integer'],
             [['first_name', 'second_name', 'last_name', 'district'], 'string', 'max' => 255],
-            ['email', 'email'],
-            [['phone'], 'string', 'max' => 20],
+            [['phone'], 'string', 'max' => 15],
+            [['email'], 'string', 'max' => 300],
             [['call_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => CallStatuses::className(), 'targetAttribute' => ['call_status_id' => 'id']],
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function attributeLabels()
     {
         return [
@@ -82,19 +50,31 @@ class Clients extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCallStatus()
-    {
+    public function getCallStatus(){
         return $this->hasOne(CallStatuses::className(), ['id' => 'call_status_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUsersClients()
-    {
+    public function getClientsInfoLinks(){
+        return $this->hasMany(ClientsInfoLinks::className(), ['client_id' => 'id']);
+    }
+
+    public function getComments(){
+        return $this->hasMany(Comments::className(), ['client_id' => 'id']);
+    }
+
+    public function getUsersClients(){
         return $this->hasMany(UsersClients::className(), ['client_id' => 'id']);
+    }
+
+    public function checkRelevanceInfo($infoId = false){
+        $result = false;
+        if(!empty($infoId) && is_numeric($infoId)){
+            $cliInfoLink = ClientsInfoLinks::find()->where(['client_id'=>$this->id, 'info_id'=>$infoId, 'date_disable'=>NULL, 'status_show'=>1])->one();
+            if(!empty($cliInfoLink)){
+                $result = true;
+            }
+        }
+        return $result;
+
     }
 }
