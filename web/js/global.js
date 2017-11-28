@@ -24,3 +24,8 @@ $(document) .on('focus','input.phone',function() {
     }
 });
 
+// Преолдер;
+
+// Форма;
+
+
