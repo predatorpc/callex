@@ -28,7 +28,7 @@ class WClientsData  extends Widget
     {
         if(!empty($this->client)){
             $template = '';
-
+            $this->client->validate();
             $form = ActiveForm::begin();
             $template .= $form->field($this->client, 'id')->hiddenInput();
             $template .= Html::hiddenInput('comment_send', '0',[]);
