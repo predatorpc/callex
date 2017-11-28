@@ -1,5 +1,5 @@
 <?php
-namespace app\models;
+namespace app\models\fitness;
 
 
 class UsersPaysWebFit extends \yii\db\ActiveRecord

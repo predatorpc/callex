@@ -9,7 +9,7 @@ $weekDays = array(
     'Четверг', 'Пятница', 'Суббота'
 );
 $callStatuses = ArrayHelper::map(CallStatuses::find()->All(),'id','name');
-$cartTypes = ArrayHelper::map(\app\models\CardsTypesWebFit::find()->All(),'id','name');
+$cartTypes = ArrayHelper::map(\app\models\fitness\CardsTypesWebFit::find()->All(),'id','name');
 $commentActions = ArrayHelper::map(\app\models\CommentsActions::find()->All(),'id','name');
 $this->title = 'Отчет за сегодня '.date('d.m.Y').' '.$weekDays[(date('w'))];
 $this->params['breadcrumbs'][] = $this->title;
@@ -139,7 +139,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //начало многосточной строки, можно использовать любые кавычки
 $script = <<< JS
 setTimeout(function() {
-  location.reload();;
+  location.reload();
 },60000);
 JS;
 //маркер конца строки, обязательно сразу, без пробелов и табуляции

@@ -1,14 +1,18 @@
 <?php
 namespace app\controllers;
-use app\models\CardsWebFit;
+
 use app\models\ClientsSearch;
 use app\models\Comments;
 use app\models\CommentsSearch;
 use app\models\Clients;
-use app\models\OrdersGroupShop;
-use app\models\OrdersItemsShop;
-use app\models\OrdersShop;
-use app\models\UsersPaysWebFit;
+
+use app\models\shop\OrdersGroupShop;
+use app\models\shop\OrdersItemsShop;
+use app\models\shop\OrdersShop;
+
+use app\models\fitness\UsersPaysWebFit;
+use app\models\fitness\CardsWebFit;
+
 use yii\filters\AccessControl;
 
 use yii\web\Controller;

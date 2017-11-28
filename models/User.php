@@ -109,46 +109,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         ];
     }
 
-//    /**
-//     * @inheritdoc
-//     */
-//    public function attributeLabels()
-//    {
-//        return [
-//            'id' => Yii::t('app', 'ID'),
-//            'name' => Yii::t('app', 'Name'),
-//            'first_name' => Yii::t('app', 'First Name'),
-//            'second_name' => Yii::t('app', 'Second Name'),
-//            'last_name' => Yii::t('app', 'Last Name'),
-//            'phone' => Yii::t('app', 'Phone'),
-//            'email' => Yii::t('app', 'Email'),
-//            'birthday' => Yii::t('app', 'Birthday'),
-//            'bonus' => Yii::t('app', 'Bonus'),
-//            'money' => Yii::t('app', 'Money'),
-//            'created_at' => Yii::t('app', 'Created At'),
-//            'updated_at' => Yii::t('app', 'Updated At'),
-//            'password_reset_token' => Yii::t('app', 'Password Reset Token'),
-//            'password_hash' => Yii::t('app', 'Password Hash'),
-//            'password' => Yii::t('app', 'Password Registration'),
-//            'auth_key' => Yii::t('app', 'Auth Key'),
-//            'status' => Yii::t('app', 'Status'),
-//        ];
-//    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentity($id)
-    {
+    public static function findIdentity($id){
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
+    public static function findIdentityByAccessToken($token, $type = null){
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
 
@@ -158,13 +123,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
      * @param string $username
      * @return static|null
      */
-    public static function findByUsername($name)
-    {
+    public static function findByUsername($name){
         return static::findOne(['name' => $name, 'status' => self::STATUS_ACTIVE]);
     }
 
-    public static function findByPhone($phone)
-    {
+    public static function findByPhone($phone){
         if(empty(static::findOne(['phone' => $phone, 'status' => self::STATUS_ACTIVE]))){
             return static::findOne(['phone' => '+7'.$phone, 'status' => self::STATUS_ACTIVE]);
         }
@@ -311,32 +274,6 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function getPromoCodes(){
         return Codes::find()->where(['user_id' => $this->id])->all();
     }
-
-    //maybe in future we'll try to use thats one
-
-
-   /*
-    public function setDiscountPercent(){
-//        $this->discountPercent = $this->basket->promoCodePercent;
-    }
-
-    public function getCards(){
-//        return UsersCards::find()->where(['user_id' => $this->id])->all();
-    }             */
-    /*
-       public function getDiscount(){
-           return $this->basket ? $this->basket->promoCodePercent : 0;
-       }
-
-       public function setDiscountPercentValue($value){
-
-       }
-
-       public function getBasket(){
-   //        return $this->hasOne(BasketLg::className(), ['user_id' => 'id'])->where(['basket.status' => 0]);
-   //        return (new BasketLg())->findCurrentBasket();
-       }
-             */
 
 
 }

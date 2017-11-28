@@ -1,5 +1,5 @@
 <?php
-namespace app\models;
+namespace app\models\fitness;
 
 
 class CardsWebFit extends \yii\db\ActiveRecord
@@ -34,12 +34,6 @@ class CardsWebFit extends \yii\db\ActiveRecord
             ['date_creation', 'default', 'value'=>Date('Y-m-d H:i:s')],
             [['comment'], 'string'],
             [['card_id'], 'unique'],
-//            [['card_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => CardsTypes::className(), 'targetAttribute' => ['card_type_id' => 'id']],
-//            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
-//            [['club_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clubs::className(), 'targetAttribute' => ['club_id' => 'id']],
-//            [['promo_link_id'], 'exist', 'skipOnError' => true, 'targetClass' => PromoLinks::className(), 'targetAttribute' => ['promo_link_id' => 'id']],
-//            [['create_by_user'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['create_by_user' => 'id']],
-//            [['create_on_terminal'], 'exist', 'skipOnError' => true, 'targetClass' => Terminal::className(), 'targetAttribute' => ['create_on_terminal' => 'id']],
             [['series_start', 'series_count','company_id', 'amount'],'integer'],
         ];
     }
