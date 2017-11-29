@@ -6,6 +6,9 @@ use app\components\desktop\WClientsInfo;
 use app\components\desktop\WComments;
 use app\components\desktop\WSmsForm;
 use app\components\desktop\WCallMessage;
+use app\components\desktop\WFitnessInfo;
+
+use app\models\fitness\FitnessInfo;
 ?>
 <div class="clients-form" id="client-card">
     <div class="row">
@@ -73,7 +76,12 @@ use app\components\desktop\WCallMessage;
             <div class="panel panel-primary">
                 <div class="panel-heading">Panel heading without title</div>
                 <div class="panel-body">
-
+                    <?php
+                      $f = new FitnessInfo();
+                      print_arr($f->getUserInfo());
+                      print_arr($f->getCardInfo());
+                    ?>
+                    <?=WFitnessInfo::widget(['client'=>$model]);?>
                     <div class="clear"></div>
                 </div>
             </div>
