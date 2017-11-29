@@ -1,7 +1,6 @@
 <?php
 namespace app\components\desktop;
 
-
 use app\models\Clients;
 use app\models\fitness\UserFitness;
 use kartik\date\DatePicker;
@@ -27,67 +26,62 @@ class WClientsData  extends Widget
     public function run()
     {
         if(!empty($this->client)){
-            $template = '';
-            $this->client->validate();
-            $form = ActiveForm::begin();
-            $template .= $form->field($this->client, 'id')->hiddenInput();
-            $template .= Html::hiddenInput('comment_send', '0',[]);
-            //$template .= $form->field($this->client, 'comment_send')->hiddenInput();
-            $template .= $form->field($this->client, 'first_name')->textInput(['maxlength' => true]);
-            $template .= $form->field($this->client, 'second_name')->textInput(['maxlength' => true]);
-            $template .= $form->field($this->client, 'last_name')->textInput(['maxlength' => true]);
 
-            $template .= $form->field($this->client, 'birthday')->widget(DatePicker::classname(), [
-                'options' => ['placeholder' => 'Выберите ...'],
-                'pluginOptions' => [
-                    'autoclose'=>true,
-                    'todayHighlight' => true,
-                    'format' => 'yyyy-mm-dd',
-                ]
-            ]);
+            $form = ActiveForm::begin([
+                'method'=>'post',
+                'options' => ['id' => 'user-form','class'=>'js-form-yii2'],
+                'enableAjaxValidation'   => true,
+                'enableClientValidation' => true,
+                'validateOnBlur'         => false,
+                'validateOnType'         => false,
+                'validateOnChange'       => false,
+                'validateOnSubmit'       => true,
+            ]); ?>
 
-            $template .= $form->field($this->client, 'gender')->dropDownList(['1' => 'Ж', '2' => 'М'], ['prompt' => 'Выберите...']);
-            $template .= $form->field($this->client, 'phone')->textInput(['maxlength' => true]);
-            $template .= $form->field($this->client, 'email')->textInput();
-            //$form->field($this->client, 'district')->textInput(['maxlength' => true]);
-            $template .= $form->field($this->client, 'car')->checkbox();
-            $template .= $form->field($this->client, 'children')->checkbox();
-            $template .= $form->field($this->client, 'call_status_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\CallStatuses::find()->where(['status'=>1])->All(),'id','name'));
+                <?=$form->field($this->client, 'id')->hiddenInput()->label(false);?>
+                <?= Html::hiddenInput('comment_send', '0',[]);?>
 
-            $template .= '<div id="next_call"style="display: none;">';
-            $template .= DateTimePicker::widget([
-                'name' => 'Clients[next_call]',
-                'type' => DateTimePicker::TYPE_COMPONENT_APPEND,
-                'value' => '',
-                'pluginOptions' => [
-                    'autoclose'=>true,
-                    'format' => 'dd.mm.yyyy HH:ii',
-                ],
-            ]);
-            $template .= '</div>';
+                <?=$form->field($this->client, 'second_name',['options'=>['class'=>'form-group col-md-4 input']])->textInput(['maxlength' => true]);?>
+
+                <?=$form->field($this->client, 'first_name',['options'=>['class'=>'form-group col-md-3 input']])->textInput(['maxlength' => true]);?>
+
+                <?=$form->field($this->client, 'last_name',['options'=>['class'=>'form-group col-md-5 input']])->textInput(['maxlength' => true]);?>
 
 
+                <?php
+                    echo $form->field($this->client, 'birthday',['options'=>['class'=>'form-group col-md-8 input']])->widget(DatePicker::classname(), [
+                        'options' => ['placeholder' => 'Выберите ...'],
+                        'pluginOptions' => [
+                            'autoclose'=>true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd',
+                        ]
+                    ]);
+                ?>
+                <?= $form->field($this->client, 'gender',['options'=>['class'=>'form-group col-md-4 input']])->dropDownList(['1' => 'Ж', '2' => 'М'], ['prompt' => 'Выберите...']);?>
+                <?= $form->field($this->client, 'phone',['options'=>['class'=>'form-group col-md-6 input']])->textInput(['maxlength' => true,'disabled'=>'disabled']);?>
+                <?= $form->field($this->client, 'email',['options'=>['class'=>'form-group col-md-6 input']])->textInput();?>
 
-            if(isset($this->client->phone) && !empty($this->client->phone)){
-                $phone = $this->client->phone;
-                $user = UserFitness::find()->where(['LIKE','phone',$phone])->One();
-                if($user){
-                    $template .= '<a target="_blank" style="font-size: 25px;font-weight: bold;" href="http://web.extremefitness.ru/users/view?id='.$user->id.'">Профиль в фитнессе</a>';
-                }
-            }
+                <?php if(isset($this->client->phone) && !empty($this->client->phone)):
+                      $phone = $this->client->phone;
+                      $user = UserFitness::find()->where(['LIKE','phone',$phone])->One();
+                      if($user){
+                          echo '<a target="_blank" style="font-size: 25px;font-weight: bold;" href="http://web.extremefitness.ru/users/view?id='.$user->id.'">Профиль в фитнессе</a>';
+                      }
+                ?>
+                <?php endif; ?>
 
-            $template .= $form->field($this->client, 'last_call')->hiddenInput(['value'=> date('Y-m-d H:i:s')])->label(false);
+                <?=$form->field($this->client, 'last_call')->hiddenInput(['value'=> date('Y-m-d H:i:s')])->label(false);?>
 
-            $template .= '<div class="form-group">';
-            $template .= Html::submitButton('Сохранить', ['class' => 'btn btn-success client', 'disabled'=>'disabled']);
-            $template .= '</div>';
-
+               <div class="form-group">
+                   <?=Html::submitButton('Сохранить', ['class' => 'btn btn-success  col-md-12']); ?>
+               </div>
+        <?php
             ActiveForm::end();
+        }else{
+           return '<div class="text">Клиент не найден</div>';
         }
-        else{
-            $template = Html::tag('span', 'Клиент не найден', ['class'=>'']);
-        }
-        return $template;
+
     }
 
 }

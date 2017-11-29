@@ -24,15 +24,17 @@ class WSmsForm  extends Widget
 
         $templateSms = '';
         $templateSms .= '<form id="sms">';
-        $templateSms .= Html::hiddenInput('sms[client_id]]',$this->client->id);
-        $templateSms .= '<div class="form-group">';
-        $templateSms .= Html::label('Текст','',['class'=>'control-label']);
-        $templateSms .= Html::input('text','sms[sms]',(isset($sms)) ? $sms : '',['class'=>'form-control']);
+            $templateSms .= Html::hiddenInput('sms[client_id]]',$this->client->id);
+            $templateSms .= '<div class="form-group">';
+                $templateSms .= Html::label('Текст SMS','',['class'=>'control-label']);
+                $templateSms .= Html::input('text','sms[sms]',(isset($sms)) ? $sms : '',['class'=>'form-control']);
+            $templateSms .= '</div>';
+            $templateSms .= '<div class="form-group">';
+                $templateSms .= '<div  class="pull-left" style="margin-right: 10px">'.Html::submitButton('Сохранить смс', ['class' => 'btn btn-warning', "id"=>"savesms"]).'</div>';
+                $templateSms .= '<div  class="">'.Html::submitButton('Сохранить и отправить смс', ['class' => 'btn btn-warning', "id"=>"sendsms"]).'</div>';
+                $templateSms .= '<div class="clear"></div>';
         $templateSms .= '</div>';
-        $templateSms .= '<div class="form-group">';
-        $templateSms .= Html::submitButton('Сохранить смс', ['class' => 'btn btn-warning', "id"=>"savesms"]);
-        $templateSms .= Html::submitButton('Сохранить и отправить смс', ['class' => 'btn btn-warning', "id"=>"sendsms"]);
-        $templateSms .= '</div></form></div>';
+        $templateSms .= '</form>';
 
         return $templateSms;
     }
