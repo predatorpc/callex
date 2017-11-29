@@ -176,6 +176,14 @@
     });
 
 
+$(document).ready(function () {
+
+
+   // alert_messages('Test Alert');
+
+});
+
+
 
 
     console.log('desktop OK');

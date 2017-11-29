@@ -33,8 +33,8 @@ class Clients extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'first_name' => 'Имя',
-            'second_name' => 'Отчество',
-            'last_name' => 'Фамилия',
+            'second_name' => 'Фамилия',
+            'last_name' => 'Отчество',
             'birthday' => 'Дата рождения',
             'gender' => 'Пол',
             'phone' => 'Телефон',
