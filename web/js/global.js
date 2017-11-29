@@ -56,11 +56,6 @@ $(document).on('beforeSubmit','.js-form-yii2', function (event) {
 });
 
 
-
-
-
-
-
 // Преолдер;
 function loader(type) {
     if(type == 'show') {
