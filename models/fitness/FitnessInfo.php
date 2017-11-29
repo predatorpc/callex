@@ -14,7 +14,7 @@ use yii\base\Model;
 class FitnessInfo extends Model
 {
     const URL_T = 'https://web.extremefitness.ru/ajax/callex';
-    const URL = 'http://fit.ru/ajax/callex';
+    const URL = 'https://web.extremefitness.ru/ajax/callex';
     public $user;
     public $card;
 

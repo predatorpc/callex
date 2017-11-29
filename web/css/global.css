@@ -116,6 +116,11 @@ a.disabled {
     font-size: 12px;
 }
 
+.table-scroll {
+    overflow: auto;
+    max-height: 200px;
+}
+
 /*Alert*/
 .alert__fix {
     left: 0;

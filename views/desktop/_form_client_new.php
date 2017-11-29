@@ -11,7 +11,7 @@ use app\components\desktop\WFitnessInfo;
 use app\models\fitness\FitnessInfo;
 ?>
 <div class="clients-form" id="client-card">
-    <div class="row">
+
        <div class="js-grid">
             <!--Форма юзера-->
             <div class="col-md-4 item-grid">
@@ -71,21 +71,17 @@ use app\models\fitness\FitnessInfo;
                 </div>
             </div><!--./Статистика-->
        </div>
-        <!--Статистика-->
+    <div class="row">
+        <!--Инфо о клиенте-->
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">Panel heading without title</div>
                 <div class="panel-body">
-                    <?php
-                      $f = new FitnessInfo();
-                      print_arr($f->getUserInfo());
-                      print_arr($f->getCardInfo());
-                    ?>
                     <?=WFitnessInfo::widget(['client'=>$model]);?>
                     <div class="clear"></div>
                 </div>
             </div>
-        </div><!--./Статистика-->
+        </div><!--Инфо о клиенте-->
 
     </div>
 </div>
