@@ -97,9 +97,11 @@ function window_pay(url,title,objPost,size) {
 // Преолдер;
 function loader(type) {
     if(type == 'show') {
+        $('.wrap').css('opacity','0.5');
         $('body').append('<div class="loader"><span></span><span></span><span></span><span></span></div>');
     }
     if(type == 'hide') {
+        $('.wrap').css('opacity','1');
         $('.loader').remove();
     }
 }

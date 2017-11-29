@@ -43,7 +43,7 @@ class WClientsInfo  extends Widget
                         $templateGrop .=
                             '<div class="group-info-client-item">'.
                                 '<span class="infoItem" client="'.$this->client->id.'" clientInfoLink="'.$infoItem->id.'">'.
-                                    Html::label($infoItem->name).
+                                    Html::label($infoItem->name,'',['class'=>($statusShow==1 ? 'text-success' : '')]).
                                     //Html::checkbox('check', $statusShow, ['class'=>'itemClient'] ).
                                     Html::tag('span', '',['class'=>'glyphicon glyphicon-ok '.(($statusShow==1)?'greenText':'greyText').'', 'id' =>'checkBox'.$this->client->id.'-'.$infoItem->id,'client'=>$this->client->id, 'infoItem'=>$infoItem->id]).
                                 '</span> '.
