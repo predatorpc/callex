@@ -28,6 +28,7 @@ class WComments  extends Widget
 
 
         $template .= Html::hiddenInput('comment[client_id]',$this->client->id);
+        /*
         $template .= '<div class="form-group">';
         $template .= Html::label('Комментарии','',['class'=>'control-label']);
 
@@ -40,9 +41,9 @@ class WComments  extends Widget
         }
 
         $template .= Html::ul($comments,['id'=>'comments_list']);
-        $template .= '</div>
-                    <div class="form-group">';
-
+        $template .= '</div>';
+        */
+        $template .='<div class="form-group">';
         $template .= Html::label('Действие','',['class'=>'control-label']);
         $template .= Html::dropDownList('comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выберитe..','class'=>'form-control','id'=> 'action']);
         $template .= '</div>

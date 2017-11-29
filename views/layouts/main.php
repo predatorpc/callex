@@ -25,6 +25,15 @@ AppAsset::register($this);
 <body>
 <?php $this->beginBody() ?>
 
+<!--Ппанель уведомления -->
+<div class="alert alert__fix js-alert-close">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <div class="messages"></div>
+</div>
+<!--./Ппанель уведомления -->
+
+
+
 <div class="wrap">
     <?php
     NavBar::begin([
