@@ -32,7 +32,7 @@ class UsersClients extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['client_id', 'user_id', 'date'], 'required'],
+            [['client_id', 'user_id',], 'required'],
             [['client_id', 'user_id', 'status'], 'integer'],
             [['date'], 'safe'],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['client_id' => 'id']],

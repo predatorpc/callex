@@ -28,7 +28,6 @@ class WClientsData  extends Widget
     {
         if(!empty($this->client)){
             $template = '';
-            $this->client->validate();
             $form = ActiveForm::begin();
             $template .= $form->field($this->client, 'id')->hiddenInput();
             $template .= Html::hiddenInput('comment_send', '0',[]);
@@ -36,6 +35,7 @@ class WClientsData  extends Widget
             $template .= $form->field($this->client, 'first_name')->textInput(['maxlength' => true]);
             $template .= $form->field($this->client, 'second_name')->textInput(['maxlength' => true]);
             $template .= $form->field($this->client, 'last_name')->textInput(['maxlength' => true]);
+            $template .= $form->field($this->client, 'status')->textInput(['maxlength' => true]);
 
             $template .= $form->field($this->client, 'birthday')->widget(DatePicker::classname(), [
                 'options' => ['placeholder' => 'Выберите ...'],

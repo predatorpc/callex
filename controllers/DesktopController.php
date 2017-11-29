@@ -65,93 +65,56 @@ class DesktopController extends Controller{
         return $this->render('index',['todayCountCalls'=>$todayCountCalls,'statistic'=>$statistic]);
     }
 
-    public function actionClientCard($id = false){
+    public function actionClientCard(){
+        // id клиента храниться в сессии edit_client_id и время начала звонка
+        // если id клента пустое или его нет то нжно получить нового
+        // нового выбираем из очереде перезвонов и если очередь пустая то тогда из CLients
+        // из клинетов выбираем сперва тех у кого Call_status_id = 0
+        // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
-        $sms = '';
-        if($id != false){
-            $client = Clients::find()->where(['id'=>$id])->One();
-            $client->is_being_edited = 1;
-            $client->save();
-            $user_client = new UsersClients();
-            $user_client->user_id = Yii::$app->user->getId();
-            $user_client->client_id = $client->id;
-            $user_client->date = date('Y-m-d H:i:s');
-            $user_client->status = 0;
-            if(!$user_client->save()){
-                print_r($user_client->getErrors());die;
-            }
-
-        }
-        elseif($edit_user_id = $session->get('edit_client_id')) {
-            $client = Clients::find()->where(['id' => $edit_user_id])->One();
-            if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
-                $smsDB = Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One();
-                if (isset($smsDB) && !empty($smsDB->text)) {
-                    $sms = $smsDB->text;
-                }
-            }
-        }
-        elseif (Clients::find()
-            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-            ->andWhere(['clients.call_status_id'=>2])
-            ->andWhere(['clients.status'=>1])
-            ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
-            ->orderBy('next_call')
-            ->One()) {
-            $client = Clients::find()
-                ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-                ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-                ->andWhere(['clients.call_status_id'=>2])
-                ->andWhere(['clients.status'=>1])
-                ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
-                ->orderBy('next_call')
-                ->One();
-                if(!$client){
-                    return 'Не обработанне клинты кончились';
-
-                }
-                $client->is_being_edited = 1;
-                $client->save();
-                $user_client = new UsersClients();
-                $user_client->user_id = Yii::$app->user->getId();
-                $user_client->client_id = $client->id;
-                $user_client->date = date('Y-m-d H:i:s');
-                $user_client->status = 0;
-                if(!$user_client->save()){
-                    print_r($user_client->getErrors());die;
-                }
-                $session->set('edit_client_id', $client->id);
-
+        $editUserId = $session->get('edit_client_id');
+        if(!empty($editUserId) && is_numeric($editUserId)) {
+            $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
         }
         else{
-            $usedClient = ArrayHelper::getColumn(Comments::find()->select('client_id')->distinct()->all(),'client_id');
-            $client = Clients::find()
-                ->where(['<>','call_status_id','4'])
-                ->andWhere(['<>','call_status_id','3'])
-                ->andWhere(['call_status_id'=>'0'])
-                ->andWhere(['is_being_edited'=> 0])
-                ->andWhere(['NOT IN','id',$usedClient])
-                ->orderBy('RAND()')->One();
-            if(!$client){
-                return 'Не обработанне клинты кончились';
-
-            }
+            //найти нового абонента
+            //устновить флаг редиктирования абонента
+            //присвоить текущему пользователю абонента
+            //записать в сессию
+            $client = Clients::getClientToCall();
             $client->is_being_edited = 1;
-            $client->save();
-            $user_client = new UsersClients();
-            $user_client->user_id = Yii::$app->user->getId();
-            $user_client->client_id = $client->id;
-            $user_client->date = date('Y-m-d H:i:s');
-            $user_client->status = 0;
-            if(!$user_client->save()){
-                print_r($user_client->getErrors());die;
-            }
-            $session->set('edit_client_id', $client->id);
+            if($client->save(true)){
+                $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
+                if(!empty($userClient)){
+                    $client = false;
+                }
+                else{
+                    $userClient = new UsersClients();
+                    $userClient->user_id = Yii::$app->user->id;
+                    $userClient->client_id = $client->id;
+                    $userClient->status = 1;
+                    if(!$userClient->save(true)){
+                        $client = false;
+                    }
+                }
 
+            }
+            else{
+                $client = false;
+            }
+        }
+        if(!empty($client)){
+            //записать абонента в сессию
+            $session->set('edit_client_id', $client->id);
+            $session['time_start'] = time();
         }
 
+        return $this->render('client-card',[
+            'client'=>$client,
+        ]);
 
+
+        /*
         if ($client->load(Yii::$app->request->post()) && (strtotime('now') - $session->get('time_start')>=10)) {
             $client->next_call = date('Y-m-d H:i:s',strtotime($client->next_call));
             if(!$client->save()){
@@ -173,16 +136,15 @@ class DesktopController extends Controller{
             }
 
             $session->remove('edit_client_id');
-
             return $this->redirect(['index']);
         }
         else {
-            $session['time_start'] = strtotime('now');
+
             return $this->render('client-card',[
                 'client'=>$client,
                 'sms'=>$sms
             ]);
-        }
+        }*/
     }
 
     public function actionAddComment(){
