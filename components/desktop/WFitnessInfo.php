@@ -66,7 +66,7 @@ class WFitnessInfo  extends Widget
                     <?php foreach($data['data']['user']['cards'] as $card): ?>
                     <tr class="text-center">
                         <td><?=$i++?></td>
-                        <td><?=$card['card_id']?></td>
+                        <td><a href="#" class="dashed" onclick="return window_pay('desktop/client-transaction-info','Транзакция',{transaction:true, card_id:<?=$card['card_id']?>},'lg');"><?=$card['card_id']?></a></td>
                         <td>-</td>
                         <td><?=$card['cardTypeName']?></td>
                         <td><?=$card['created_at']?> - <?=$card['expires_at']?></td>

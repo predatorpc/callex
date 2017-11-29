@@ -31,6 +31,7 @@ $(window).load(function () {
         itemSelector: '.item-grid',
 
     });
+
    //
 });
 
@@ -55,6 +56,43 @@ $(document).on('beforeSubmit','.js-form-yii2', function (event) {
     return false;
 });
 
+// Открытие модальное окно url - string; tittle - string; objPost - obj ,idModal -индификатор;
+function window_pay(url,title,objPost,size) {
+    var modalContainer = $('#window_pay');
+
+    if(title){
+        modalContainer.find(".modal-title").text(title);
+    }else{
+        modalContainer.find(".modal-title").text('');
+    }
+    // Размер модальное окно;
+    if(size == 'lg') {
+        modalContainer.find('.modal-dialog').addClass('modal-lg').removeClass('modal-min');
+    }else if(size == 'sm'){
+        modalContainer.find('.modal-dialog').addClass('modal-sm').removeClass('modal-min');
+    }else{
+        modalContainer.find('.modal-dialog').addClass('modal-min').removeClass('modal-sm modal-lg');
+    }
+
+
+    //Если нет объекта по умол. пустой;
+    if(!issetJs(objPost)) objPost = {};
+    loader('show');
+    modalContainer.find('.modal-body').html('');
+    $.ajax({
+        url: '/' + url,
+        type: "POST",
+        data: objPost,
+        async: false,
+        success: function (data) {
+            modalContainer.find('.modal-body').html(data);
+            modalContainer.modal('show');
+            loader('hide');
+        }
+    });
+
+    return false;
+}
 
 // Преолдер;
 function loader(type) {

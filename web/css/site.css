@@ -144,3 +144,10 @@ a.desc:after {
 .greyText{
     color:#BBBBBB;
 }
+
+.clients-update .group-info-client-item {
+
+}
+.clients-update .group-info-client-item .glyphicon {
+    margin: 0 0 0 4px;
+}

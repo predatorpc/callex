@@ -94,7 +94,16 @@ a.disabled {
     cursor: default;  /* устанавливаем курсор в виде стрелки */
     color: #999; /* цвет текста для нективной ссылки */
 }
-
+a.dashed {
+    border-bottom:1px dashed;
+}
+a.dotted {
+    border-bottom:1px dotted;
+}
+a.dashed:hover,a.dotted {
+    border-bottom:none;
+    text-decoration: none;
+}
 /*Бустрап форм*/
 .form-group.input {
     padding-left: 5px;
