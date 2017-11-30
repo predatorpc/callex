@@ -7,6 +7,7 @@ use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
+use yii\bootstrap\Modal;
 use app\assets\AppAsset;
 
 AppAsset::register($this);
@@ -31,7 +32,16 @@ AppAsset::register($this);
     <div class="messages"></div>
 </div>
 <!--./Ппанель уведомления -->
+<?php
+    // Модальное окно;
+    Modal::begin([
+        'header' => '<h4 class="modal-title" id="myModalLabel"></h4>',
+        'size' => 'modal-min',
+        'id' => 'window_pay',
+    ]);
 
+    Modal::end();
+?>
 
 
 <div class="wrap">
