@@ -514,6 +514,7 @@ class DesktopController extends Controller{
        $post = Yii::$app->request->post();
        if(!empty($post['transaction'])) {
            if(!is_numeric($post['card_id'])) return false;
+           //
            $fitnessInfo = new FitnessInfo(['card'=>$post['card_id']]);
            return $this->renderAjax('transaction-info',[
                'data'=>$fitnessInfo->getCardInfo()

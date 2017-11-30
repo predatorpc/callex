@@ -47,7 +47,7 @@ class WClientsInfo  extends Widget
                                     //Html::checkbox('check', $statusShow, ['class'=>'itemClient'] ).
                                     Html::tag('span', '',['class'=>'glyphicon glyphicon-ok '.(($statusShow==1)?'greenText':'greyText').'', 'id' =>'checkBox'.$this->client->id.'-'.$infoItem->id,'client'=>$this->client->id, 'infoItem'=>$infoItem->id]).
                                 '</span> '.
-                                Html::tag('span', '',['class'=>'glyphicon glyphicon-info-sign','onclick'=>'window_pay("desktop/client-old-info","Инфо",{clientOldInfo:true, client:'.$this->client->id.',infoItem:'.$infoItem->id.'})']).
+                                Html::tag('span', '',['class'=>'glyphicon glyphicon-info-sign','onclick'=>'window_pay("desktop/client-old-info","'.$infoItem->name.'",{clientOldInfo:true, client:'.$this->client->id.',infoItem:'.$infoItem->id.'})']).
 
                             '</div>';
                     }

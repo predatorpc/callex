@@ -56,6 +56,23 @@ $(document).on('beforeSubmit','.js-form-yii2', function (event) {
     return false;
 });
 
+$(document).on('click','.js-tag',function(){
+    var text = $(this).text();
+    $('.js-tag').removeClass('text-success');
+    $(this).addClass('text-success');
+    $('.js-text-add').html('');
+    $('.js-text-add').html(text);
+    return false;
+});
+$(document).on('click','.js-select-action',function(){
+    var item = $(this).val();
+    if(item == 7) {
+      $('.times-content').fadeIn(200);
+    }else{
+      $('.times-content').fadeOut(200);
+    }
+    return false;
+});
 // Открытие модальное окно url - string; tittle - string; objPost - obj ,idModal -индификатор;
 function window_pay(url,title,objPost,size) {
     var modalContainer = $('#window_pay');
