@@ -100,7 +100,7 @@ a.dashed {
 a.dotted {
     border-bottom:1px dotted;
 }
-a.dashed:hover,a.dotted {
+a.dashed:hover,a.dotted:hover,a:focus {
     border-bottom:none;
     text-decoration: none;
 }
@@ -212,5 +212,30 @@ a.dashed:hover,a.dotted {
     bottom: 0;
     right: 0;
 }
+/*Таб*/
+.tab__com {
 
+}
+.tab__com .tab-pane {
+    display: none;
 
+}
+.tab__com .tab-pane.active {
+    display: block;
+}
+
+/*Время*/
+.times-content {
+    display: none;
+    margin-top: -18px;
+    padding: 5px 0;
+}
+.times-content .times-select {
+    float: left;
+    margin-right: 10px;
+    width: 65px;
+}
+.times-content .times-select label {
+    font-size: 11px;
+    margin: 0px;
+}
