@@ -151,3 +151,12 @@ a.desc:after {
 .clients-update .group-info-client-item .glyphicon {
     margin: 0 0 0 4px;
 }
+
+.clients-update .panel-body.clients_info {
+    max-height: 332px;
+    overflow: auto;
+}
+#comments .tag-content {
+    max-height: 75px;
+    overflow: auto;
+}

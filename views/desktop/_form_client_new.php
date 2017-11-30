@@ -71,9 +71,9 @@ use app\models\fitness\FitnessInfo;
                 </div>
             </div><!--./Статистика-->
        </div>
-    <div class="row">
+
         <!--Инфо о клиенте-->
-        <div class="col-md-12">
+        <div class="col-md-12 item-grid">
             <div class="panel panel-primary">
                 <div class="panel-heading">Panel heading without title</div>
                 <div class="panel-body">
@@ -83,6 +83,6 @@ use app\models\fitness\FitnessInfo;
             </div>
         </div><!--Инфо о клиенте-->
 
-    </div>
+
 </div>
 <div class="clearfix"></div>
