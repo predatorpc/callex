@@ -65,6 +65,10 @@ class FitnessInfo extends Model
         return false;
     }
 
+    public function getTrainers(){
+        return $this->requestFitnessGet(['trainer'=>'true']);
+    }
+
 
 
 

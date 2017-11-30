@@ -5,6 +5,7 @@ use app\components\WTest;
 use app\models\ClientsInfo;
 use app\models\ClientsInfoLinks;
 use app\models\Comments;
+use app\models\FeedbackTrainer;
 use app\models\fitness\FitnessInfo;
 use app\models\UsersClients;
 use yii\helpers\ArrayHelper;
@@ -31,7 +32,20 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client', 'client-old-info', 'client-change-info','client-transaction-info'],
+                        'actions' => [
+                            'index',
+                            'client-card',
+                            'add-comment',
+                            'sms-send',
+                            'sms-save',
+                            'scripts',
+                            'view-script',
+                            'calls',
+                            'find-client',
+                            'client-old-info',
+                            'client-change-info',
+                            'client-transaction-info'
+                        ],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -66,93 +80,124 @@ class DesktopController extends Controller{
         return $this->render('index',['todayCountCalls'=>$todayCountCalls,'statistic'=>$statistic]);
     }
 
-    public function actionClientCard($id = false){
+    public function actionClientCard(){
+        // id клиента храниться в сессии edit_client_id и время начала звонка
+        // если id клента пустое или его нет то нжно получить нового
+        // нового выбираем из очереде перезвонов и если очередь пустая то тогда из CLients
+        // из клинетов выбираем сперва тех у кого Call_status_id = 0
+        // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
-        $sms = '';
-        if($id != false){
-            $client = Clients::find()->where(['id'=>$id])->One();
-            $client->is_being_edited = 1;
-            $client->save();
-            $user_client = new UsersClients();
-            $user_client->user_id = Yii::$app->user->getId();
-            $user_client->client_id = $client->id;
-            $user_client->date = date('Y-m-d H:i:s');
-            $user_client->status = 0;
-            if(!$user_client->save()){
-                print_r($user_client->getErrors());die;
-            }
+        $session->set('edit_client_id',168168);
 
-        }
-        elseif($edit_user_id = $session->get('edit_client_id')) {
-            $client = Clients::find()->where(['id' => $edit_user_id])->One();
-            if (Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One()) {
-                $smsDB = Sentsms::find()->where(['client_id' => $client->id, 'user_id' => Yii::$app->user->getId(), 'status' => 0])->One();
-                if (isset($smsDB) && !empty($smsDB->text)) {
-                    $sms = $smsDB->text;
-                }
-            }
-        }
-        elseif (Clients::find()
-            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-            ->andWhere(['clients.call_status_id'=>2])
-            ->andWhere(['clients.status'=>1])
-            ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
-            ->orderBy('next_call')
-            ->One()) {
-            $client = Clients::find()
-                ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-                ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-                ->andWhere(['clients.call_status_id'=>2])
-                ->andWhere(['clients.status'=>1])
-                ->andWhere(['<','clients.next_call',date('Y-m-d H:i:s',strtotime('+ 5 minutes'))])
-                ->orderBy('next_call')
-                ->One();
-                if(!$client){
-                    return 'Не обработанне клинты кончились';
-
-                }
-                $client->is_being_edited = 1;
-                $client->save();
-                $user_client = new UsersClients();
-                $user_client->user_id = Yii::$app->user->getId();
-                $user_client->client_id = $client->id;
-                $user_client->date = date('Y-m-d H:i:s');
-                $user_client->status = 0;
-                if(!$user_client->save()){
-                    print_r($user_client->getErrors());die;
-                }
-                $session->set('edit_client_id', $client->id);
-
+        $editUserId = $session->get('edit_client_id');
+        if(!empty($editUserId) && is_numeric($editUserId)) {
+            $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
         }
         else{
-            $usedClient = ArrayHelper::getColumn(Comments::find()->select('client_id')->distinct()->all(),'client_id');
-            $client = Clients::find()
-                ->where(['<>','call_status_id','4'])
-                ->andWhere(['<>','call_status_id','3'])
-                ->andWhere(['call_status_id'=>'0'])
-                ->andWhere(['is_being_edited'=> 0])
-                ->andWhere(['NOT IN','id',$usedClient])
-                ->orderBy('RAND()')->One();
-            if(!$client){
-                return 'Не обработанне клинты кончились';
-
-            }
+            //найти нового абонента
+            //устновить флаг редиктирования абонента
+            //присвоить текущему пользователю абонента
+            //записать в сессию
+            $client = Clients::getClientToCall();
             $client->is_being_edited = 1;
-            $client->save();
-            $user_client = new UsersClients();
-            $user_client->user_id = Yii::$app->user->getId();
-            $user_client->client_id = $client->id;
-            $user_client->date = date('Y-m-d H:i:s');
-            $user_client->status = 0;
-            if(!$user_client->save()){
-                print_r($user_client->getErrors());die;
-            }
-            $session->set('edit_client_id', $client->id);
+            if($client->save(true)){
+                $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
+                if(!empty($userClient)){
+                    $client = false;
+                }
+                else{
+                    $userClient = new UsersClients();
+                    $userClient->user_id = Yii::$app->user->id;
+                    $userClient->client_id = $client->id;
+                    $userClient->status = 1;
+                    if(!$userClient->save(true)){
+                        $client = false;
+                    }
+                }
 
+            }
+            else{
+                $client = false;
+            }
+        }
+        if(!empty($client)){
+            //записать абонента в сессию
+            $session->set('edit_client_id', $client->id);
+            $session['time_start'] = time();
         }
 
 
+        if(Yii::$app->request->isPost) {
+            if (!empty(Yii::$app->request->post('Clients'))) {//сохраняем данные клиента
+                $clientUpd = Yii::$app->request->post('Clients');
+                if ($client->id == $clientUpd['id']) {
+                    if ($client->load(Yii::$app->request->post()) && $client->save(true)) {
+                        return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
+                    }
+                }
+            }
+
+            if (!empty(Yii::$app->request->post('FeedbackTrainer'))) {//сохраняем данные клиента
+                $params = Yii::$app->request->post('FeedbackTrainer');
+                if ($client->id == $params['client_id']) {
+                    $fbTrainer = new FeedbackTrainer();
+                    if ($fbTrainer->load(Yii::$app->request->post()) && $fbTrainer->save(true)) {
+                        return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
+                    }
+                }
+            }
+
+            if (!empty(Yii::$app->request->post('Comment'))) {
+                $result = [
+                    'status' => 'error',
+                    'message' => 'Укажите все данные'
+                ];
+                $params = Yii::$app->request->post('Comment');
+                if (!empty($params['action_id']) && !empty($params['text']) && !empty($params['client_id']) && is_numeric($params['client_id'])) {
+                    if ($client->id == $params['client_id']) {
+//                        $this->redirect('/desktop/index');
+                        $comment = new Comments();
+                        if($comment->load(Yii::$app->request->post('Comment'))){
+                            //обработка действия
+
+                            if ($comment->save(true)) {
+                                $result = [
+                                    'status' => 'success',
+                                    'message' => 'Сохранено',
+                                ];
+                                //если все успешно то удалить сессию и отдать ссылку для релода страницы
+                            }
+                            else {
+                                $result = [
+                                    'status' => 'error',
+                                    'message' => 'Не сохранено'
+                                ];
+                            }
+                        }
+                        else{
+                            $result = [
+                                'status' => 'error',
+                                'message' => 'Не сохранено'
+                            ];
+                        }
+                    }
+                    else {
+                        $result = [
+                            'status' => 'error',
+                            'message' => 'Клиент не тот'
+                        ];
+                    }
+                }
+                //return json_encode($result);
+            }
+        }
+
+        return $this->render('client-card',[
+            'client'=>$client,
+        ]);
+
+
+        /*
         if ($client->load(Yii::$app->request->post()) && (strtotime('now') - $session->get('time_start')>=10)) {
             $client->next_call = date('Y-m-d H:i:s',strtotime($client->next_call));
             if(!$client->save()){
@@ -174,38 +219,67 @@ class DesktopController extends Controller{
             }
 
             $session->remove('edit_client_id');
-
             return $this->redirect(['index']);
         }
         else {
-            $session['time_start'] = strtotime('now');
+
             return $this->render('client-card',[
                 'client'=>$client,
                 'sms'=>$sms
             ]);
-        }
+        }*/
     }
 
     public function actionAddComment(){
-        if(Yii::$app->request->isPost){
-            $request = Yii::$app->request->post('comment');
-            $comment = new Comments();
-            $comment->action_id = $request['action_id'];
-            //$comment->type_id = $request['type_id'];
-            $comment->text = $request['text'];
-            $comment->created_by_user = Yii::$app->user->getId();
-            $comment->client_id = $request['client_id'];
-            $comment->date = date('Y-m-d H:i:s');
-            $comment->status = 1;
-            if($comment->save()){
-                return $comment->user->second_name .
-                    '(' . date('d.m.Y H:i:s', strtotime($comment->date)) .
-                    '): '.(isset($actions[$comment->action_id])?$actions[$comment->action_id]:'')
-                    .' - '. $comment->text;
-            }else{
-                print_r($comment->getErrors());
+
+        $result = [
+            'status'=>'error',
+            'message'=>'Пустые данные'
+        ];
+
+        /*if(Yii::$app->request->isPost) {
+            if (Yii::$app->request->isPost && !empty(Yii::$app->request->post('Comment'))) {
+                $params = Yii::$app->request->post('Comment');
+                if (!empty($params['action_id']) && !empty($params['text']) && !empty($params['client_id']) && is_numeric($params['client_id']) ) {
+                    $client = Clients::find()->where(['id'=>$params['client_id']])->one();
+                    if(!empty($client) && !empty($client->phone)){
+                        $comment = new Comments();
+                        $comment->action_id = $params['action_id'];
+                        $comment->text = $params['text'];
+                        $comment->created_by_user = (!empty(Yii::$app->user->id)?Yii::$app->user->id:NULL);
+                        $comment->client_id = $client->id;
+                        $comment->status = 1;
+                        if($comment->save(true)){
+                            $result = [
+                                'status'=>'success',
+                                'message'=>'Сохранено',
+                            ];
+                            //если все успешно то удалить сессию и отдать ссылку для релода страницы
+                        }
+                        else{
+                            $result = [
+                                'status'=>'error',
+                                'message'=>'Не сохранено'
+                            ];
+                        }
+                    }
+                    else{
+                        $result = [
+                            'status'=>'error',
+                            'message'=>'Клиент не найден'
+                        ];
+                    }
+                }
+                else{
+                    $result = [
+                        'status'=>'error',
+                        'message'=>'Укажите все данные'
+                    ];
+                }
             }
-        }
+        }*/
+
+        return json_encode($result);
     }
 
     public function actionImport(){
@@ -273,49 +347,47 @@ class DesktopController extends Controller{
 
     public function actionSmsSend(){
 
-        $params = Yii::$app->request->post('sms');
         $result = [
-            'status'=>'true',
-            'message'=>'Не отправлено'
+            'status'=>'error',
+            'message'=>'Пустые данные'
         ];
-        if(!empty($params)){
-            if(!empty($params['sms']) && !empty($params['client_id'])){
+        if(Yii::$app->request->isPost && !empty(Yii::$app->request->post('Sms'))){
+            $params = Yii::$app->request->post('Sms');
+            if(!empty($params['sms']) && !empty($params['client_id']) && is_numeric($params['client_id'])){
                 $client = Clients::find()->where(['id'=>$params['client_id']])->one();
                 if(!empty($client) && !empty($client->phone)){
-                    if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
-                        $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
-                    }
-                    else{
-                        $sms = new Sentsms();
-                    }
-                    $sms->client_id = $params['client_id'];
+                    $sms = new Sentsms();
+                    $sms->client_id = $client->id;
                     $sms->text = $params['sms'];
-                    $sms->user_id = (!empty(Yii::$app->user->id)?Yii::$app->user->id:0);
-                    $sms->date = date('Y-m-d H:i:s');
+                    $sms->user_id = (!empty(Yii::$app->user->id)?Yii::$app->user->id:NULL);
                     $sms->status = 1;
-                    if(!$sms->save()){
+                    if(!$sms->save(true)){
                         $result = [
-                            'status'=>'true',
-                            'message'=>'Сохранено с ошибками'
+                            'status'=>'error',
+                            'message'=>'Не сохранено'
                         ];
-                        //print_r($sms->getErrors());
                     }
                     else{
+                        System::sendSms('7'.preg_replace('/\D|(\G7)|(\G8)/','','+79237042936'), $params['sms']);
                         $result = [
-                            'status'=>'true',
+                            'status'=>'success',
                             'message'=>'Сохранено и отправлено'
                         ];
                     }
-                    System::sendSms('7'.$client->phone, $params['sms']);
                 }
-
+                else{
+                    $result = [
+                        'status'=>'error',
+                        'message'=>'Нет номер телефона'
+                    ];
+                }
             }
         }
         return json_encode($result);
 
     }
 
-    public function actionSmsSave(){
+    public function actionSmsSave(){//TODO: DELETE THIS ACTIONS
 
         $params = Yii::$app->request->post('sms');
         $result = ['status'=>'false'];
