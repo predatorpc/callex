@@ -59,7 +59,7 @@
             }
             $.ajax({
                 type: "POST",
-                url: "/desktop/add-comment",
+                url: "/desktop/client-card",
                 data: $(this).serialize(),
                 success: function(data) {
                     var res = JSON.parse(data);
@@ -72,6 +72,32 @@
                     // $('ul#comments_list').prepend('<li>'+data+'</li>');
                     // $('form#comments textarea').val('');
                     // $('input[name="comment_send"]').val(1);
+                },
+            });
+        }
+        return false;
+    });
+
+    $('form#FeedbackTrainer').submit(function(){
+        if($(this).find('textarea').val() != ''){
+            if($('select#trainerSel').val() == ''){
+                alert_messages('Выберите действие',3);
+                return false;
+
+            }
+            $.ajax({
+                type: "POST",
+                url: "/desktop/client-card",
+                data: $(this).serialize(),
+                success: function(data) {
+                    var res = JSON.parse(data);
+                    if(res.status=='success'){
+                        alert_messages(res.message,1);
+                        //TODO:добавить нового тренера в историю и обновить истории и очистить поля
+                    }
+                    else{
+                        alert_messages(res.message,2);
+                    }
                 },
             });
         }

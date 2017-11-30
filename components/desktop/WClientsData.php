@@ -59,7 +59,7 @@ class WClientsData  extends Widget
                     ]);
                 ?>
                 <?= $form->field($this->client, 'gender',['options'=>['class'=>'form-group col-md-4 input']])->dropDownList([1 => ' М', 2 => 'Ж'], ['prompt' => 'Выберите...']);?>
-                <?= $form->field($this->client, 'phone',['options'=>['class'=>'form-group col-md-6 input']])->textInput(['maxlength' => true,'disabled'=>'disabled']);?>
+                <?= $form->field($this->client, 'phone',['options'=>['class'=>'form-group col-md-6 input']])->textInput(['maxlength' => true, 'readonly'=> true]);?>
                 <?= $form->field($this->client, 'email',['options'=>['class'=>'form-group col-md-6 input']])->textInput();?>
 
                 <?php /*if(isset($this->client->phone) && !empty($this->client->phone)):

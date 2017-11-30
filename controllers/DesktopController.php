@@ -5,6 +5,7 @@ use app\components\WTest;
 use app\models\ClientsInfo;
 use app\models\ClientsInfoLinks;
 use app\models\Comments;
+use app\models\FeedbackTrainer;
 use app\models\fitness\FitnessInfo;
 use app\models\UsersClients;
 use yii\helpers\ArrayHelper;
@@ -31,7 +32,20 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client', 'client-old-info', 'client-change-info','client-transaction-info'],
+                        'actions' => [
+                            'index',
+                            'client-card',
+                            'add-comment',
+                            'sms-send',
+                            'sms-save',
+                            'scripts',
+                            'view-script',
+                            'calls',
+                            'find-client',
+                            'client-old-info',
+                            'client-change-info',
+                            'client-transaction-info'
+                        ],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -113,18 +127,69 @@ class DesktopController extends Controller{
         }
 
 
-        if(Yii::$app->request->isPost){
-            if(!empty(Yii::$app->request->post('Clients'))){//сохраняем данные клиента
+        if(Yii::$app->request->isPost) {
+            if (!empty(Yii::$app->request->post('Clients'))) {//сохраняем данные клиента
                 $clientUpd = Yii::$app->request->post('Clients');
-                if($client->id == $clientUpd['id']){
-                    if($client->load(Yii::$app->request->post()) && $client->save(true)){
-                        return json_encode(['status'=>'success','message'=>'Успешно сохранился']);
+                if ($client->id == $clientUpd['id']) {
+                    if ($client->load(Yii::$app->request->post()) && $client->save(true)) {
+                        return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
                     }
                 }
-
-
             }
-            //print_r(Yii::$app->request->post());die();
+
+            if (!empty(Yii::$app->request->post('FeedbackTrainer'))) {//сохраняем данные клиента
+                $params = Yii::$app->request->post('FeedbackTrainer');
+                if ($client->id == $params['client_id']) {
+                    $fbTrainer = new FeedbackTrainer();
+                    if ($fbTrainer->load(Yii::$app->request->post()) && $fbTrainer->save(true)) {
+                        return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
+                    }
+                }
+            }
+
+            if (!empty(Yii::$app->request->post('Comment'))) {
+                $result = [
+                    'status' => 'error',
+                    'message' => 'Укажите все данные'
+                ];
+                $params = Yii::$app->request->post('Comment');
+                if (!empty($params['action_id']) && !empty($params['text']) && !empty($params['client_id']) && is_numeric($params['client_id'])) {
+                    if ($client->id == $params['client_id']) {
+//                        $this->redirect('/desktop/index');
+                        $comment = new Comments();
+                        if($comment->load(Yii::$app->request->post('Comment'))){
+                            //обработка действия
+
+                            if ($comment->save(true)) {
+                                $result = [
+                                    'status' => 'success',
+                                    'message' => 'Сохранено',
+                                ];
+                                //если все успешно то удалить сессию и отдать ссылку для релода страницы
+                            }
+                            else {
+                                $result = [
+                                    'status' => 'error',
+                                    'message' => 'Не сохранено'
+                                ];
+                            }
+                        }
+                        else{
+                            $result = [
+                                'status' => 'error',
+                                'message' => 'Не сохранено'
+                            ];
+                        }
+                    }
+                    else {
+                        $result = [
+                            'status' => 'error',
+                            'message' => 'Клиент не тот'
+                        ];
+                    }
+                }
+                //return json_encode($result);
+            }
         }
 
         return $this->render('client-card',[
@@ -166,12 +231,13 @@ class DesktopController extends Controller{
     }
 
     public function actionAddComment(){
+
         $result = [
             'status'=>'error',
             'message'=>'Пустые данные'
         ];
 
-        if(Yii::$app->request->isPost) {
+        /*if(Yii::$app->request->isPost) {
             if (Yii::$app->request->isPost && !empty(Yii::$app->request->post('Comment'))) {
                 $params = Yii::$app->request->post('Comment');
                 if (!empty($params['action_id']) && !empty($params['text']) && !empty($params['client_id']) && is_numeric($params['client_id']) ) {
@@ -186,7 +252,7 @@ class DesktopController extends Controller{
                         if($comment->save(true)){
                             $result = [
                                 'status'=>'success',
-                                'message'=>'Сохранено'
+                                'message'=>'Сохранено',
                             ];
                             //если все успешно то удалить сессию и отдать ссылку для релода страницы
                         }
@@ -211,7 +277,7 @@ class DesktopController extends Controller{
                     ];
                 }
             }
-        }
+        }*/
 
         return json_encode($result);
     }

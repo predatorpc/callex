@@ -7,6 +7,7 @@ use app\components\desktop\WComments;
 use app\components\desktop\WSmsForm;
 use app\components\desktop\WCallMessage;
 use app\components\desktop\WFitnessInfo;
+use app\components\desktop\WFeedbackTrainer;
 
 use app\models\fitness\FitnessInfo;
 ?>
@@ -66,6 +67,16 @@ use app\models\fitness\FitnessInfo;
                     <div class="panel-heading">История действий</div>
                     <div class="panel-body">
                         <?=WCallMessage::widget(['client'=>$model]);?>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div><!--./Статистика-->
+
+           <div class="col-md-4 item-grid">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Тренер обратная связь</div>
+                    <div class="panel-body">
+                        <?=WFeedbackTrainer::widget(['client'=>$model]);?>
                         <div class="clear"></div>
                     </div>
                 </div>

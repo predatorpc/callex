@@ -41,6 +41,8 @@ class Comments extends \yii\db\ActiveRecord
             [['client_id',  'action_id', 'created_by_user', 'call_status_id', 'status'], 'integer'],
             [['text'], 'required'],
             [['text','phone'], 'string'],
+            ['created_by_user', 'default', 'value'=>($this->isNewRecord?(!empty(Yii::$app->user->id)?Yii::$app->user->id:null):$this->create_by_user)],
+            ['status', 'default', 'value'=>1],
             [['date'], 'safe'],
             [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsActions::className(), 'targetAttribute' => ['action_id' => 'id']],
         ];
