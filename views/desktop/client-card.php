@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="clients-update">
 
     <?= $this->render('_form_client_new', [
-            'model' => $client,'sms'=>$sms
+            'model' => $client,
         ]);
     ?>
 

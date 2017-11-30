@@ -34,11 +34,11 @@ class WComments  extends Widget
         $template .= '<form id="comments">';
 
 
-        $template .= Html::hiddenInput('comment[client_id]',$this->client->id);
+        $template .= Html::hiddenInput('Comment[client_id]',$this->client->id);
 
         $template .='<div class="form-group">';
         $template .= Html::label('Действие','',['class'=>'control-label']);
-        $template .= Html::dropDownList('comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выберитe..','class'=>'form-control js-select-action','id'=> 'action']);
+        $template .= Html::dropDownList('Comment[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выберитe..','class'=>'form-control js-select-action','id'=> 'action']);
         $template .= '</div>';
         // Выбор время;
         $template .= '<div class="times-content">';
@@ -66,25 +66,12 @@ class WComments  extends Widget
 
 
         $template .= Html::label('Комментарий','',['class'=>'control-label']);
-        $template .= Html::textarea('comment[text]','',['class'=>'form-control js-text-add']);
+        $template .= Html::textarea('Comment[text]','',['class'=>'form-control js-text-add']);
         $template .= '</div>';
         $template .= '<div class="form-group">';
-        $template .=Html::submitButton('Оставить комментарий', ['class' => 'btn btn-success', "id"=>"sendcomment"]);
+        $template .=Html::submitButton('Сохранить и закрыть', ['class' => 'btn btn-success  col-md-12', "id"=>"sendcomment"]);
         $template .= '</div>';
         $template .= '</form>';
-
-
-        $templateSms = '';
-        $templateSms .= '<form id="sms">';
-        $templateSms .= Html::hiddenInput('sms[client_id]]',$this->client->id);
-        $templateSms .= '<div class="form-group">';
-        $templateSms .= Html::label('Текст','',['class'=>'control-label']);
-        $templateSms .= Html::input('text','sms[sms]',(isset($sms)) ? $sms : '',['class'=>'form-control']);
-        $templateSms .= '</div>';
-        $templateSms .= '<div class="form-group">';
-        $templateSms .= Html::submitButton('Сохранить смс', ['class' => 'btn btn-warning', "id"=>"savesms"]);
-        $templateSms .= Html::submitButton('Сохранить и отправить смс', ['class' => 'btn btn-warning', "id"=>"sendsms"]);
-        $templateSms .= '</div></form>';
 
         return $template;
     }
