@@ -59,7 +59,7 @@ class WComments  extends Widget
                 $template.= '<div style="margin: 0 10px 5px 0;display: inline-block;  font-size: 12px;"><a href="#!" class="js-tag dotted" >'.$tag.'</a></div>';
             }
         }else{
-            $template .= '<b class="text-danger">Добавьте текст в парамс</b>';
+            $template .= '<b class="text-danger">Добавьте текст в парамс \'tag\'=>[\'Hello Word\']</b>';
         }
         $template .='</div>';
         $template .=  '<div class="form-group">';
