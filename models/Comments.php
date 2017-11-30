@@ -38,11 +38,10 @@ class Comments extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['client_id', 'type_id', 'action_id', 'created_by_user', 'call_status_id', 'status'], 'integer'],
+            [['client_id',  'action_id', 'created_by_user', 'call_status_id', 'status'], 'integer'],
             [['text'], 'required'],
             [['text','phone'], 'string'],
             [['date'], 'safe'],
-            [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsTypes::className(), 'targetAttribute' => ['type_id' => 'id']],
             [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentsActions::className(), 'targetAttribute' => ['action_id' => 'id']],
         ];
     }
@@ -55,7 +54,6 @@ class Comments extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'client_id' => 'ID Клиента',
-            'type_id' => 'Тип',
             'action_id' => 'Действие',
             'text' => 'Комментарий',
             'created_by_user' => 'Создан пользователем',

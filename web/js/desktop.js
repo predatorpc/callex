@@ -24,8 +24,12 @@
                 data: $('form#sms').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data);
-                    alert(res.message);
-
+                    if(res.status=='success'){
+                        alert_messages(res.message,1);
+                    }
+                    else{
+                        alert_messages(res.message,2);
+                    }
                 },
             });
         }
@@ -45,10 +49,11 @@
         }
         return false;
     });
+
     $('form#comments').submit(function(){
         if($(this).find('textarea').val() != ''){
             if($('select#action').val() == ''){
-                alert('Выберите действие');
+                alert_messages('Выберите действие',3);
                 return false;
 
             }
@@ -57,9 +62,16 @@
                 url: "/desktop/add-comment",
                 data: $(this).serialize(),
                 success: function(data) {
-                    $('ul#comments_list').prepend('<li>'+data+'</li>');
-                    $('form#comments textarea').val('');
-                    $('input[name="comment_send"]').val(1);
+                    var res = JSON.parse(data);
+                    if(res.status=='success'){
+                        alert_messages(res.message,1);
+                    }
+                    else{
+                        alert_messages(res.message,2);
+                    }
+                    // $('ul#comments_list').prepend('<li>'+data+'</li>');
+                    // $('form#comments textarea').val('');
+                    // $('input[name="comment_send"]').val(1);
                 },
             });
         }

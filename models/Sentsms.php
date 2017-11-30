@@ -30,7 +30,7 @@ class Sentsms extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'client_id', 'text', 'date'], 'required'],
+            [['user_id', 'client_id', 'text', ], 'required'],
             [['user_id', 'client_id', 'status'], 'integer'],
             [['text'], 'string'],
             [['date'], 'safe'],

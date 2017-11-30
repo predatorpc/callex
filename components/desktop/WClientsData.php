@@ -62,19 +62,21 @@ class WClientsData  extends Widget
                 <?= $form->field($this->client, 'phone',['options'=>['class'=>'form-group col-md-6 input']])->textInput(['maxlength' => true,'disabled'=>'disabled']);?>
                 <?= $form->field($this->client, 'email',['options'=>['class'=>'form-group col-md-6 input']])->textInput();?>
 
-                <?php if(isset($this->client->phone) && !empty($this->client->phone)):
+                <?php /*if(isset($this->client->phone) && !empty($this->client->phone)):
                       $phone = $this->client->phone;
                       $user = UserFitness::find()->where(['LIKE','phone',$phone])->One();
                       if($user){
-                          echo '<a target="_blank" style="font-size: 25px;font-weight: bold;" href="http://web.extremefitness.ru/users/view?id='.$user->id.'">Профиль в фитнессе</a>';
+                          echo '<a target="_blank" style="font-size: 14px;font-weight: bold;" href="http://web.extremefitness.ru/users/view?id='.$user->id.'">Профиль в фитнессе</a>';
                       }
                 ?>
-                <?php endif; ?>
+                <?php endif; */ ?>
 
                 <?=$form->field($this->client, 'last_call')->hiddenInput(['value'=> date('Y-m-d H:i:s')])->label(false);?>
 
+                <?= '<div class="form-group">'. Html::a('Позвонить клиенту', '#', ['class'=>'btn btn-warning  col-md-6', 'rel'=>'100', 'onclick'=>'call('.((Yii::$app->user->id==3003161 || Yii::$app->user->id==7831)?"9237042936":$this->client->phone).','.(!empty(\app\models\Users::find()->where(['id'=>Yii::$app->user->id])->one()->phone_id)?\app\models\Users::find()->where(['id'=>Yii::$app->user->id])->one()->phone_id:'0').');']).'</div>'?>
+
                <div class="form-group">
-                   <?=Html::submitButton('Сохранить', ['class' => 'btn btn-success  col-md-12']); ?>
+                   <?=Html::submitButton('Сохранить', ['class' => 'btn btn-success  col-md-6']); ?>
                </div>
         <?php
             ActiveForm::end();

@@ -168,6 +168,16 @@ class Clients extends \yii\db\ActiveRecord
             ->one();
     }
 
+    //звонить собственным клиентам
+    public static function getSelfClientCall(){
+        return self::find()->select('clients.*')->from('clients, users_clients')
+            ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
+            ->andWhere('clients.id = users_clients.client_id')
+            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
+            ->orderBy(['last_call'=>SORT_ASC])
+            ->One();
+    }
+
     public static function getClientToCall(){
         $client = Clients::getReCallClient();
         if(empty($client)){
@@ -177,7 +187,10 @@ class Clients extends \yii\db\ActiveRecord
                 if(empty($client)){
                     $client = Clients::getClientsUsersFree();
                     if(empty($client)){
-                        $client = false;
+                        $client = Clients::getSelfClientCall();
+                        if(empty($client)){
+                            $client = false;
+                        }
                     }
                 }
             }

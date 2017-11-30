@@ -16,7 +16,7 @@ use app\models\fitness\FitnessInfo;
             <!--Форма юзера-->
             <div class="col-md-4 item-grid">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Вмджет форма клиент</div>
+                    <div class="panel-heading">Данные клиента</div>
                     <div class="panel-body">
                         <?php
                             echo WClientsData::widget(['client'=>$model]);
@@ -29,7 +29,7 @@ use app\models\fitness\FitnessInfo;
             <!--Напрвление-->
             <div class="col-md-4 item-grid">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Panel heading without title</div>
+                    <div class="panel-heading">Интересы</div>
                     <div class="panel-body">
                         <?=WClientsInfo::widget(['client'=>$model]);?>
                         <div class="clear"></div>
@@ -40,7 +40,7 @@ use app\models\fitness\FitnessInfo;
             <!--Коментарий-->
             <div class="col-md-4 item-grid">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Panel heading without title</div>
+                    <div class="panel-heading">Комментарии</div>
                     <div class="panel-body">
                         <?=WComments::widget(['client'=>$model]);?>
                         <div class="clear"></div>
@@ -52,7 +52,7 @@ use app\models\fitness\FitnessInfo;
             <!--Sms-->
             <div class="col-md-4 item-grid">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Panel heading without title</div>
+                    <div class="panel-heading">Отправить смс</div>
                     <div class="panel-body">
                         <?=WSmsForm::widget(['client'=>$model]);?>
                         <div class="clear"></div>
@@ -63,7 +63,7 @@ use app\models\fitness\FitnessInfo;
             <!--Статистика-->
             <div class="col-md-4 item-grid">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">Panel heading without title</div>
+                    <div class="panel-heading">История действий</div>
                     <div class="panel-body">
                         <?=WCallMessage::widget(['client'=>$model]);?>
                         <div class="clear"></div>
@@ -75,7 +75,7 @@ use app\models\fitness\FitnessInfo;
         <!--Инфо о клиенте-->
         <div class="col-md-12">
             <div class="panel panel-primary">
-                <div class="panel-heading">Panel heading without title</div>
+                <div class="panel-heading">Информация по картам</div>
                 <div class="panel-body">
                     <?=WFitnessInfo::widget(['client'=>$model]);?>
                     <div class="clear"></div>

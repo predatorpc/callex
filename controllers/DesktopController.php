@@ -72,6 +72,8 @@ class DesktopController extends Controller{
         // из клинетов выбираем сперва тех у кого Call_status_id = 0
         // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
+        $session->set('edit_client_id',168168);
+
         $editUserId = $session->get('edit_client_id');
         if(!empty($editUserId) && is_numeric($editUserId)) {
             $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
@@ -107,6 +109,21 @@ class DesktopController extends Controller{
             //записать абонента в сессию
             $session->set('edit_client_id', $client->id);
             $session['time_start'] = time();
+        }
+
+
+        if(Yii::$app->request->isPost){
+            if(!empty(Yii::$app->request->post('Clients'))){//сохраняем данные клиента
+                $clientUpd = Yii::$app->request->post('Clients');
+                if($client->id == $clientUpd['id']){
+                    if($client->load(Yii::$app->request->post()) && $client->save(true)){
+                        return json_encode(['status'=>'success','message'=>'Успешно сохранился']);
+                    }
+                }
+
+
+            }
+            //print_r(Yii::$app->request->post());die();
         }
 
         return $this->render('client-card',[
@@ -148,25 +165,54 @@ class DesktopController extends Controller{
     }
 
     public function actionAddComment(){
-        if(Yii::$app->request->isPost){
-            $request = Yii::$app->request->post('comment');
-            $comment = new Comments();
-            $comment->action_id = $request['action_id'];
-            //$comment->type_id = $request['type_id'];
-            $comment->text = $request['text'];
-            $comment->created_by_user = Yii::$app->user->getId();
-            $comment->client_id = $request['client_id'];
-            $comment->date = date('Y-m-d H:i:s');
-            $comment->status = 1;
-            if($comment->save()){
-                return $comment->user->second_name .
-                    '(' . date('d.m.Y H:i:s', strtotime($comment->date)) .
-                    '): '.(isset($actions[$comment->action_id])?$actions[$comment->action_id]:'')
-                    .' - '. $comment->text;
-            }else{
-                print_r($comment->getErrors());
+        $result = [
+            'status'=>'error',
+            'message'=>'Пустые данные'
+        ];
+
+        if(Yii::$app->request->isPost) {
+            if (Yii::$app->request->isPost && !empty(Yii::$app->request->post('Comment'))) {
+                $params = Yii::$app->request->post('Comment');
+                if (!empty($params['action_id']) && !empty($params['text']) && !empty($params['client_id']) && is_numeric($params['client_id']) ) {
+                    $client = Clients::find()->where(['id'=>$params['client_id']])->one();
+                    if(!empty($client) && !empty($client->phone)){
+                        $comment = new Comments();
+                        $comment->action_id = $params['action_id'];
+                        $comment->text = $params['text'];
+                        $comment->created_by_user = (!empty(Yii::$app->user->id)?Yii::$app->user->id:NULL);
+                        $comment->client_id = $client->id;
+                        $comment->status = 1;
+                        if($comment->save(true)){
+                            $result = [
+                                'status'=>'success',
+                                'message'=>'Сохранено'
+                            ];
+                            //если все успешно то удалить сессию и отдать ссылку для релода страницы
+                        }
+                        else{
+                            $result = [
+                                'status'=>'error',
+                                'message'=>'Не сохранено'
+                            ];
+                        }
+                    }
+                    else{
+                        $result = [
+                            'status'=>'error',
+                            'message'=>'Клиент не найден'
+                        ];
+                    }
+                }
+                else{
+                    $result = [
+                        'status'=>'error',
+                        'message'=>'Укажите все данные'
+                    ];
+                }
             }
         }
+
+        return json_encode($result);
     }
 
     public function actionImport(){
@@ -234,49 +280,47 @@ class DesktopController extends Controller{
 
     public function actionSmsSend(){
 
-        $params = Yii::$app->request->post('sms');
         $result = [
-            'status'=>'true',
-            'message'=>'Не отправлено'
+            'status'=>'error',
+            'message'=>'Пустые данные'
         ];
-        if(!empty($params)){
-            if(!empty($params['sms']) && !empty($params['client_id'])){
+        if(Yii::$app->request->isPost && !empty(Yii::$app->request->post('Sms'))){
+            $params = Yii::$app->request->post('Sms');
+            if(!empty($params['sms']) && !empty($params['client_id']) && is_numeric($params['client_id'])){
                 $client = Clients::find()->where(['id'=>$params['client_id']])->one();
                 if(!empty($client) && !empty($client->phone)){
-                    if(Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One()){
-                        $sms = Sentsms::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
-                    }
-                    else{
-                        $sms = new Sentsms();
-                    }
-                    $sms->client_id = $params['client_id'];
+                    $sms = new Sentsms();
+                    $sms->client_id = $client->id;
                     $sms->text = $params['sms'];
-                    $sms->user_id = (!empty(Yii::$app->user->id)?Yii::$app->user->id:0);
-                    $sms->date = date('Y-m-d H:i:s');
+                    $sms->user_id = (!empty(Yii::$app->user->id)?Yii::$app->user->id:NULL);
                     $sms->status = 1;
-                    if(!$sms->save()){
+                    if(!$sms->save(true)){
                         $result = [
-                            'status'=>'true',
-                            'message'=>'Сохранено с ошибками'
+                            'status'=>'error',
+                            'message'=>'Не сохранено'
                         ];
-                        //print_r($sms->getErrors());
                     }
                     else{
+                        System::sendSms('7'.preg_replace('/\D|(\G7)|(\G8)/','','+79237042936'), $params['sms']);
                         $result = [
-                            'status'=>'true',
+                            'status'=>'success',
                             'message'=>'Сохранено и отправлено'
                         ];
                     }
-                    System::sendSms('7'.$client->phone, $params['sms']);
                 }
-
+                else{
+                    $result = [
+                        'status'=>'error',
+                        'message'=>'Нет номер телефона'
+                    ];
+                }
             }
         }
         return json_encode($result);
 
     }
 
-    public function actionSmsSave(){
+    public function actionSmsSave(){//TODO: DELETE THIS ACTIONS
 
         $params = Yii::$app->request->post('sms');
         $result = ['status'=>'false'];
@@ -413,7 +457,7 @@ class DesktopController extends Controller{
                         'status'=>'true',
                         'message'=>'Vip',
                         'newval'=>$clientInfoLinkUpd->status_show,
-                        'id' =>$clientId.'-'.$info,
+                        'id' =>$clientId.'-'.$info->id,
                     ];
                 }
                 else{
