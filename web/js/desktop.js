@@ -103,13 +103,12 @@
     $(document).on("click", ".infoItem", function(e) {
         //меняем чек бокс на выключено и пишеи history
         var element = $(this);
-        var currnetClass=$(this).children('span').attr('class');
+
         // Тут мы блокируем
         element.prop({"disabled":true});
-        if($(this).filter('disabled').length > 0){
-            return false;
-        }
-        else{
+        if($(this).filter('disabled').length > 0) return false;
+
+            loader('show');
             $.ajax({
                 url: '/desktop/client-change-info',
                 type: "post",
@@ -119,9 +118,11 @@
                 },
                 success: function (data) {
                     console.log(data);
-                    var resp = JSON.parse(data);
+                    $(".clients_info").html(data);
+                    loader('hide');
+                   // var resp = JSON.parse(data);
 
-
+                    /*
                     if(resp.status=='true'){
                         if(resp.newval==1){
                             console.log('Adin');
@@ -142,13 +143,12 @@
                     else{
                         $(this).children('span').attr( 'class', '').addClass(currnetClass);
 
-                    }
+                    }*/
                     element.prop({"disabled":false});
 
                     //вывести сообщение
                 }
             });
-        }
 
         return false;
 
@@ -161,6 +161,7 @@
         $(this).prop({"disabled":false});
         var tokenName = $('meta[name=csrf-param]').attr("content");
         var token = $('meta[name=csrf-token]').attr("content");
+
         $.ajax({
             url: '/desktop/client-old-info',
             type: "post",
@@ -172,16 +173,6 @@
             },
             success: function (data) {
                 console.log(data);
-
-                //var resp = JSON.parse(data);
-                // if(parseInt(resp.tournamentLinkId)>0){
-                //     // setTimeout(function() {
-                //     //     $('#savedStatus'+resp.tournamentLinkId).empty();
-                //     // },3000);
-                // }
-                // else{
-                //     alert(resp.message);
-                // }
             }
         });
         console.log('change');

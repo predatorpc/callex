@@ -5,6 +5,7 @@ use app\components\WTest;
 use app\models\ClientsInfo;
 use app\models\ClientsInfoLinks;
 use app\models\Comments;
+use app\models\fitness\FitnessInfo;
 use app\models\UsersClients;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -30,7 +31,7 @@ class DesktopController extends Controller{
                         'roles' => ['GodMode'],
                     ],
                     [
-                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client', 'client-old-info', 'client-change-info'],
+                        'actions' => ['index','client-card','add-comment','sms-send','sms-save','scripts','view-script','calls','find-client', 'client-old-info', 'client-change-info','client-transaction-info'],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
                     ],
@@ -389,50 +390,26 @@ class DesktopController extends Controller{
     }
 
     public function actionClientOldInfo(){
-        $clientInfo = Yii::$app->request->post('ClientInfoId');
-        $clientId = Yii::$app->request->post('ClientId');
+        $post =  Yii::$app->request->post();
 
-        $result = [
-            'status'=>'false',
-            'message'=>'Нет данных',
-            'id'=>''
-        ];
-        if(!empty($clientInfo) && is_numeric($clientInfo) && !empty($clientId) && is_numeric($clientId)){
-            $info = ClientsInfo::find()->where(['status'=>1, 'id'=>$clientInfo])->one();
+        if(!empty($post['clientOldInfo']) && !empty($post['infoItem']) &&!empty($post['client']) ){
+            if(!is_numeric($post['infoItem']) && !is_numeric($post['client'])) return false;
+
+            $info = ClientsInfo::find()->where(['status'=>1, 'id'=>$post['infoItem']])->one();
             if(!empty($info)){
-                $clientInfoLinks = ClientsInfoLinks::find()->where(['info_id'=>$info->id, 'client_id'=>$clientId, 'status_show'=>0, 'status'=>1])->andWhere(['<>', 'date_disable', 0])->all();
-                if(!empty($clientInfoLinks)){
-                    foreach ($clientInfoLinks as $clientInfoLink){
-                        $result['oldInfos'][]='Интересовался с '.Date('d.m.Y H:i', strtotime($clientInfoLink->date_creation)).' до '.Date('d.m.Y H:i', strtotime($clientInfoLink->date_disable));
-                    }
-                    $result['status'] = 'true';
-                }
-                else{
-                    $result = [
-                        'status'=>'true',
-                        'message'=>'',
-                    ];
-                }
+                $clientInfoLinks = ClientsInfoLinks::find()->where(['info_id'=>$info->id, 'client_id'=>$post['client'], 'status_show'=>0, 'status'=>1])->andWhere(['<>', 'date_disable', 0])->all();
 
-            }
-            else{
-                $result = [
-                    'status'=>'false',
-                    'message'=>'Данные не верные',
-                ];
+                return $this->renderAjax('area-info',[
+                    'model'=>$clientInfoLinks
+                ]);
+
             }
         }
-        //print_r($result);
-        return json_encode($result);
     }
+
 
     //изменение значения чекбокса
     public function actionClientChangeInfo(){
-        $result = [
-            'status'=>'false',
-            'message'=>'Нет данных',
-            'id'=>''
-        ];
 
         $clientInfo = Yii::$app->request->post('ClientInfoLinksId');
         $clientId = Yii::$app->request->post('ClientInfoLinksClientId');
@@ -453,30 +430,30 @@ class DesktopController extends Controller{
                 }
 
                 if($clientInfoLinkUpd->save(true)){
-                    $result = [
-                        'status'=>'true',
-                        'message'=>'Vip',
-                        'newval'=>$clientInfoLinkUpd->status_show,
-                        'id' =>$clientId.'-'.$info->id,
-                    ];
-                }
-                else{
-                    $result = [
-                        'status'=>'false',
-                        'message'=>'Данные не сохранены',
-                        'id' =>$clientId.'-'.$info,
-                    ];
+                    $client = Clients::find()->where(['id'=>$clientId])->One();
+                    return \app\components\desktop\WClientsInfo::widget(['client'=>$client]);
+                } else{
+                    return 'Данные не сохранены';
                 }
 
-            }
-            else{
-                $result = [
-                    'status'=>'false',
-                    'message'=>'Данные не верные',
-                    'id'=>''
-                ];
+            } else{
+                return 'Данные не верные';
             }
         }
-        return json_encode($result);
     }
+
+    // Транзакция;
+    public function actionClientTransactionInfo(){
+
+       $post = Yii::$app->request->post();
+       if(!empty($post['transaction'])) {
+           if(!is_numeric($post['card_id'])) return false;
+           $fitnessInfo = new FitnessInfo(['card'=>$post['card_id']]);
+           return $this->renderAjax('transaction-info',[
+               'data'=>$fitnessInfo->getCardInfo()
+           ]);
+       }
+    }
+
+
 }

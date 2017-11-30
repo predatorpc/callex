@@ -30,7 +30,7 @@ use app\models\fitness\FitnessInfo;
             <div class="col-md-4 item-grid">
                 <div class="panel panel-primary">
                     <div class="panel-heading">Интересы</div>
-                    <div class="panel-body">
+                    <div class="panel-body clients_info">
                         <?=WClientsInfo::widget(['client'=>$model]);?>
                         <div class="clear"></div>
                     </div>
