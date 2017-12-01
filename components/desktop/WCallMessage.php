@@ -1,6 +1,7 @@
 <?php
 
 namespace app\components\desktop;
+use app\models\Sentsms;
 use yii\base\Widget;
 use yii\helpers\Html;
 use app\models\Comments;
@@ -24,7 +25,7 @@ class WCallMessage extends Widget
                 <div class="tab-pane active" id="comments-tab">
                    <div class="items__com">
                        <?php
-                       $comments = Comments::find()->where(['client_id' => $this->client->id])->orderBy('date DESC')->limit(5)->All();
+                       $comments = Comments::find()->where(['client_id' => $this->client->id])->orderBy('date DESC')->All();
                        if(!empty($comments)) {
                            foreach ($comments as $comment){ ?>
                             <div class="item">
@@ -40,16 +41,18 @@ class WCallMessage extends Widget
                 </div>
                 <div class="tab-pane" id="sms-tab">
                     <div class="items__com">
-                        <div class="item">
-                            <b class="title">Media heading</b>
-                            <div class="date">20.01.17 г</div>
-                            <div class="text"> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.</div>
-                        </div>
-                        <div class="item">
-                            <b class="title">Media heading</b>
-                            <div class="date">20.01.17 г</div>
-                            <div class="text"> Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque </div>
-                        </div>
+                        <?php
+                        $smss = Sentsms::find()->where(['client_id'=>$this->client->id, 'status'=>1])->all();
+                        if(!empty($smss)){
+                            foreach ($smss as $sms){?>
+                                <div class="item">
+                                    <div class="date"><?= Date('d.m.Y H:i', strtotime($sms->date))?></div>
+                                    <div class="text"><?= (!empty($sms->text)?$sms->text:'')?></div>
+                                </div>
+                            <?php
+                            }
+                        }
+                        ?>
 
                     </div>
                 </div>

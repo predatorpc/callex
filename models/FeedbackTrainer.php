@@ -12,8 +12,11 @@ use Yii;
  * @property int $trainer_fit_id
  * @property string $date_creation
  * @property int $create_by_user
- * @property int $feedback
+ * @property string $feedback
  * @property int $status
+ *
+ * @property Clients $clinet
+ * @property Users $createByUser
  */
 class FeedbackTrainer extends \yii\db\ActiveRecord
 {
@@ -31,9 +34,14 @@ class FeedbackTrainer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['clinet_id', 'trainer_fit_id'], 'required'],
-            [['clinet_id', 'trainer_fit_id', 'create_by_user', 'feedback', 'status'], 'integer'],
+            [['client_id', 'trainer_fit_id'], 'required'],
+            [['client_id', 'trainer_fit_id', 'create_by_user', 'status'], 'integer'],
             [['date_creation'], 'safe'],
+            [['feedback'], 'string', 'max' => 500],
+            ['create_by_user', 'default', 'value'=>($this->isNewRecord?(!empty(Yii::$app->user->id)?Yii::$app->user->id:null):$this->create_by_user)],
+            ['status', 'default', 'value'=>1],
+            [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['clinet_id' => 'id']],
+            [['create_by_user'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['create_by_user' => 'id']],
         ];
     }
 
@@ -44,12 +52,28 @@ class FeedbackTrainer extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'clinet_id' => 'Clinet ID',
+            'client_id' => 'Clinet ID',
             'trainer_fit_id' => 'Trainer Fit ID',
             'date_creation' => 'Date Creation',
             'create_by_user' => 'Create By User',
             'feedback' => 'Feedback',
             'status' => 'Status',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getClinet()
+    {
+        return $this->hasOne(Clients::className(), ['id' => 'client_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreateByUser()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'create_by_user']);
     }
 }
