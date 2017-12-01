@@ -44,7 +44,9 @@ class DesktopController extends Controller{
                             'find-client',
                             'client-old-info',
                             'client-change-info',
-                            'client-transaction-info'
+                            'client-transaction-info',
+                            'feedback-trainer-comments',
+                            'trainers-comments-delete'
                         ],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
@@ -87,13 +89,15 @@ class DesktopController extends Controller{
         // из клинетов выбираем сперва тех у кого Call_status_id = 0
         // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
-        $session->set('edit_client_id',168168);
+        //$session->set('edit_client_id',168168);
 
         $editUserId = $session->get('edit_client_id');
         if(!empty($editUserId) && is_numeric($editUserId)) {
-            $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
+            $client = Clients::find()->where(['id' => $editUserId])->One();
+
         }
         else{
+
             //найти нового абонента
             //устновить флаг редиктирования абонента
             //присвоить текущему пользователю абонента
@@ -129,6 +133,7 @@ class DesktopController extends Controller{
 
         if(Yii::$app->request->isPost) {
             if (!empty(Yii::$app->request->post('Clients'))) {//сохраняем данные клиента
+
                 $clientUpd = Yii::$app->request->post('Clients');
                 if ($client->id == $clientUpd['id']) {
                     if ($client->load(Yii::$app->request->post()) && $client->save(true)) {
@@ -136,18 +141,40 @@ class DesktopController extends Controller{
                     }
                 }
             }
-
+            // Добавляем комент тренера;
             if (!empty(Yii::$app->request->post('FeedbackTrainer'))) {//сохраняем данные клиента
+
                 $params = Yii::$app->request->post('FeedbackTrainer');
-                if ($client->id == $params['client_id']) {
+
+                if (intval($client->id) == intval($params['client_id'])) {
+
                     $fbTrainer = new FeedbackTrainer();
-                    if ($fbTrainer->load(Yii::$app->request->post()) && $fbTrainer->save(true)) {
-                        return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
+                    if ($fbTrainer->load(Yii::$app->request->post())) {
+                        // Ай ай ай Макс атрибуты не совпадают из формы, лучше бы вызвал через ActiveForm::begin([
+                        $_post = Yii::$app->request->post();
+                        if(!$_post['FeedbackTrainer']['trainer_id'] && !$_post['FeedbackTrainer']['feedback']) json_encode(['status' => 'error', 'message' => 'Не все поля заполнены']);
+
+                        $fbTrainer->clinet_id = $client->id;
+                        $fbTrainer->trainer_fit_id = intval($_post['FeedbackTrainer']['trainer_id']);
+                        $fbTrainer->feedback = $_post['FeedbackTrainer']['feedback'];
+
+                        if($fbTrainer->save(true)) {
+                            return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
+                        }else{
+                            return json_encode(['status' => 'error', 'message' => print_r($fbTrainer->errors)]);
+                        }
                     }
                 }
+                    return json_encode(['status' => 'error', 'message' => 'Ошибка сервера']);
             }
 
+            // Обновляем коммент;
+
+            // Удаляем коммент;
+
+
             if (!empty(Yii::$app->request->post('Comment'))) {
+
                 $result = [
                     'status' => 'error',
                     'message' => 'Укажите все данные'
@@ -191,6 +218,9 @@ class DesktopController extends Controller{
                 //return json_encode($result);
             }
         }
+     //   $model = FeedbackTrainer::find()->where(['trainer_fit_id'=>1046])->all();
+       // print_arr($model);
+
 
         return $this->render('client-card',[
             'client'=>$client,
@@ -229,6 +259,48 @@ class DesktopController extends Controller{
             ]);
         }*/
     }
+
+    // Выводим коменты тренера;
+    public  function actionFeedbackTrainerComments() {
+       $post =  Yii::$app->request->post();
+       if(!empty($post['f_comments']) && !empty($post['trainer_id'])) {
+           $model = FeedbackTrainer::find()->where(['clinet_id'=>$post['client_id'],'trainer_fit_id'=>$post['trainer_id'],'status'=>1])->all();
+
+           if(empty($model)) return 'Нет записей';
+           return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
+       }
+
+    }
+
+    // Удаляем комент тренера ставим статус 0;
+    public  function actionTrainersCommentsDelete() {
+        $post =  Yii::$app->request->post();
+        if(!empty($post['delete_comments']) && !empty($post['comment_id'])) {
+            $delete = FeedbackTrainer::findOne($post['comment_id']);
+            $delete->status = 0;
+            if(!$delete->save(false)) return 'Ошибка сервера';
+            // Обновляем контент;
+            $model = FeedbackTrainer::find()->where(['clinet_id'=>$delete->clinet_id,'trainer_fit_id'=>$delete->trainer_fit_id])->all();
+
+            return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
+        }
+
+    }
+    // Обновляем комент тренера;
+    public  function actionTrainersCommentsUpdate() {
+        $post =  Yii::$app->request->post();
+        if(!empty($post['update_comments']) && !empty($post['comment_id'])) {
+            $update = FeedbackTrainer::findOne($post['comment_id']);
+            $update->feedback = $post['feedback'];
+            if(!$update->save(false)) return 'Ошибка сервера';
+            // Обновляем контент;
+            $model = FeedbackTrainer::find()->where(['clinet_id'=>$update->clinet_id,'trainer_fit_id'=>$update->trainer_fit_id])->all();
+
+            return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
+        }
+
+    }
+
 
     public function actionAddComment(){
 

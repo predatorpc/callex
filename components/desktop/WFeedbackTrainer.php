@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rr
- * Date: 30.11.17
- * Time: 9:57
- */
+
 
 namespace app\components\desktop;
 
@@ -12,6 +7,7 @@ namespace app\components\desktop;
 use app\models\fitness\FitnessInfo;
 use yii\base\Widget;
 use yii\helpers\Html;
+use app\models\FeedbackTrainer;
 
 class WFeedbackTrainer extends Widget
 {
@@ -33,24 +29,31 @@ class WFeedbackTrainer extends Widget
             if (empty($trainers)) {
                 $trainers = [];
             }
-            ?>
 
+            //Выводим если есть коменты;
+
+
+
+
+            ?>
             <form id="FeedbackTrainer">
-                <?= Html::hiddenInput('FeedbackTrainer[client_id]]', $this->client->id);?>
+                <?= Html::hiddenInput('FeedbackTrainer[client_id]]', $this->client->id,['class'=>'client_id']);?>
 
                 <div class="form-group">
-                    <?= Html::label('Тренер', '', ['class' => 'control-label']);?>
-                    <?=  Html::dropDownList('FeedbackTrainer[trainer_id]', 'null', $trainers['data']['trainers'], ['class' => 'form-control', 'id' => 'trainerSel', 'prompt' => 'Выберите...']);?>
+
+                    <?=  Html::label('Тренер', '', ['class' => 'control-label']);?>
+                    <?=  Html::dropDownList('FeedbackTrainer[trainer_id]', 'null', $trainers['data']['trainers'], ['class' => 'form-control feedbackTrainerSelect', 'id' => 'trainerSel', 'prompt' => 'Выберите...']);?>
                     <?=  Html::label('Отзыв', '', ['class' => 'control-label']);?>
-                    <?=  Html::input('text', 'FeedbackTrainer[feedback]', '', ['class' => 'form-control']);?>
+                    <?=  Html::input('text', 'FeedbackTrainer[feedback]', '',['class' => 'form-control feedbackTrainer']);?>
                 </div>
                 <div class="form-group">
-                    <div  class="">
-                        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success  col-md-12', "id" => "FeedbackTrainerCommit"]);?>
-                    </div>
+                    <?= Html::submitButton('Добавить', ['class' => 'btn btn-success  col-md-12 js-feedback-trainer', "id" => "FeedbackTrainerCommit"]);?>
                     <div class="clear"></div>
                 </div>
             </form>
+
+            <div class="content-feedback"></div>
+
             <?php
         }
         else{

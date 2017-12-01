@@ -31,8 +31,9 @@ class FeedbackTrainer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['clinet_id', 'trainer_fit_id'], 'required'],
-            [['clinet_id', 'trainer_fit_id', 'create_by_user', 'feedback', 'status'], 'integer'],
+            [['clinet_id', 'trainer_fit_id','feedback'], 'required'],
+            [['clinet_id', 'trainer_fit_id', 'create_by_user','status'], 'integer'],
+            [['feedback'],'string'],
             [['date_creation'], 'safe'],
         ];
     }

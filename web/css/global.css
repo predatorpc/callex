@@ -178,7 +178,7 @@ a.dashed:hover,a.dotted:hover,a:focus {
     }
 }
 .loader {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     width: 80px;

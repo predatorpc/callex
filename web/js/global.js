@@ -26,14 +26,16 @@ $(document) .on('focus','input.phone',function() {
 
 // супер сетка;
 $(window).load(function () {
-    $('.js-grid').masonry({
-       // columnWidth: 200,
-        itemSelector: '.item-grid',
 
-    });
+    masonry_item();
 
-   //
+    $('#myTabList a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+        masonry_item();
+    })
 });
+
 
 
 
@@ -64,6 +66,7 @@ $(document).on('click','.js-tag',function(){
     $('.js-text-add').html(text);
     return false;
 });
+// Выбор время;
 $(document).on('click','.js-select-action',function(){
     var item = $(this).val();
     if(item == 7) {
@@ -71,8 +74,20 @@ $(document).on('click','.js-select-action',function(){
     }else{
       $('.times-content').fadeOut(200);
     }
+    masonry_item();
     return false;
 });
+
+// Динамичные блоки;
+function masonry_item() {
+    $('.js-grid').masonry({
+        // columnWidth: 200,
+        itemSelector: '.item-grid',
+    });
+}
+
+
+
 // Открытие модальное окно url - string; tittle - string; objPost - obj ,idModal -индификатор;
 function window_pay(url,title,objPost,size) {
     var modalContainer = $('#window_pay');

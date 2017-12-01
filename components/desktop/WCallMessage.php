@@ -14,7 +14,7 @@ class WCallMessage extends Widget
    if(empty($this->client)) return false; ?>
        <div class="list-comments">
             <!-- Nav tabs -->
-            <ul class="nav nav-tabs ">
+            <ul class="nav nav-tabs " id="myTabList">
                 <li class="active"><a href="#comments-tab" data-toggle="tab">Список комментариев</a></li>
                 <li><a href="#sms-tab" data-toggle="tab">Список Смс-ки</a></li>
             </ul>
