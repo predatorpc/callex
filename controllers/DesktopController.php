@@ -102,14 +102,26 @@ class DesktopController extends Controller{
             //устновить флаг редиктирования абонента
             //присвоить текущему пользователю абонента
             //записать в сессию
-            $client = Clients::getClientToCall();
+            $client = System::getClientToCall();//Clients::getClientToCall();
             $client->is_being_edited = 1;
             if($client->save(true)){
-                /*$userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
-                if(!empty($userClient) && $userClient->user->status==1){
-                    $client = false;
+                $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
+                $flagSaveCurentUser = false;
+                if(!empty($userClient)){
+                    if($userClient->user->status==1){
+                        $client = false;
+                    }
+                    else{
+                        $userClient->status=0;
+                        if($userClient->save(true)){
+                            $flagSaveCurentUser = true;
+                        }
+                    }
                 }
-                else{*/
+                else{
+                    $flagCurentUser = true;
+                }
+                if($flagSaveCurentUser){
                     $userClient = new UsersClients();
                     $userClient->user_id = Yii::$app->user->id;
                     $userClient->client_id = $client->id;
@@ -117,7 +129,7 @@ class DesktopController extends Controller{
                     if(!$userClient->save(true)){
                         $client = false;
                     }
-                //}
+                }
 
             }
             else{
@@ -229,39 +241,6 @@ class DesktopController extends Controller{
         return $this->render('client-card',[
             'client'=>$client,
         ]);
-
-
-        /*
-        if ($client->load(Yii::$app->request->post()) && (strtotime('now') - $session->get('time_start')>=10)) {
-            $client->next_call = date('Y-m-d H:i:s',strtotime($client->next_call));
-            if(!$client->save()){
-                $session['time_start'] = strtotime('now');
-                return $this->render('client-card',['client'=>$client,'sms'=>$sms]);
-            }
-            $session->remove('time_start');
-            $client->is_being_edited = 0;
-            if($client->call_status_id != 2){
-                $client->next_call =  '';
-            }
-            $client->save(true);
-            $user_client = UsersClients::find()->where(['client_id'=>$client->id,'user_id'=>Yii::$app->user->getId(),'status'=>0])->One();
-            if($user_client){
-                $user_client->status = 1;
-                if(!$user_client->save()){
-                    print_r($user_client->getErrors());die;
-                }
-            }
-
-            $session->remove('edit_client_id');
-            return $this->redirect(['index']);
-        }
-        else {
-
-            return $this->render('client-card',[
-                'client'=>$client,
-                'sms'=>$sms
-            ]);
-        }*/
     }
 
     // Выводим коменты тренера;

@@ -80,105 +80,11 @@ class Clients extends \yii\db\ActiveRecord
 
     }
 
-    //новые
-    public static function getNewClient(){
-//SELECT clients.*
-//FROM `clients`
-//LEFT JOIN comments on comments.client_id=clients.id and comments.status=1
-//LEFT JOIN users_clients on users_clients.client_id = clients.id and users_clients.status=1
-//WHERE clients.status=1
-//GROUP by clients.id
-//HAVING count(comments.id)=0 and count(users_clients.id)=0
-//LIMIT 1
-//-------
-        //нет пользователь удален или нет комментария
-//SELECT users.phone, clients.*
-//FROM `clients`
-//LEFT JOIN comments on comments.client_id=clients.id and comments.status=1
-//LEFT JOIN users_clients on users_clients.client_id = clients.id and users_clients.status=1
-//LEft join users on users.id = users_clients.user_id and users.status=1
-//WHERE clients.status=1
-//GROUP by clients.id
-//HAVING count(comments.id)=0 or count(users.id)=0
-        //получаем новых клиентом кому не звонили еще
-        //то есть тех у которых нет комментария и нет пользователя
-        return self::find()
-            ->leftJoin('comments', 'comments.client_id=clients.id and comments.status=1')
-            ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
-            ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
-            ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
-            ->groupBy('clients.id')
-            //->having(['count(comments.id)'=>0, 'count(users_clients.id)'=>0])
-            ->having(['count(comments.id)'=>0, 'count(users.id)'=>0])
-            ->orderBy('RAND()')
-            ->limit(1)
-            ->one();
+    /**
+     * Получение клиента для звонка
+    */
 
-    }
-
-    //перезвонить
-    public static function getReCallClient(){
-//SELECT clients.*
-//FROM `clients`, users_clients
-//WHERE users_clients.user_id = 4359 and
-//        users_clients.status=1 and
-//        clients.id = users_clients.client_id and
-//        clients.call_status_id`=2 AND
-//        clients.status`=1 and
-//        clients.next_call` < '2017-11-28 07:47:13'
-//ORDER BY `next_call`
-        //можно убрать clients.call_status_id'=>2 сделать не актуальным
-        // и добавить фильтр по комментарию но это когда появяться
-
-        return self::find()->select('clients.*')->from('clients, users_clients')
-            ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
-            ->andWhere('clients.id = users_clients.client_id')
-            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
-            //->andWhere(['clients.call_status_id'=>2,])// TODO: можно будет убрать в последствии ну или в базе запилить тригер
-            ->andWhere(['<', 'clients.next_call', Date('Y-m-d H:i:s',strtotime('+ 5 minutes')) ])
-            ->orderBy('next_call')
-            ->One();
-    }
-
-    //пустые комментарии
-    public static function getClientsEmptyComments(){
-        return self::find()
-            ->leftJoin('comments', 'comments.client_id=clients.id and comments.status=1')
-            ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
-            ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
-            ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
-            ->groupBy('clients.id')
-            //->having(['count(comments.id)'=>0, 'count(users_clients.id)'=>0])
-            ->having(['count(comments.id)'=>0, 'count(users.id)'=>0])
-            ->orderBy('RAND()')
-            ->limit(1)
-            ->one();
-    }
-
-    //пользователь уже уволен
-    public static function getClientsUsersFree(){
-        return self::find()
-            ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
-            ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
-            ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
-            ->groupBy('clients.id')
-            ->having(['count(users.id)'=>0])
-            ->orderBy('RAND()')
-            ->limit(1)
-            ->one();
-    }
-
-    //звонить собственным клиентам
-    public static function getSelfClientCall(){
-        return self::find()->select('clients.*')->from('clients, users_clients')
-            ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
-            ->andWhere('clients.id = users_clients.client_id')
-            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
-            ->orderBy(['last_call'=>SORT_ASC])
-            ->One();
-    }
-
-    public static function getClientToCall(){
+    /*public function getClientToCall(){
         $client = Clients::getReCallClient();
         if(empty($client)){
             $client = Clients::getNewClient();
@@ -196,6 +102,150 @@ class Clients extends \yii\db\ActiveRecord
             }
         }
         return $client;
+    }*/
+
+    public function getClientToCall($counter=1){
+        $client = $this->getReCallClient();
+        if(empty($client)){
+            if($counter<=4){
+                $random = rand(1,50);
+                if($random<=11){
+                    $client = $this->getNewClient();
+                }
+                elseif(($random>11 && $random<=22)){
+                    $client = $this->getClientsEmptyComments();
+                }
+                elseif(($random>22 && $random<=33)){
+                    $client = Clients::getClientsUsersFree();
+                }
+                elseif( $random>33){
+                    $client = $this->getSelfClientCall();
+                }
+                else{
+                    $client = false;
+                }
+            }
+            else{
+                $client = $this->getSelfClientCall();
+            }
+
+            if(empty($client) ){
+                if($counter<=4){
+                    $counter ++;
+                    $client = $this->randGetClient($counter);
+                }
+                else{
+                    $client=false;
+                }
+            }
+        }
+        return $client;
+    }
+
+    //новые
+    private function getNewClient(){
+        /**
+         * SQL
+        //SELECT clients.*
+        //FROM `clients`
+        //LEFT JOIN comments on comments.client_id=clients.id and comments.status=1
+        //LEFT JOIN users_clients on users_clients.client_id = clients.id and users_clients.status=1
+        //WHERE clients.status=1
+        //GROUP by clients.id
+        //HAVING count(comments.id)=0 and count(users_clients.id)=0
+        //LIMIT 1
+        //-------
+        //нет пользователь удален или нет комментария
+        //SELECT users.phone, clients.*
+        //FROM `clients`
+        //LEFT JOIN comments on comments.client_id=clients.id and comments.status=1
+        //LEFT JOIN users_clients on users_clients.client_id = clients.id and users_clients.status=1
+        //LEft join users on users.id = users_clients.user_id and users.status=1
+        //WHERE clients.status=1
+        //GROUP by clients.id
+        //HAVING count(comments.id)=0 or count(users.id)=0
+        */
+
+        //получаем новых клиентом кому не звонили еще
+        //то есть тех у которых нет комментария и нет пользователя
+        return $this::find()
+            ->leftJoin('comments', 'comments.client_id=clients.id and comments.status=1')
+            ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
+            ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
+            ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
+            ->groupBy('clients.id')
+            //->having(['count(comments.id)'=>0, 'count(users_clients.id)'=>0])
+            ->having(['count(comments.id)'=>0, 'count(users.id)'=>0])
+            ->orderBy('RAND()')
+            ->limit(1)
+            ->one();
 
     }
+
+    //перезвонить
+    private function getReCallClient(){
+        /**
+         * SQL
+        //SELECT clients.*
+        //FROM `clients`, users_clients
+        //WHERE users_clients.user_id = 4359 and
+        //        users_clients.status=1 and
+        //        clients.id = users_clients.client_id and
+        //        clients.call_status_id`=2 AND
+        //        clients.status`=1 and
+        //        clients.next_call` < '2017-11-28 07:47:13'
+        //ORDER BY `next_call`
+         */
+        //можно убрать clients.call_status_id'=>2 сделать не актуальным
+        // и добавить фильтр по комментарию но это когда появяться
+
+        return $this::find()->select('clients.*')->from('clients, users_clients')
+            ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
+            ->andWhere('clients.id = users_clients.client_id')
+            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
+            //->andWhere(['clients.call_status_id'=>2,])// TODO: можно будет убрать в последствии ну или в базе запилить тригер
+            ->andWhere(['<', 'clients.next_call', Date('Y-m-d H:i:s',strtotime('+ 5 minutes')) ])
+            ->orderBy('next_call')
+            ->One();
+    }
+
+    //пустые комментарии
+    private function getClientsEmptyComments(){
+        return $this::find()
+            ->leftJoin('comments', 'comments.client_id=clients.id and comments.status=1')
+            ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
+            ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
+            ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
+            ->groupBy('clients.id')
+            //->having(['count(comments.id)'=>0, 'count(users_clients.id)'=>0])
+            ->having(['count(comments.id)'=>0, 'count(users.id)'=>0])
+            ->orderBy('RAND()')
+            ->limit(1)
+            ->one();
+    }
+
+    //пользователь уже уволен
+    private function getClientsUsersFree(){
+        return $this::find()
+            ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
+            ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
+            ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
+            ->groupBy('clients.id')
+            ->having(['count(users.id)'=>0])
+            ->orderBy('RAND()')
+            ->limit(1)
+            ->one();
+    }
+
+    //звонить собственным клиентам
+    private function getSelfClientCall(){
+        return $this::find()->select('clients.*')->from('clients, users_clients')
+            ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
+            ->andWhere('clients.id = users_clients.client_id')
+            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
+            ->orderBy(['last_call'=>SORT_ASC])
+            ->One();
+    }
+
+
 }
