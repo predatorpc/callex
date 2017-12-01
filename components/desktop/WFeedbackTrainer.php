@@ -40,7 +40,7 @@ class WFeedbackTrainer extends Widget
 
                 <div class="form-group">
                     <?= Html::label('Тренер', '', ['class' => 'control-label']);?>
-                    <?=  Html::dropDownList('FeedbackTrainer[trainer_id]', 'null', $trainers['data']['trainers'], ['class' => 'form-control', 'id' => 'trainerSel', 'prompt' => 'Выберите...']);?>
+                    <?=  Html::dropDownList('FeedbackTrainer[trainer_fit_id]', 'null', $trainers['data']['trainers'], ['class' => 'form-control', 'id' => 'trainerSel', 'prompt' => 'Выберите...']);?>
                     <?=  Html::label('Отзыв', '', ['class' => 'control-label']);?>
                     <?=  Html::input('text', 'FeedbackTrainer[feedback]', '', ['class' => 'form-control']);?>
                 </div>
