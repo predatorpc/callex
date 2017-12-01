@@ -80,6 +80,8 @@
 
     $(document).on('click','.js-feedback-trainer',function(){
         var input = $('#FeedbackTrainer').serialize();
+        var trainer_id = $('.feedbackTrainerSelect').val();
+
         if($('#FeedbackTrainer input.feedbackTrainer').val().length == 0 || $('#FeedbackTrainer .feedbackTrainerSelect').val().length == 0) {
             alert('Не все поля заполнены');
             return false;
@@ -96,6 +98,12 @@
                         alert_messages(res.message,1);
                         //TODO:добавить нового тренера в историю и обновить истории и очистить поля
                         $(".feedbackTrainer").val('');
+                        // Обновляем контент комент;
+                        $.post('/desktop/feedback-trainer-comments',{f_comments:true,trainer_id: trainer_id ,client_id:$("input.client_id").val()},function(response) {
+                            $(".content-feedback").html(response);
+                            masonry_item();
+                        });
+
                     }
                     else{
                         alert_messages(res.message,2);
@@ -108,6 +116,7 @@
         return false;
     });
 
+    //
     $(document).on('change','.feedbackTrainerSelect',function() {
         loader('show');
         $.post('/desktop/feedback-trainer-comments',{f_comments:true,trainer_id:$(this).val(),client_id:$("input.client_id").val()},function(response) {
@@ -118,6 +127,22 @@
          return false;
     });
 
+    //  Редактировать поле;
+    $(document).on('click','.js-trainers-comments-update',function() {
+        var comment_id = $(this).parents('.item').data('comment_id');
+        var feedback = $(this).siblings('.feedback').val();
+
+        loader('show');
+        //
+        $.post('/desktop/trainers-comments-update',{update_comments:true,comment_id:comment_id,feedback:feedback},function(response) {
+            $(".content-feedback").html(response);
+            masonry_item();
+            alert_messages('Успешно сохранено',1);
+            loader('hide');
+        });
+    });
+
+
     // Delete;
     $(document).on('click','.js-trainers-comments-delete',function() {
         var comment_id = $(this).parent('.item').data('comment_id');
@@ -126,6 +151,7 @@
         $.post('/desktop/trainers-comments-delete',{delete_comments:true,comment_id:comment_id},function(response) {
             $(".content-feedback").html(response);
             masonry_item();
+            alert_messages('Успешно удалено',1);
             loader('hide');
         });
     });
