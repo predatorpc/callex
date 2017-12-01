@@ -8,6 +8,7 @@ use app\models\Comments;
 use app\models\FeedbackTrainer;
 use app\models\fitness\FitnessInfo;
 use app\models\UsersClients;
+use Codeception\Lib\ParamsLoader;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use Yii;
@@ -89,15 +90,13 @@ class DesktopController extends Controller{
         // из клинетов выбираем сперва тех у кого Call_status_id = 0
         // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
-        //$session->set('edit_client_id',168168);
 
         $editUserId = $session->get('edit_client_id');
-        if(!empty($editUserId) && is_numeric($editUserId)) {
-            $client = Clients::find()->where(['id' => $editUserId])->One();
 
+        if(!empty($editUserId) && is_numeric($editUserId)) {
+            $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
         }
         else{
-
             //найти нового абонента
             //устновить флаг редиктирования абонента
             //присвоить текущему пользователю абонента
@@ -106,7 +105,7 @@ class DesktopController extends Controller{
             $client->is_being_edited = 1;
             if($client->save(true)){
                 $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
-                if(!empty($userClient)){
+                if(!empty($userClient) && $userClient->user->status==1){
                     $client = false;
                 }
                 else{
@@ -133,7 +132,6 @@ class DesktopController extends Controller{
 
         if(Yii::$app->request->isPost) {
             if (!empty(Yii::$app->request->post('Clients'))) {//сохраняем данные клиента
-
                 $clientUpd = Yii::$app->request->post('Clients');
                 if ($client->id == $clientUpd['id']) {
                     if ($client->load(Yii::$app->request->post()) && $client->save(true)) {
@@ -143,68 +141,76 @@ class DesktopController extends Controller{
             }
             // Добавляем комент тренера;
             if (!empty(Yii::$app->request->post('FeedbackTrainer'))) {//сохраняем данные клиента
-
                 $params = Yii::$app->request->post('FeedbackTrainer');
-
-                if (intval($client->id) == intval($params['client_id'])) {
-
+                if ($client->id == intval($params['client_id'])) {
                     $fbTrainer = new FeedbackTrainer();
-                    if ($fbTrainer->load(Yii::$app->request->post())) {
-                        // Ай ай ай Макс атрибуты не совпадают из формы, лучше бы вызвал через ActiveForm::begin([
-                        $_post = Yii::$app->request->post();
-                        if(!$_post['FeedbackTrainer']['trainer_id'] && !$_post['FeedbackTrainer']['feedback']) json_encode(['status' => 'error', 'message' => 'Не все поля заполнены']);
-
-                        $fbTrainer->clinet_id = $client->id;
-                        $fbTrainer->trainer_fit_id = intval($_post['FeedbackTrainer']['trainer_id']);
-                        $fbTrainer->feedback = $_post['FeedbackTrainer']['feedback'];
-
-                        if($fbTrainer->save(true)) {
-                            return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
-                        }else{
-                            return json_encode(['status' => 'error', 'message' => print_r($fbTrainer->errors)]);
-                        }
+                    $fbTrainer->load(Yii::$app->request->post());
+                    if ($fbTrainer->load(Yii::$app->request->post()) && $fbTrainer->save(true)) {
+                        return json_encode(['status' => 'success', 'message' => 'Успешно сохранился']);
                     }
                 }
-                    return json_encode(['status' => 'error', 'message' => 'Ошибка сервера']);
             }
 
-            // Обновляем коммент;
-
-            // Удаляем коммент;
-
-
-            if (!empty(Yii::$app->request->post('Comment'))) {
-
+            if (!empty(Yii::$app->request->post('Comments'))) {
                 $result = [
                     'status' => 'error',
                     'message' => 'Укажите все данные'
                 ];
-                $params = Yii::$app->request->post('Comment');
+                $params = Yii::$app->request->post('Comments');
                 if (!empty($params['action_id']) && !empty($params['text']) && !empty($params['client_id']) && is_numeric($params['client_id'])) {
-                    if ($client->id == $params['client_id']) {
+                    if ($client->id == intval($params['client_id']) ){
 //                        $this->redirect('/desktop/index');
                         $comment = new Comments();
-                        if($comment->load(Yii::$app->request->post('Comment'))){
+                        if($comment->load(Yii::$app->request->post())){
                             //обработка действия
+                            if($comment->action_id == 7){//recall over N day
+                                $recallTime = (!empty($params['days'])?abs($params['days']).' days':'') .
+                                    (!empty($params['hours'])?abs($params['hours']):'0') .' hours ' .
+                                    (!empty($params['minute'])?abs($params['minute']).' minute':'');
+                                if(empty($recallTime)){
+                                    $recallTime = '30 minute';
+                                }
+                                $client->next_call = Date('Y-m-d H:i:s', strtotime($recallTime, time()));
+                            }
+                            elseif($comment->action_id == 10){// больше не звонить
+                                $client->status=0; // клиент больше не будет выпадать
+                            }
+                            else{
+                                $client->next_call = NULL;
+                            }
 
-                            if ($comment->save(true)) {
-                                $result = [
-                                    'status' => 'success',
-                                    'message' => 'Сохранено',
-                                ];
-                                //если все успешно то удалить сессию и отдать ссылку для релода страницы
+                            $comment->validate();
+                            $client->is_being_edited = 0;
+                            $client->validate();
+                            if(empty($comment->errors) && empty($client->errors)){
+                                //сохраняем клиента и если все хорошо сохраняем комментарий
+                                if($client->save(true) && $comment->save(true)) {
+                                    $result = [
+                                        'status' => 'success',
+                                        'message' => 'Сохранено',
+                                    ];
+                                    $session->remove('time_start');
+                                    $session->remove('edit_client_id');
+                                    return $this->redirect('/desktop/client-card');
+                                }
+                                else{
+                                    $result = [
+                                        'status' => 'error',
+                                        'message' => 'Не сохранено'
+                                    ];
+                                }
                             }
                             else {
                                 $result = [
                                     'status' => 'error',
-                                    'message' => 'Не сохранено'
+                                    'message' => 'Ошибка в заполнении'
                                 ];
                             }
                         }
                         else{
                             $result = [
                                 'status' => 'error',
-                                'message' => 'Не сохранено'
+                                'message' => 'Ошибка загрузки данных'
                             ];
                         }
                     }
@@ -215,12 +221,9 @@ class DesktopController extends Controller{
                         ];
                     }
                 }
-                //return json_encode($result);
+                return json_encode($result);
             }
         }
-     //   $model = FeedbackTrainer::find()->where(['trainer_fit_id'=>1046])->all();
-       // print_arr($model);
-
 
         return $this->render('client-card',[
             'client'=>$client,

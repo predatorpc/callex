@@ -29,20 +29,15 @@ class WFeedbackTrainer extends Widget
             if (empty($trainers)) {
                 $trainers = [];
             }
-
-            //Выводим если есть коменты;
-
-
-
-
             ?>
+
             <form id="FeedbackTrainer">
                 <?= Html::hiddenInput('FeedbackTrainer[client_id]]', $this->client->id,['class'=>'client_id']);?>
 
                 <div class="form-group">
 
                     <?=  Html::label('Тренер', '', ['class' => 'control-label']);?>
-                    <?=  Html::dropDownList('FeedbackTrainer[trainer_id]', 'null', $trainers['data']['trainers'], ['class' => 'form-control feedbackTrainerSelect', 'id' => 'trainerSel', 'prompt' => 'Выберите...']);?>
+                    <?=  Html::dropDownList('FeedbackTrainer[trainer_fit_id]', 'null', $trainers['data']['trainers'], ['class' => 'form-control feedbackTrainerSelect', 'id' => 'trainerSel', 'prompt' => 'Выберите...']);?>
                     <?=  Html::label('Отзыв', '', ['class' => 'control-label']);?>
                     <?=  Html::input('text', 'FeedbackTrainer[feedback]', '',['class' => 'form-control feedbackTrainer']);?>
                 </div>

@@ -176,7 +176,7 @@
                     'ClientInfoLinksClientId':$(this).attr('client'),
                 },
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     $(".clients_info").html(data);
                     loader('hide');
                    // var resp = JSON.parse(data);
@@ -231,7 +231,7 @@
                 '_csrf':token
             },
             success: function (data) {
-                console.log(data);
+                //console.log(data);
             }
         });
         console.log('change');
