@@ -268,7 +268,7 @@ class DesktopController extends Controller{
     public  function actionFeedbackTrainerComments() {
        $post =  Yii::$app->request->post();
        if(!empty($post['f_comments']) && !empty($post['trainer_id'])) {
-           $model = FeedbackTrainer::find()->where(['client_id'=>$post['client_id'],'trainer_fit_id'=>$post['trainer_id'],'status'=>1])->orderBy('id DESC')->all();
+           $model = FeedbackTrainer::find()->where(['client_id'=>$post['client_id'],'status'=>1])->orderBy('id DESC')->all();
 
            if(empty($model)) return 'Нет записей';
            return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
@@ -284,7 +284,7 @@ class DesktopController extends Controller{
             $delete->status = 0;
             if(!$delete->save(false)) return 'Ошибка сервера';
             // Обновляем контент;
-            $model = FeedbackTrainer::find()->where(['client_id'=>$delete->client_id,'trainer_fit_id'=>$delete->trainer_fit_id,'status'=>1])->orderBy('id DESC')->all();
+            $model = FeedbackTrainer::find()->where(['client_id'=>$delete->client_id, 'status'=>1])->orderBy('id DESC')->all();
 
             return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
         }
@@ -300,7 +300,7 @@ class DesktopController extends Controller{
             $update->feedback = $post['feedback'];
             if(!$update->save(false)) return 'Ошибка сервера';
             // Обновляем контент;
-            $model = FeedbackTrainer::find()->where(['client_id'=>$update->client_id,'trainer_fit_id'=>$update->trainer_fit_id,'status'=>1])->orderBy('id DESC')->all();
+            $model = FeedbackTrainer::find()->where(['client_id'=>$update->client_id,'status'=>1])->orderBy('id DESC')->all();
 
             return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
         }
