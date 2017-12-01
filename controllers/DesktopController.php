@@ -36,7 +36,6 @@ class DesktopController extends Controller{
                         'actions' => [
                             'index',
                             'client-card',
-                            'client-card2',
                             'add-comment',
                             'sms-send',
                             'sms-save',
@@ -85,7 +84,7 @@ class DesktopController extends Controller{
         return $this->render('index',['todayCountCalls'=>$todayCountCalls,'statistic'=>$statistic]);
     }
 
-    public function actionClientCard2(){
+    public function actionClientCard(){
         // id клиента храниться в сессии edit_client_id и время начала звонка
         // если id клента пустое или его нет то нжно получить нового
         // нового выбираем из очереде перезвонов и если очередь пустая то тогда из CLients
