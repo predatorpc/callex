@@ -116,7 +116,7 @@
         return false;
     });
 
-    //
+    /*
     $(document).on('change','.feedbackTrainerSelect',function() {
         loader('show');
         $.post('/desktop/feedback-trainer-comments',{f_comments:true,trainer_id:$(this).val(),client_id:$("input.client_id").val()},function(response) {
@@ -125,7 +125,7 @@
              loader('hide');
         });
          return false;
-    });
+    });*/
 
     //  Редактировать поле;
     $(document).on('click','.js-trainers-comments-update',function() {
