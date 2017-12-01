@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "feedback_trainer".
  *
  * @property int $id
- * @property int $clinet_id
+ * @property int $client_id
  * @property int $trainer_fit_id
  * @property string $date_creation
  * @property int $create_by_user
@@ -40,7 +40,7 @@ class FeedbackTrainer extends \yii\db\ActiveRecord
             [['feedback'], 'string', 'max' => 500],
             ['create_by_user', 'default', 'value'=>($this->isNewRecord?(!empty(Yii::$app->user->id)?Yii::$app->user->id:null):$this->create_by_user)],
             ['status', 'default', 'value'=>1],
-            [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['clinet_id' => 'id']],
+            [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['client_id' => 'id']],
             [['create_by_user'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['create_by_user' => 'id']],
         ];
     }
@@ -52,7 +52,7 @@ class FeedbackTrainer extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'client_id' => 'Clinet ID',
+            'client_id' => 'client_id ID',
             'trainer_fit_id' => 'Trainer Fit ID',
             'date_creation' => 'Date Creation',
             'create_by_user' => 'Create By User',

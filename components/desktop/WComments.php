@@ -58,16 +58,16 @@ class WComments  extends Widget
             $template .= '<div class="clear"></div>';
             $template .= '</div>';
 
-            $template .='<div class="tag-content">';
-            if(!empty(\Yii::$app->params['tag'])) {
-                foreach (\Yii::$app->params['tag'] as $tag) {
-                    $template.= '<div style="margin: 0 10px 5px 0;display: inline-block;  font-size: 12px;"><a href="#!" class="js-tag dotted" >'.$tag.'</a></div>';
-                }
-            }else{
-                $template .= '<b class="text-danger">Добавьте текст в парамс</b>';
+        $template .='<div class="tag-content">';
+        if(!empty(\Yii::$app->params['tag'])) {
+            foreach (\Yii::$app->params['tag'] as $tag) {
+                $template.= '<div style="margin: 0 10px 5px 0;display: inline-block;  font-size: 12px;"><a href="#!" class="js-tag dotted" >'.$tag.'</a></div>';
             }
-            $template .='</div>';
-            $template .=  '<div class="form-group">';
+        }else{
+            $template .= '<b class="text-danger">Добавьте текст в парамс \'tag\'=>[\'Hello Word\']</b>';
+        }
+        $template .='</div>';
+        $template .=  '<div class="form-group">';
 
 
             $template .= Html::label('Комментарий','',['class'=>'control-label']);

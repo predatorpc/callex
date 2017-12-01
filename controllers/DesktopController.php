@@ -45,7 +45,10 @@ class DesktopController extends Controller{
                             'find-client',
                             'client-old-info',
                             'client-change-info',
-                            'client-transaction-info'
+                            'client-transaction-info',
+                            'feedback-trainer-comments',
+                            'trainers-comments-delete',
+                            'trainers-comments-update'
                         ],
                         'allow' => true,
                         'roles' => ['Manager','Operator'],
@@ -102,11 +105,11 @@ class DesktopController extends Controller{
             $client = Clients::getClientToCall();
             $client->is_being_edited = 1;
             if($client->save(true)){
-                $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
+                /*$userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
                 if(!empty($userClient) && $userClient->user->status==1){
                     $client = false;
                 }
-                else{
+                else{*/
                     $userClient = new UsersClients();
                     $userClient->user_id = Yii::$app->user->id;
                     $userClient->client_id = $client->id;
@@ -114,7 +117,7 @@ class DesktopController extends Controller{
                     if(!$userClient->save(true)){
                         $client = false;
                     }
-                }
+                //}
 
             }
             else{
@@ -137,7 +140,7 @@ class DesktopController extends Controller{
                     }
                 }
             }
-
+            // Добавляем комент тренера;
             if (!empty(Yii::$app->request->post('FeedbackTrainer'))) {//сохраняем данные клиента
                 $params = Yii::$app->request->post('FeedbackTrainer');
                 if ($client->id == intval($params['client_id'])) {
@@ -260,6 +263,49 @@ class DesktopController extends Controller{
             ]);
         }*/
     }
+
+    // Выводим коменты тренера;
+    public  function actionFeedbackTrainerComments() {
+       $post =  Yii::$app->request->post();
+       if(!empty($post['f_comments']) && !empty($post['trainer_id'])) {
+           $model = FeedbackTrainer::find()->where(['client_id'=>$post['client_id'],'trainer_fit_id'=>$post['trainer_id'],'status'=>1])->orderBy('id DESC')->all();
+
+           if(empty($model)) return 'Нет записей';
+           return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
+       }
+
+    }
+
+    // Удаляем комент тренера ставим статус 0;
+    public  function actionTrainersCommentsDelete() {
+        $post =  Yii::$app->request->post();
+        if(!empty($post['delete_comments']) && !empty($post['comment_id'])) {
+            $delete = FeedbackTrainer::findOne($post['comment_id']);
+            $delete->status = 0;
+            if(!$delete->save(false)) return 'Ошибка сервера';
+            // Обновляем контент;
+            $model = FeedbackTrainer::find()->where(['client_id'=>$delete->client_id,'trainer_fit_id'=>$delete->trainer_fit_id,'status'=>1])->orderBy('id DESC')->all();
+
+            return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
+        }
+
+    }
+
+    // Обновляем комент тренера;
+    public  function actionTrainersCommentsUpdate() {
+        $post =  Yii::$app->request->post();
+        if(!empty($post['update_comments']) && !empty($post['comment_id'])) {
+            if(empty($post['feedback'])) return 'Заполните поле';
+            $update = FeedbackTrainer::findOne($post['comment_id']);
+            $update->feedback = $post['feedback'];
+            if(!$update->save(false)) return 'Ошибка сервера';
+            // Обновляем контент;
+            $model = FeedbackTrainer::find()->where(['client_id'=>$update->client_id,'trainer_fit_id'=>$update->trainer_fit_id,'status'=>1])->orderBy('id DESC')->all();
+
+            return \app\components\html\WTrainersListComments::widget(['model'=>$model]);
+        }
+    }
+
 
     public function actionAddComment(){
 
