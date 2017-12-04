@@ -15,13 +15,21 @@ class WClietsList extends Widget
     public function init()
     {
         parent::init();
-        $this->clients = Clients::find()
+        $this->clients = Clients::find()->from('clients, users_clients')
+        ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
+        ->andWhere('clients.id = users_clients.client_id')
+        ->andWhere(['clients.status'=>1, ])
+        ->andWhere(['<>', 'clients.next_call', 0 ])
+        ->orderBy('next_call')
+            ->groupBy('clients.id')
+        ->all();
+        /*Clients::find()
             ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
             ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
             ->andWhere(['clients.call_status_id'=>2])
             ->andWhere(['<>','clients.next_call','NULL'])
             ->orderBy('clients.next_call')
-            ->All();
+            ->All();*/
 
         if ($this->clients === null) {
             $this->clients = [];
@@ -57,7 +65,7 @@ class WClietsList extends Widget
 
 
             $html .= ' <a href="#" class="list-group-item">
-                       <b class="list-group-item-heading" style="font-size: 16px;">'.$client->last_name.'</b>
+                       <b class="list-group-item-heading" style="font-size: 16px;">'.$client->first_name.' '.$client->last_name.' '.$client->second_name.'</b>
                        <p class="list-group-item-text">
                          Перезвонить через '.$timeString.'
                        </p>

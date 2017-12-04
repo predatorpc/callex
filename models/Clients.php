@@ -84,7 +84,8 @@ class Clients extends \yii\db\ActiveRecord
      * Получение клиента для звонка
     */
 
-    /*public function getClientToCall(){
+    /*
+    public static function getClientToCall(){
         $client = Clients::getReCallClient();
         if(empty($client)){
             $client = Clients::getNewClient();
@@ -104,46 +105,48 @@ class Clients extends \yii\db\ActiveRecord
         return $client;
     }*/
 
-    public function getClientToCall($counter=1){
-        $client = $this->getReCallClient();
+    public static function getClientToCall($counter=1){
+
+        $client = Clients::getReCallClient();
         if(empty($client)){
             if($counter<=4){
                 $random = rand(1,50);
                 if($random<=11){
-                    $client = $this->getNewClient();
+                    $client = Clients::getNewClient();
                 }
                 elseif(($random>11 && $random<=22)){
-                    $client = $this->getClientsEmptyComments();
+                    $client = Clients::getClientsEmptyComments();
                 }
                 elseif(($random>22 && $random<=33)){
                     $client = Clients::getClientsUsersFree();
                 }
                 elseif( $random>33){
-                    $client = $this->getSelfClientCall();
+                    $client = Clients::getSelfClientCall();
                 }
                 else{
                     $client = false;
                 }
             }
             else{
-                $client = $this->getSelfClientCall();
+                $client = Clients::getSelfClientCall();
             }
 
             if(empty($client) ){
                 if($counter<=4){
                     $counter ++;
-                    $client = $this->randGetClient($counter);
+                    $client = self::getClientToCall($counter);
                 }
                 else{
                     $client=false;
                 }
             }
         }
+        //var_dump($client);
         return $client;
     }
 
     //новые
-    private function getNewClient(){
+    public static function getNewClient(){
         /**
          * SQL
         //SELECT clients.*
@@ -168,7 +171,7 @@ class Clients extends \yii\db\ActiveRecord
 
         //получаем новых клиентом кому не звонили еще
         //то есть тех у которых нет комментария и нет пользователя
-        return $this::find()
+        return self::find()
             ->leftJoin('comments', 'comments.client_id=clients.id and comments.status=1')
             ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
             ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
@@ -183,26 +186,26 @@ class Clients extends \yii\db\ActiveRecord
     }
 
     //перезвонить
-    private function getReCallClient(){
+    public static function getReCallClient(){
         /**
          * SQL
-        //SELECT clients.*
-        //FROM `clients`, users_clients
-        //WHERE users_clients.user_id = 4359 and
-        //        users_clients.status=1 and
-        //        clients.id = users_clients.client_id and
-        //        clients.call_status_id`=2 AND
-        //        clients.status`=1 and
-        //        clients.next_call` < '2017-11-28 07:47:13'
-        //ORDER BY `next_call`
+//        SELECT clients.*
+//        FROM `clients`, users_clients
+//        WHERE users_clients.user_id = 4359 and
+//                users_clients.status=1 and
+//                clients.id = users_clients.client_id and
+//                clients.call_status_id`=2 AND
+//                clients.status`=1 and
+//                clients.next_call` < '2017-11-28 07:47:13'
+//        ORDER BY `next_call`
          */
         //можно убрать clients.call_status_id'=>2 сделать не актуальным
         // и добавить фильтр по комментарию но это когда появяться
 
-        return $this::find()->select('clients.*')->from('clients, users_clients')
+        return self::find()->select('clients.*')->from('clients, users_clients')
             ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
             ->andWhere('clients.id = users_clients.client_id')
-            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
+            ->andWhere(['clients.status'=>1, /*'clients.is_being_edited'=>0, clients.service_field_rand'=>rand(1,1000)*/ ])
             //->andWhere(['clients.call_status_id'=>2,])// TODO: можно будет убрать в последствии ну или в базе запилить тригер
             ->andWhere(['<', 'clients.next_call', Date('Y-m-d H:i:s',strtotime('+ 5 minutes')) ])
             ->orderBy('next_call')
@@ -210,8 +213,8 @@ class Clients extends \yii\db\ActiveRecord
     }
 
     //пустые комментарии
-    private function getClientsEmptyComments(){
-        return $this::find()
+    public static function getClientsEmptyComments(){
+        return self::find()
             ->leftJoin('comments', 'comments.client_id=clients.id and comments.status=1')
             ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
             ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
@@ -225,8 +228,8 @@ class Clients extends \yii\db\ActiveRecord
     }
 
     //пользователь уже уволен
-    private function getClientsUsersFree(){
-        return $this::find()
+    public static function getClientsUsersFree(){
+        return self::find()
             ->leftJoin('users_clients', 'users_clients.client_id = clients.id and users_clients.status=1')
             ->leftJoin('users', 'users.id = users_clients.user_id and users.status=1')//TODO ???? хз на сколько оправдано
             ->where(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000)])
@@ -238,8 +241,8 @@ class Clients extends \yii\db\ActiveRecord
     }
 
     //звонить собственным клиентам
-    private function getSelfClientCall(){
-        return $this::find()->select('clients.*')->from('clients, users_clients')
+    public static function getSelfClientCall(){
+        return self::find()->select('clients.*')->from('clients, users_clients')
             ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
             ->andWhere('clients.id = users_clients.client_id')
             ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])

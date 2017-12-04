@@ -93,54 +93,62 @@ class DesktopController extends Controller{
         $session = Yii::$app->session;
 
         $editUserId = $session->get('edit_client_id');
-
         if(!empty($editUserId) && is_numeric($editUserId)) {
             $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
+            //$session->remove('edit_client_id');
         }
         else{
             //найти нового абонента
             //устновить флаг редиктирования абонента
             //присвоить текущему пользователю абонента
             //записать в сессию
-            $client = System::getClientToCall();//Clients::getClientToCall();
+            $client = Clients::getClientToCall();//System::getClientToCall();//Clients::getClientToCall();
+
             $client->is_being_edited = 1;
-            if($client->save(true)){
-                $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1])->one();
+            if($client->save(true)) {
+
+                //выбрать из userClients  запись где user=1 и не равен текущену
+                // и если такие то етсь удаляем клиента
+                //если пусто то сохраняем
+
+                $userClientIsset = UsersClients::find()->from('users_clients, users')
+                    ->where(['users_clients.client_id' => $client->id, 'users_clients.status' => 1])
+                    ->andWhere(['!=', 'users_clients.user_id', Yii::$app->user->id])
+                    ->andWhere('users.id = users_clients.user_id')
+                    ->andWhere(['users.status' => 1])
+                    ->all();
+
                 $flagSaveCurentUser = false;
-                if(!empty($userClient)){
-                    if($userClient->user->status==1){
-                        $client = false;
-                    }
-                    else{
-                        $userClient->status=0;
-                        if($userClient->save(true)){
-                            $flagSaveCurentUser = true;
-                        }
-                    }
+                if (!empty($userClientIsset)) {
+                    $client = false;
                 }
-                else{
-                    $flagCurentUser = true;
+                else {//TODO проставить статус 0 у того у кого пользователь удалден
+                    $flagSaveCurentUser = true;
                 }
-                if($flagSaveCurentUser){
-                    $userClient = new UsersClients();
+                if ($flagSaveCurentUser) {
+                    $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1, 'user_id'=>Yii::$app->user->id])->one();
+                    if(empty($userClient)){
+                        $userClient = new UsersClients();
+                    }
                     $userClient->user_id = Yii::$app->user->id;
                     $userClient->client_id = $client->id;
                     $userClient->status = 1;
-                    if(!$userClient->save(true)){
+                    if (!$userClient->save(true)) {
                         $client = false;
                     }
                 }
-
             }
             else{
                 $client = false;
             }
         }
+
         if(!empty($client)){
             //записать абонента в сессию
             $session->set('edit_client_id', $client->id);
-            $session['time_start'] = time();
+            $session->set('time_start',time());
         }
+
 
 
         if(Yii::$app->request->isPost) {
@@ -184,6 +192,7 @@ class DesktopController extends Controller{
                                     $recallTime = '30 minute';
                                 }
                                 $client->next_call = Date('Y-m-d H:i:s', strtotime($recallTime, time()));
+                                $client->is_being_edited = 0;
                             }
                             elseif($comment->action_id == 10){// больше не звонить
                                 $client->status=0; // клиент больше не будет выпадать
