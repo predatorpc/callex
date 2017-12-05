@@ -203,6 +203,7 @@ class DesktopController extends Controller{
 
                             $comment->validate();
                             $client->is_being_edited = 0;
+                            $client->last_call = Date('Y-m-d H:i:s');
                             $client->validate();
                             if(empty($comment->errors) && empty($client->errors)){
                                 //сохраняем клиента и если все хорошо сохраняем комментарий

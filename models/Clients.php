@@ -109,18 +109,18 @@ class Clients extends \yii\db\ActiveRecord
 
         $client = Clients::getReCallClient();
         if(empty($client)){
-            if($counter<=4){
-                $random = rand(1,50);
-                if($random<=11){
+            if($counter<=12){
+                $random = rand(1,1000);
+                if($random<=250){
                     $client = Clients::getNewClient();
                 }
-                elseif(($random>11 && $random<=22)){
+                elseif(($random>250 && $random<=500)){
                     $client = Clients::getClientsEmptyComments();
                 }
-                elseif(($random>22 && $random<=33)){
+                elseif(($random>500 && $random<=750)){
                     $client = Clients::getClientsUsersFree();
                 }
-                elseif( $random>33){
+                elseif( $random>750){
                     $client = Clients::getSelfClientCall();
                 }
                 else{
@@ -132,7 +132,7 @@ class Clients extends \yii\db\ActiveRecord
             }
 
             if(empty($client) ){
-                if($counter<=4){
+                if($counter<=12){
                     $counter ++;
                     $client = self::getClientToCall($counter);
                 }
