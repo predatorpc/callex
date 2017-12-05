@@ -28,7 +28,7 @@ tests/_support/_generated
 /vendor
 /config
 /mail
-/commands
+#/commands
 /runtime
 /tests
 /db
