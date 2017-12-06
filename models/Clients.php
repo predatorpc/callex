@@ -141,6 +141,7 @@ class Clients extends \yii\db\ActiveRecord
                 }
             }
         }
+
         //var_dump($client);
         return $client;
     }
