@@ -41,7 +41,7 @@ class WComments  extends Widget
 
             $template .='<div class="form-group">';
             $template .= Html::label('Действие','',['class'=>'control-label']);
-            $template .= Html::dropDownList('Comments[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->All(),'id','name'),['prompt' => 'Выберитe..','class'=>'form-control js-select-action','id'=> 'action']);
+            $template .= Html::dropDownList('Comments[action_id]', 'null', ArrayHelper::map(CommentsActions::find()->where(['status'=>1])->All(),'id','name'),['prompt' => 'Выберитe..','class'=>'form-control js-select-action','id'=> 'action']);
             $template .= '</div>';
             // Выбор время;
 
@@ -90,7 +90,7 @@ class WComments  extends Widget
             $template .= '</div>';
             $template .= '</form>';
         }
-        else{
+        else {
             $template = '<div class="text">Клиент не найден</div>';
         }
 

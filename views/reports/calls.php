@@ -118,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model){
                     return $model->user->first_name.' '.$model->user->last_name.' '.$model->user->second_name;
                 }
-            ],
+            ],/*
             [
                 'attribute'=>'call_status_id',
                 'header'=> 'Статус звонка',
@@ -127,7 +127,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->client->callStatus->name;
                 },
                 'filter' => ArrayHelper::map(CallStatuses::find()->all(),'id','name'),
-            ],
+            ],*/
             [
                 'attribute'=>'date',
                 'value' => function($model){
