@@ -43,7 +43,9 @@ class CommentsSearch extends Comments
      */
     public function search($params)
     {
-        $query = Comments::find()->leftJoin('clients','clients.id = comments.client_id')->leftJoin('users','users.id = comments.created_by_user');
+        $query = Comments::find()
+            ->leftJoin('clients','clients.id = comments.client_id')
+            ->leftJoin('users','users.id = comments.created_by_user');
 
         // add conditions that should always apply here
 
