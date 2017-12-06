@@ -245,7 +245,7 @@ class Clients extends \yii\db\ActiveRecord
         return self::find()->select('clients.*')->from('clients, users_clients')
             ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
             ->andWhere('clients.id = users_clients.client_id')
-            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, /*'clients.service_field_rand'=>rand(1,1000)*/ ])
+            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000) ])
             ->orderBy(['last_call'=>SORT_ASC])
             ->One();
     }
