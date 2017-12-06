@@ -92,7 +92,9 @@ class DesktopController extends Controller{
         // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
 
-        $editUserId = $session->get('edit_client_id');
+        $editUserId = (!empty(Yii::$app->request->get('id'))?Yii::$app->request->get('id'):$session->get('edit_client_id'));
+
+
         if(!empty($editUserId) && is_numeric($editUserId)) {
             $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
             //$session->remove('edit_client_id');
@@ -512,8 +514,8 @@ class DesktopController extends Controller{
         if(Yii::$app->request->post('phone')){
             $phone = Yii::$app->request->post('phone');
             if(strlen($phone)== 10){
-                $client = Clients::find()->where(['LIKE','phone',$phone])->One();
-                if($client){
+                $client = Clients::find()->where(['LIKE','phone', trim($phone)])->One();
+                if(!empty($client)){
                     $this->redirect(['client-card','id'=> $client->id]);
                 }
             }
