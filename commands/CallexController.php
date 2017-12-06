@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use app\models\AutoCall;
 use app\models\Clients;
 use yii\console\Controller;
 
@@ -48,6 +49,11 @@ class CallexController extends Controller
         }
 
         echo "найдено дублей у абонентов: ".$doubleClients."\nУдалено дублей".$double."\nИсправлено номеров: ".$fixPhone;
+    }
+
+    public function actionAutoCall(){
+        $autoCall = new AutoCall();
+        $autoCall->createCardToCall('9237042936');
     }
 
 }

@@ -187,13 +187,11 @@ class DesktopController extends Controller{
                         if($comment->load(Yii::$app->request->post())){
                             //обработка действия
                             if($comment->action_id == 7){//recall over N day
-                                $recallTime = (!empty($params['days'])?abs($params['days']).' days':'') .
+                                /*$recallTime = (!empty($params['days'])?abs($params['days']).' days':'') .
                                     (!empty($params['hours'])?abs($params['hours']):'0') .' hours ' .
-                                    (!empty($params['minute'])?abs($params['minute']).' minute':'');
-                                if(empty($recallTime)){
-                                    $recallTime = '30 minute';
-                                }
-                                $client->next_call = Date('Y-m-d H:i:s', strtotime($recallTime, time()));
+                                    (!empty($params['minute'])?abs($params['minute']).' minute':'');*/
+                                $recallTime = (!empty($params['date_recall'])?(strtotime($params['date_recall'])>time()?strtotime($params['date_recall']):strtotime('30 minute', time())) :strtotime('30 minute', time()));
+                                $client->next_call = Date('Y-m-d H:i:s', $recallTime);
                                 $client->is_being_edited = 0;
                             }
                             elseif($comment->action_id == 10){// больше не звонить
