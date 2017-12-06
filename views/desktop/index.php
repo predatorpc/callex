@@ -3,7 +3,7 @@ use app\components\WClietsList;
 use yii\helpers\ArrayHelper;
 use app\models\CallStatuses;
 use yii\bootstrap\BootstrapAsset;
-$callStatuses = ArrayHelper::map(CallStatuses::find()->All(),'id','name');
+$callStatuses = ArrayHelper::map(\app\models\CommentsActions::find()->All(),'id','name');
 $this->title = 'Рабочий стол';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -30,8 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php } ?>
 
             <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left"  style="float: right;" id="statistic" data-content="<?php
+
                     foreach ($statistic as $item){
-                        echo $callStatuses[$item->call_status_id].' : ';
+                        //print_r($item);
+                        echo $callStatuses[$item->action_id].' : ';
                         echo $item->count.' | ';
                     }?>">
                 <?=$todayCountCalls;?>

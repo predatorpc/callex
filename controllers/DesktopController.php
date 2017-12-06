@@ -5,6 +5,7 @@ use app\components\WTest;
 use app\models\ClientsInfo;
 use app\models\ClientsInfoLinks;
 use app\models\Comments;
+use app\models\CommentsActions;
 use app\models\FeedbackTrainer;
 use app\models\fitness\FitnessInfo;
 use app\models\UsersClients;
@@ -60,26 +61,13 @@ class DesktopController extends Controller{
 
     public function actionIndex(){
 
-        $statistic = Clients::find()
-            ->select('count(clients.id) as count,call_status_id')
-            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-            ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
-            ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
-            ->andWhere(['`users_clients`.status'=>1])
-            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6,9]])
-            ->groupBy('clients.call_status_id')
-            ->All();
+        $query = Comments::find()->where(['created_by_user'=>Yii::$app->user->id, 'status'=>1])
+            ->andWhere(['NOT IN', 'action_id', [3,8,9]])
+            ->andWhere(['between', 'date', date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')]);
 
 
-        $todayCountCalls = Clients::find()
-            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-            ->andWhere(['>=','`users_clients`.date',date('Y-m-d 00:00:00')])
-            ->andWhere(['<=','`users_clients`.date',date('Y-m-d 23:59:59')])
-            ->andWhere(['NOT IN','clients.call_status_id',[0,1,5,6,9]])
-            ->andWhere(['`users_clients`.status'=>1])
-            ->count();
+        $todayCountCalls = $query->count();
+        $statistic = $query->groupBy('action_id')->select('action_id, count(id)as "count"')->all();
 
         return $this->render('index',['todayCountCalls'=>$todayCountCalls,'statistic'=>$statistic]);
     }
