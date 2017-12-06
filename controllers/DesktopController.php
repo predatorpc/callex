@@ -84,7 +84,7 @@ class DesktopController extends Controller{
 
 
         if(!empty($editUserId) && is_numeric($editUserId)) {
-            $client = Clients::find()->where(['id' => $editUserId, 'is_being_edited'=>1])->One();
+            $client = Clients::find()->where(['id' => $editUserId, /*'is_being_edited'=>1*/])->One(); //TODO:  ???
             //$session->remove('edit_client_id');
         }
         else{
@@ -107,17 +107,16 @@ class DesktopController extends Controller{
                     ->andWhere('users.id = users_clients.user_id')
                     ->andWhere(['users.status' => 1])
                     ->all();
-
+                //if(Yii::$app->user->id != 33235){
                 $flagSaveCurentUser = false;
                 if (!empty($userClientIsset)) {
-                    $client = false;
-                }
-                else {//TODO проставить статус 0 у того у кого пользователь удалден
+                    //$client = false;
+                } else {//TODO проставить статус 0 у того у кого пользователь удалден
                     $flagSaveCurentUser = true;
                 }
                 if ($flagSaveCurentUser) {
-                    $userClient = UsersClients::find()->where(['client_id'=>$client->id, 'status'=>1, 'user_id'=>Yii::$app->user->id])->one();
-                    if(empty($userClient)){
+                    $userClient = UsersClients::find()->where(['client_id' => $client->id, 'status' => 1, 'user_id' => Yii::$app->user->id])->one();
+                    if (empty($userClient)) {
                         $userClient = new UsersClients();
                     }
                     $userClient->user_id = Yii::$app->user->id;
@@ -127,6 +126,8 @@ class DesktopController extends Controller{
                         $client = false;
                     }
                 }
+                //}
+
             }
             else{
                 $client = false;
@@ -137,6 +138,11 @@ class DesktopController extends Controller{
             //записать абонента в сессию
             $session->set('edit_client_id', $client->id);
             $session->set('time_start',time());
+        }
+        else{
+            $session->remove('edit_client_id');
+            $session->remove('time_start');
+
         }
 
 
@@ -499,12 +505,12 @@ class DesktopController extends Controller{
     {
         if(Yii::$app->request->post('phone')){
             $phone = Yii::$app->request->post('phone');
-            if(strlen($phone)== 10){
+            //if(strlen($phone)== 10){
                 $client = Clients::find()->where(['LIKE','phone', trim($phone)])->One();
                 if(!empty($client)){
                     $this->redirect(['client-card','id'=> $client->id]);
                 }
-            }
+            //}
         }
         return $this->render('find-client');
     }
