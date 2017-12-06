@@ -18,36 +18,35 @@ class CallexController extends Controller
         $double=0;
         $doubleClients=0;
         $fixPhone=0;
-        while ($i<200000){
-            $clientsAll = Clients::find()->where(['>','id',$i])->andWhere(['<=','id',($i+1000)])->andWhere(['status'=>1]);
-            foreach ($clientsAll->each() as $client) {
-                //приветси все номера в порядок
-                echo $client->phone .' -> ';
-                $client->phone = '+7'.preg_replace('/(\+78)|(\+7)|(|)|-|\+1/', '', $client->phone);
-                echo $client->phone ."\n";
-                //поиск дублей
-                if($client->save(true)){
-                    $fixPhone++;
-                }
+        $clients = Clients::find()->select('clients.id, clients.phone')
+            ->leftJoin('clients cc', 'cc.phone=clients.phone and cc.status=1')
+            ->where(['clients.status'=>1])
+            ->groupBy('clients.phone')
+            ->having('count(cc.id)>1')->asArray()->all();
+
+        if(!empty($clients)){
+
+            foreach ($clients as $client){
+                echo $client['id'].' '.$client['phone'];
                 $clientDoubles = Clients::find()
                     ->where(['status'=>1])
-                    ->andWhere(['like','phone', preg_replace('/(\+7)|(|)|-/', '', $client->phone)])
-                    ->andWhere(['!=', 'id', $client->id])
+                    ->andWhere(['phone'=>$client['phone']])
+                    ->andWhere(['!=', 'id', $client['id']])
                     ->all();
                 if(!empty($clientDoubles)){
-                    $doubleClients++;
+                    $doubleClients++; echo ' doubles: ';
                     foreach ($clientDoubles as $clientDouble){
+                        echo '#'.$clientDouble->id. ' ';
                         $clientDouble->status=-99;
                         if($clientDouble->save(true)){
                             $double++;
                         }
                     }
                 }
-                unset($clientDoubles);
+                echo "\n";
             }
-            unset($clientsAll);
-            $i+=1000;
         }
+
         echo "найдено дублей у абонентов: ".$doubleClients."\nУдалено дублей".$double."\nИсправлено номеров: ".$fixPhone;
     }
 
