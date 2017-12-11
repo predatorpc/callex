@@ -10,6 +10,7 @@ namespace app\models;
 
 
 use yii\base\Model;
+use yii\console\Exception;
 
 class AutoCall extends Model
 {
@@ -18,6 +19,8 @@ class AutoCall extends Model
      * суть модели в том что бы можно было задать параметры для выходного файла для всей выборки
      * в последующем выне модели можно делать выюорку и потом передавать только номер телефона для которого все будеит строиться
     */
+    const PATH_LOCAL = '/Users/rr/autocall/';
+    const PATH_RSERVER = '/home/ef/autocall4/';
 
     private $channel = 'Local/89658285276@from-internal';
     private $callerId = 1000;
@@ -30,6 +33,8 @@ class AutoCall extends Model
     private $archive = 'yes';
 
     private $dateToCall;
+
+    private $connection;
 
 
     /*
@@ -81,10 +86,20 @@ Archive: yes
         else{
             $this->dateToCall = Date('Y-m-d');
         }
+
+
+        try {
+            echo "try to connect....\n";
+            $this->connect();
+        }
+        catch (Exception $e) {
+            throw new Exception('Cannot connect to server');
+        }
+
+
     }
 
     public function createCardToCall($phone = false){
-
         $phone = $this->adaptationPhone($phone);
 
         if(!empty($phone)){
@@ -100,13 +115,18 @@ Archive: yes
                 ."Archive: ".$this->archive."\n";
 
             $fileName = $phone.'_'.\Yii::$app->uniqueId.'.call';
-            $dirName =$_SERVER['DOCUMENT_ROOT'] . '/autocall/'.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
+            $dirName =self::PATH_LOCAL.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
             //создаем директорию с датой
             //var_dump($dirName);die();
+
             if(!file_exists($dirName)){
                 mkdir($dirName, 0777, true);
             }
-            return file_put_contents($dirName.'/'.$fileName, $file);
+            if(file_put_contents($dirName.'/'.$fileName, $file)){
+                if($this->moveFile($dirName.'/', $fileName)){
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -129,6 +149,78 @@ Archive: yes
         }
         return false;
     }
+
+    private function connect() {
+        if (($this->connection = ssh2_connect(\Yii::$app->params['remoteConnection']['id'], \Yii::$app->params['remoteConnection']['port']))) {
+            if(!empty($this->connection) && ssh2_auth_password($this->connection, \Yii::$app->params['remoteConnection']['user'], \Yii::$app->params['remoteConnection']['pass']) ){
+                return true;
+            }
+            else{
+                throw new Exception('Cannot connect to server2');
+            }
+        }
+        else{
+            throw new Exception('Cannot connect to server');
+        }
+
+        return false;
+    }
+
+    public function moveFile($filePath=false, $fileName=false){
+        if(!empty($filePath) && !empty($fileName) && file_exists($filePath.$fileName)){
+            if(!empty($this->connection)) {
+
+                if(!$this->remoteDirExists(self::PATH_RSERVER)){
+                    $this->remoteMakeDir(self::PATH_RSERVER);
+                }
+
+                if (!ssh2_scp_send($this->connection, self::PATH_LOCAL . $fileName, self::PATH_RSERVER . $fileName, 0777)) {
+                    throw new Exception('File don`t move');
+                } else {
+                    return true;
+                }
+            }
+        }
+        else{
+            throw new Exception('File don`t exists');
+        }
+        return false;
+
+    }
+
+
+    private function remoteMakeDir($path=false){
+        if(!empty($path) && !empty($this->connection)){
+            $stream = ssh2_exec($this->connection, 'mkdir -p '.$path);
+            $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+            stream_set_blocking($errorStream, true);
+            $error = stream_get_contents($errorStream);
+            fclose($errorStream);
+            fclose($stream);
+            if(empty($error)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function remoteDirExists($path=false){
+        if(!empty($path) && !empty($this->connection)){
+            $stream = ssh2_exec($this->connection, 'cd '.self::PATH_RSERVER);
+            $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+            stream_set_blocking($errorStream, true);
+            $error = stream_get_contents($errorStream);
+            fclose($errorStream);
+            fclose($stream);
+            if(empty($error)){
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+
 
 
 
