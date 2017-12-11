@@ -8,7 +8,7 @@
 
 namespace app\models;
 
-
+use Yii;
 use yii\base\Model;
 use yii\console\Exception;
 
@@ -22,7 +22,7 @@ class AutoCall extends Model
     const PATH_LOCAL = '/Users/rr/autocall/';
     const PATH_RSERVER = '/home/ef/autocall4/';
 
-    private $channel = 'Local/89658285276@from-internal';
+    private $channel = 'Local/#phone#@from-internal';
     private $callerId = 1000;
     private $maxRetries = 5;
     private $retryTime = 300;
@@ -81,7 +81,7 @@ Archive: yes
         }
 
         if (isset($config['dateToCall']) && is_numeric($config['dateToCall'])) {
-            $this->dateToCall = Date('Y-m-D', strtotime($config['priority']));
+            $this->dateToCall = Date('Y-m-d', strtotime($config['priority']));
         }
         else{
             $this->dateToCall = Date('Y-m-d');
