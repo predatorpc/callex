@@ -5,6 +5,7 @@ namespace app\commands;
 use app\models\AutoCall;
 use app\models\Clients;
 use yii\console\Controller;
+use yii\console\Exception;
 
 
 class CallexController extends Controller
@@ -52,10 +53,31 @@ class CallexController extends Controller
     }
 
     public function actionAutoCall(){
-        $autoCall = new AutoCall();
-        $autoCall->createCardToCall('9237042936');
-        $autoCall->createCardToCall('+79137730726');
-        $autoCall->createCardToCall('9529257146');
+        $flagConncet = false;
+        try{
+            $autoCall = new AutoCall();
+            echo "connected\n";
+            $flagConncet = true;
+        }
+        catch (Exception $e){
+            $flagConncet =false;
+        }
+        if($flagConncet){
+            try {
+
+                //
+                if($autoCall->createCardToCall('9237042936')){
+                    echo "file created and moved success\n";
+                }
+            }
+            catch (\Exception $e){
+                echo "cannot create file on remote server\n";
+            }
+
+        }
+
+        //$autoCall->createCardToCall('+79529257146');
+        //$autoCall->createCardToCall('89137730726');
     }
 
 }
