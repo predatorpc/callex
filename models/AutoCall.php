@@ -8,7 +8,7 @@
 
 namespace app\models;
 
-
+use Yii;
 use yii\base\Model;
 
 class AutoCall extends Model
@@ -19,7 +19,7 @@ class AutoCall extends Model
      * в последующем выне модели можно делать выюорку и потом передавать только номер телефона для которого все будеит строиться
     */
 
-    private $channel = 'Local/89658285276@from-internal';
+    private $channel = 'Local/#phone#@from-internal';
     private $callerId = 1000;
     private $maxRetries = 5;
     private $retryTime = 300;
@@ -76,7 +76,7 @@ Archive: yes
         }
 
         if (isset($config['dateToCall']) && is_numeric($config['dateToCall'])) {
-            $this->dateToCall = Date('Y-m-D', strtotime($config['priority']));
+            $this->dateToCall = Date('Y-m-d', strtotime($config['priority']));
         }
         else{
             $this->dateToCall = Date('Y-m-d');
@@ -98,13 +98,14 @@ Archive: yes
                 ."Extension: ".$this->extension."\n"
                 ."Priority: ".$this->priority."\n"
                 ."Archive: ".$this->archive."\n";
+            //echo $file;
 
-            $fileName = $phone.'_'.\Yii::$app->uniqueId.'.call';
-            $dirName =$_SERVER['DOCUMENT_ROOT'] . '/autocall/'.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
+            //$fileName = $phone.'_#'.uniqid('').'.call';
+            $fileName = $phone.'_#.call';
+            $dirName ='/home/ef/autocall/'.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
             //создаем директорию с датой
-            //var_dump($dirName);die();
             if(!file_exists($dirName)){
-                mkdir($dirName, 0777, true);
+                mkdir($dirName, 0077, true);
             }
             return file_put_contents($dirName.'/'.$fileName, $file);
         }

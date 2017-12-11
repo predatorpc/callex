@@ -428,7 +428,7 @@ class DesktopController extends Controller{
                         ];
                     }
                     else{
-                        System::sendSms('7'.preg_replace('/\D|(\G7)|(\G8)/','','+79237042936'), $params['sms']);
+                        System::sendSms('7'.preg_replace('/\D|(\G7)|(\G8)/','',$client->phone), $params['sms']);
                         $result = [
                             'status'=>'success',
                             'message'=>'Сохранено и отправлено'

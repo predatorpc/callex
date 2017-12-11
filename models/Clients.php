@@ -84,7 +84,7 @@ class Clients extends \yii\db\ActiveRecord
      * Получение клиента для звонка
     */
 
-    /*
+
     public static function getClientToCall(){
         $client = Clients::getReCallClient();
         if(empty($client)){
@@ -103,8 +103,8 @@ class Clients extends \yii\db\ActiveRecord
             }
         }
         return $client;
-    }*/
-
+    }
+/*
     public static function getClientToCall($counter=1){
 
         $client = Clients::getReCallClient();
@@ -128,7 +128,7 @@ class Clients extends \yii\db\ActiveRecord
                 }
             }
             else{
-                $client = Clients::getSelfClientCall();
+                $client = Clients::getClientsEmptyComments();
             }
 
             if(empty($client) ){
@@ -144,7 +144,7 @@ class Clients extends \yii\db\ActiveRecord
 
         //var_dump($client);
         return $client;
-    }
+    }*/
 
     //новые
     public static function getNewClient(){
@@ -246,7 +246,7 @@ class Clients extends \yii\db\ActiveRecord
         return self::find()->select('clients.*')->from('clients, users_clients')
             ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
             ->andWhere('clients.id = users_clients.client_id')
-            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, 'clients.service_field_rand'=>rand(1,1000) ])
+            ->andWhere(['clients.status'=>1, 'clients.is_being_edited'=>0, 'next_call'=>NULL, 'clients.service_field_rand'=>rand(1,1000) ])
             ->orderBy(['last_call'=>SORT_ASC])
             ->One();
     }
