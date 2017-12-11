@@ -54,6 +54,8 @@ class CallexController extends Controller
     public function actionAutoCall(){
         $autoCall = new AutoCall();
         $autoCall->createCardToCall('9237042936');
+        $autoCall->createCardToCall('+79137730726');
+        $autoCall->createCardToCall('9529257146');
     }
 
 }
