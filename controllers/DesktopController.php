@@ -136,8 +136,11 @@ class DesktopController extends Controller{
 
         if(!empty($client)){
             //записать абонента в сессию
-            $session->set('edit_client_id', $client->id);
-            $session->set('time_start',time());
+
+            if(empty(Yii::$app->request->get('id')) ) {
+                $session->set('edit_client_id', $client->id);
+                $session->set('time_start',time());
+            }
         }
         else{
             $session->remove('edit_client_id');
