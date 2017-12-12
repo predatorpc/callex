@@ -31,7 +31,7 @@ class WCallMessage extends Widget
                             <div class="item">
                                 <b class="title"><?=$comment->user->second_name?></b>
                                 <div class="date"><?=date('d.m.Y H:i:s', strtotime($comment->date))?></div>
-                                <div class="text"><?=$comment->text?></div>
+                                <div class="text"><?=(!empty($comment->action->name)?$comment->action->name:'').': '.(!empty($comment->text)?$comment->text:'')?></div>
                             </div>
                             <?php } ?>
                        <?php }else {?>
