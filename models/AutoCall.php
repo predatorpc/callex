@@ -19,18 +19,21 @@ class AutoCall extends Model
      * суть модели в том что бы можно было задать параметры для выходного файла для всей выборки
      * в последующем выне модели можно делать выюорку и потом передавать только номер телефона для которого все будеит строиться
     */
-    const PATH_LOCAL = '/Users/rr/autocall/';
+    const PATH_LOCAL = '/mnt/aster/';
+    //const PATH_LOCAL = '/home/ef/autocall/';
     const PATH_RSERVER = '/home/ef/autocall4/';
 
     private $channel = 'Local/#phone#@from-internal';
     private $callerId = 1000;
-    private $maxRetries = 5;
-    private $retryTime = 300;
+    private $maxRetries = 1;
+    private $retryTime = 1;
     private $waitTime = 20;
     private $context = 'test-sound';
     private $extension = 1000;
     private $priority = 1;
     private $archive = 'yes';
+
+    private $timeToWait = 60;//sec
 
     private $dateToCall;
 
@@ -80,6 +83,10 @@ Archive: yes
             $this->priority = $config['priority'];
         }
 
+        if (isset($config['$timeToWait']) && is_numeric($config['$timeToWait'])) {
+            $this->timeToWait = $config['$timeToWait'];
+        }
+
         if (isset($config['dateToCall']) && is_numeric($config['dateToCall'])) {
             $this->dateToCall = Date('Y-m-d', strtotime($config['priority']));
         }
@@ -87,7 +94,7 @@ Archive: yes
             $this->dateToCall = Date('Y-m-d');
         }
 
-
+        /*
         try {
             echo "try to connect....\n";
             $this->connect();
@@ -95,18 +102,18 @@ Archive: yes
         catch (Exception $e) {
             throw new Exception('Cannot connect to server');
         }
+        */
 
 
     }
 
     public function createCardToCall($phone = false){
         $phone = $this->adaptationPhone($phone);
-
         if(!empty($phone)){
             $file = "";
             $file  = "Channel:".str_replace('#phone#', $phone, $this->channel)."\n"
                 ."Callerid: ".$this->callerId."\n"
-                ."MaxRetries: ".$this->maxRetries."\n"
+               // ."MaxRetries: ".$this->maxRetries."\n"
                 ."RetryTime: ".$this->retryTime."\n"
                 ."WaitTime: ".$this->waitTime."\n"
                 ."Context: ".$this->context."\n"
@@ -114,18 +121,37 @@ Archive: yes
                 ."Priority: ".$this->priority."\n"
                 ."Archive: ".$this->archive."\n";
 
-            $fileName = $phone.'_'.\Yii::$app->uniqueId.'.call';
-            $dirName =self::PATH_LOCAL.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
+            //$fileName = $phone.'_'.\Yii::$app->uniqueId.'.call';
+            //$dirName =self::PATH_LOCAL.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
+            $fileName = 'unique_name.call';
+            $dirName =self::PATH_LOCAL;
             //создаем директорию с датой
             //var_dump($dirName);die();
 
             if(!file_exists($dirName)){
                 mkdir($dirName, 0777, true);
             }
+            /*
             if(file_put_contents($dirName.'/'.$fileName, $file)){
                 if($this->moveFile($dirName.'/', $fileName)){
                     return true;
                 }
+            }*/
+            $fileExists = file_exists($dirName.'/'.$fileName);
+            $time = time();
+            $currentTime = time();
+            $flagCreate = false;
+            echo "\nwaiting";
+            while ($fileExists==true || ($fileExists==true && $currentTime<($time+$this->timeToWait))){
+                echo '.';
+                $fileExists = file_exists($dirName.'/'.$fileName);
+                $currentTime = time();
+                sleep(1);
+
+            }
+            echo "\n";
+            if(file_put_contents($dirName.'/'.$fileName, $file)){
+                return true;
             }
         }
 
@@ -187,7 +213,6 @@ Archive: yes
         return false;
 
     }
-
 
     private function remoteMakeDir($path=false){
         if(!empty($path) && !empty($this->connection)){

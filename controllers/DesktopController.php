@@ -79,6 +79,10 @@ class DesktopController extends Controller{
         // из клинетов выбираем сперва тех у кого Call_status_id = 0
         // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
+        //for dont save comments from seacrh
+        //id from found // client_id recalss list
+        //$get = (!empty(Yii::$app->request->get('id'))?Yii::$app->request->get('id'):((!empty(Yii::$app->request->get('client_id')))?Yii::$app->request->get('client_id'):false));
+        //$editUserId = (!empty($get)?$get:$session->get('edit_client_id'));
 
         $editUserId = (!empty(Yii::$app->request->get('id'))?Yii::$app->request->get('id'):$session->get('edit_client_id'));
 
@@ -137,10 +141,10 @@ class DesktopController extends Controller{
         if(!empty($client)){
             //записать абонента в сессию
 
-            if(empty(Yii::$app->request->get('id')) ) {
+            //if(empty(Yii::$app->request->get('id')) ) {
                 $session->set('edit_client_id', $client->id);
                 $session->set('time_start',time());
-            }
+            //}
         }
         else{
             $session->remove('edit_client_id');
