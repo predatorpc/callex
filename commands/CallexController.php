@@ -53,6 +53,14 @@ class CallexController extends Controller
     }
 
     public function actionAutoCall(){
+        $testPhones = [
+            //'+79237042936',
+            //'+79994636006',
+            //'+79529257146',
+            //'+79137730726',
+            '+79137778236'
+
+        ];
         $flagConncet = false;
         try{
             $autoCall = new AutoCall();
@@ -64,10 +72,12 @@ class CallexController extends Controller
         }
         if($flagConncet){
             try {
-
-                //
-                if($autoCall->createCardToCall('9237042936')){
-                    echo "file created and moved success\n";
+                foreach ($testPhones as $testPhone){
+                    echo "\n*********************\n";
+                    echo 'phone:'.$testPhone;
+                    if($autoCall->createCardToCall($testPhone)){
+                        echo "file created and moved success\n";
+                    }
                 }
             }
             catch (\Exception $e){
