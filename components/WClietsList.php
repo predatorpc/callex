@@ -15,21 +15,22 @@ class WClietsList extends Widget
     public function init()
     {
         parent::init();
-        $this->clients = Clients::find()->select('clients.*')->from('clients, users_clients')
-        ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
-        ->andWhere('clients.id = users_clients.client_id')
-        ->andWhere(['clients.status'=>1, ])
-        ->andWhere(['<>', 'clients.next_call', 0 ])
-        ->orderBy('next_call')
-            ->groupBy('clients.id')
-        ->all();
-        /*Clients::find()
-            ->leftJoin('users_clients', '`users_clients`.`client_id` = `clients`.`id`')
-            ->andWhere(['`users_clients`.`user_id`'=> Yii::$app->user->getId()])
-            ->andWhere(['clients.call_status_id'=>2])
-            ->andWhere(['<>','clients.next_call','NULL'])
-            ->orderBy('clients.next_call')
-            ->All();*/
+        $this->clients = Clients::find()
+            ->where(['next_call_by_user'=>Yii::$app->user->id, 'status'=>1])
+            ->andWhere(['between', 'clients.next_call', Date('Y-m-d 00:00:00'), Date('Y-m-d 00:00:00', strtotime('1 day', time())) ])
+            ->orderBy(['next_call'=>SORT_ASC])
+            //->limit(11)
+            ->all();
+
+//            Clients::find()->select('clients.*')
+//            ->from('clients, users_clients')
+//        ->where(['users_clients.user_id'=>Yii::$app->user->id, 'users_clients.status'=>1,])
+//        ->andWhere('clients.id = users_clients.client_id')
+//        ->andWhere(['clients.status'=>1, ])
+//        ->andWhere(['<>', 'clients.next_call', 0 ])
+//        ->orderBy('next_call')
+//        ->groupBy('clients.id')
+//        ->all();
 
         if ($this->clients === null) {
             $this->clients = [];

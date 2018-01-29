@@ -62,7 +62,7 @@ class DesktopController extends Controller{
     public function actionIndex(){
 
         $query = Comments::find()->where(['created_by_user'=>Yii::$app->user->id, 'status'=>1])
-            ->andWhere(['NOT IN', 'action_id', [8,9,13]])
+            ->andWhere(['NOT IN', 'action_id', [3,4,8,9]])
             ->andWhere(['between', 'date', date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')]);
 
 
@@ -76,19 +76,10 @@ class DesktopController extends Controller{
         // id клиента храниться в сессии edit_client_id и время начала звонка
         // если id клента пустое или его нет то нжно получить нового
         // нового выбираем из очереде перезвонов и если очередь пустая то тогда из CLients
-        // из клинетов выбираем сперва тех у кого Call_status_id = 0
-        // потом из клиентов которым когда либо уже звонили
         $session = Yii::$app->session;
-        //for dont save comments from seacrh
-        //id from found // client_id recalss list
-        //$get = (!empty(Yii::$app->request->get('id'))?Yii::$app->request->get('id'):((!empty(Yii::$app->request->get('client_id')))?Yii::$app->request->get('client_id'):false));
-        //$editUserId = (!empty($get)?$get:$session->get('edit_client_id'));
-
         $editUserId = (!empty(Yii::$app->request->get('id'))?Yii::$app->request->get('id'):$session->get('edit_client_id'));
-
-
         if(!empty($editUserId) && is_numeric($editUserId)) {
-            $client = Clients::find()->where(['id' => $editUserId, /*'is_being_edited'=>1*/])->One(); //TODO:  ???
+            $client = Clients::find()->where(['id' => $editUserId,])->One();
             //$session->remove('edit_client_id');
         }
         else{
@@ -96,53 +87,47 @@ class DesktopController extends Controller{
             //устновить флаг редиктирования абонента
             //присвоить текущему пользователю абонента
             //записать в сессию
-            $client = Clients::getClientToCall();//System::getClientToCall();//Clients::getClientToCall();
+            $client = Clients::getClientToCall();
+            $client->is_being_edited = 1;
+            if($client->save(true)) {
+                  //выбрать из userClients  запись где user=1 и не равен текущену и если такие то етсь удаляем клиента если пусто то сохраняем
+//                $userClientIsset = UsersClients::find()->from('users_clients, users')
+//                    ->where(['users_clients.client_id' => $client->id, 'users_clients.status' => 1])
+//                    ->andWhere(['!=', 'users_clients.user_id', Yii::$app->user->id])
+//                    ->andWhere('users.id = users_clients.user_id')
+//                    ->andWhere(['users.status' => 1])
+//                    ->all();
+//
+//                $flagSaveCurentUser = false;
+//                if (empty($userClientIsset)) {//проставить статус 0 у того у кого пользователь удалден
+//                    $flagSaveCurentUser = true;
+//                }
+//                if ($flagSaveCurentUser) {
+//                    $userClient = UsersClients::find()->where(['client_id' => $client->id, 'status' => 1, 'user_id' => Yii::$app->user->id])->one();
+//                    if (empty($userClient)) {
+//                        $userClient = new UsersClients();
+//                    }
+//                    $userClient->user_id = Yii::$app->user->id;
+//                    $userClient->client_id = $client->id;
+//                    $userClient->status = 1;
+//                    if (!$userClient->save(true)) {
+//                        $client = false;
+//                    }
+//                }
 
-            if(!empty($client)){
-                $client->is_being_edited = 1;
-                if($client->save(true)) {
-
-                    //выбрать из userClients  запись где user=1 и не равен текущену
-                    // и если такие то етсь удаляем клиента
-                    //если пусто то сохраняем
-
-                    $userClientIsset = UsersClients::find()->from('users_clients, users')
-                        ->where(['users_clients.client_id' => $client->id, 'users_clients.status' => 1])
-                        ->andWhere(['!=', 'users_clients.user_id', Yii::$app->user->id])
-                        ->andWhere('users.id = users_clients.user_id')
-                        ->andWhere(['users.status' => 1])
-                        ->all();
-                    //if(Yii::$app->user->id != 33235){
-                    $flagSaveCurentUser = false;
-                    if (!empty($userClientIsset)) {
-                        //$client = false;
-                    } else {//TODO проставить статус 0 у того у кого пользователь удалден
-                        $flagSaveCurentUser = true;
-                    }
-                    if ($flagSaveCurentUser) {
-                        $userClient = UsersClients::find()->where(['client_id' => $client->id, 'status' => 1, 'user_id' => Yii::$app->user->id])->one();
-                        if (empty($userClient)) {
-                            $userClient = new UsersClients();
-                        }
-                        $userClient->user_id = Yii::$app->user->id;
-                        $userClient->client_id = $client->id;
-                        $userClient->status = 1;
-                        if (!$userClient->save(true)) {
-                            $client = false;
-                        }
-                    }
-                    //}
-
-                }
-                else{
-                    $client = false;
-                }
+                //upd в usersClients сохраняем кто кому когда звонил
+                $userClient = new UsersClients();
+                $userClient->user_id = Yii::$app->user->id;
+                $userClient->client_id = $client->id;
+                $userClient->status = 1;
+                $userClient->save(true);
+            }
+            else{
+                $client = false;
             }
         }
-
         if(!empty($client)){
             //записать абонента в сессию
-
             //if(empty(Yii::$app->request->get('id')) ) {
                 $session->set('edit_client_id', $client->id);
                 $session->set('time_start',time());
@@ -151,10 +136,8 @@ class DesktopController extends Controller{
         else{
             $session->remove('edit_client_id');
             $session->remove('time_start');
-
+            $this->redirect('/desktop/client-card');
         }
-
-
 
         if(Yii::$app->request->isPost) {
             if (!empty(Yii::$app->request->post('Clients'))) {//сохраняем данные клиента
@@ -188,27 +171,43 @@ class DesktopController extends Controller{
 //                        $this->redirect('/desktop/index');
                         $comment = new Comments();
                         if($comment->load(Yii::$app->request->post())){
+
+                            $flagMaxRecalls=true;// по умолчанию количество перезвонов не учитывается
                             //обработка действия
                             if($comment->action_id == 7){//recall over N day
-                                /*$recallTime = (!empty($params['days'])?abs($params['days']).' days':'') .
-                                    (!empty($params['hours'])?abs($params['hours']):'0') .' hours ' .
-                                    (!empty($params['minute'])?abs($params['minute']).' minute':'');*/
-                                $recallTime = (!empty($params['date_recall'])?(strtotime($params['date_recall'])>time()?strtotime($params['date_recall']):strtotime('30 minute', time())) :strtotime('30 minute', time()));
-                                $client->next_call = Date('Y-m-d H:i:s', $recallTime);
-                                $client->is_being_edited = 0;
+                                if(Clients::find()->where(['next_call_by_user'=>Yii::$app->user->id, 'status'=>1,])->andWhere(['<>', 'next_call',0])->count() < Yii::$app->params['maxReCalls'] ){
+                                    $recallTime = (!empty($params['days'])?abs($params['days']).' days':'') .
+                                        (!empty($params['hours'])?abs($params['hours']):'0') .' hours ' .
+                                        (!empty($params['minute'])?abs($params['minute']).' minute':'');
+                                    $client->next_call = Date('Y-m-d H:i:s', strtotime($recallTime, time()));
+
+                                    //$recallTime = (!empty($params['date_recall'])?(strtotime($params['date_recall'])>time()?strtotime($params['date_recall']):strtotime('30 minute', time())) :strtotime('30 minute', time()));
+                                    //$client->next_call = Date('Y-m-d H:i:s', $recallTime);
+
+                                    $client->next_call_by_user = Yii::$app->user->id;
+                                    $client->is_being_edited = 0;
+                                }
+                                else{
+                                    $flagMaxRecalls = false;
+                                }
+
                             }
                             elseif($comment->action_id == 10){// больше не звонить
+                                $client->next_call = NULL;
+                                $client->next_call_by_user = NULL;
                                 $client->status=0; // клиент больше не будет выпадать
                             }
                             else{
                                 $client->next_call = NULL;
+                                $client->next_call_by_user = NULL;
                             }
 
                             $comment->validate();
                             $client->is_being_edited = 0;
                             $client->last_call = Date('Y-m-d H:i:s');
                             $client->validate();
-                            if(empty($comment->errors) && empty($client->errors)){
+
+                            if($flagMaxRecalls && empty($comment->errors) && empty($client->errors)){
                                 //сохраняем клиента и если все хорошо сохраняем комментарий
                                 if($client->save(true) && $comment->save(true)) {
                                     $result = [
@@ -227,10 +226,19 @@ class DesktopController extends Controller{
                                 }
                             }
                             else {
-                                $result = [
-                                    'status' => 'error',
-                                    'message' => 'Ошибка в заполнении'
-                                ];
+                                if(!$flagMaxRecalls){
+                                    $result = [
+                                        'status' => 'error',
+                                        'message' => 'Слишком много перезвонов'
+                                    ];
+                                }
+                                else{
+                                    $result = [
+                                        'status' => 'error',
+                                        'message' => 'Ошибка в заполнении'
+                                    ];
+                                }
+
                             }
                         }
                         else{
@@ -515,7 +523,7 @@ class DesktopController extends Controller{
         if(Yii::$app->request->post('phone')){
             $phone = Yii::$app->request->post('phone');
             //if(strlen($phone)== 10){
-                $client = Clients::find()->where(['LIKE','phone', trim($phone)])->One();
+                $client = Clients::find()->where(['LIKE','phone', trim($phone), 'status'=>1])->One();
                 if(!empty($client)){
                     $this->redirect(['client-card','id'=> $client->id]);
                 }

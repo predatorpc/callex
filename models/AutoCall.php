@@ -18,26 +18,35 @@ class AutoCall extends Model
     /**
      * суть модели в том что бы можно было задать параметры для выходного файла для всей выборки
      * в последующем выне модели можно делать выюорку и потом передавать только номер телефона для которого все будеит строиться
+     * среди параметров есть ssh если он тру то происходит копирование по ssh на другой сервер в нужную папку иначе создается в хранилище и по крону берется от туда
+     *
     */
-    const PATH_LOCAL = '/mnt/aster/';
-    //const PATH_LOCAL = '/home/ef/autocall/';
+
+    const PATH_LOCAL_OUTGONE = '/mnt/aster/';
+    const PATH_LOCAL_WAREHOUSE = '/home/ef/autocall/';
+    const PATH_LOCAL_SSH = '/home/ef/autocall/';
     const PATH_RSERVER = '/home/ef/autocall4/';
+    const CALLERID_ALL = [1000,1001,1002,1003,1004]; //extensions совпадают c callId
+
 
     private $channel = 'Local/#phone#@from-internal';
-    private $callerId = 1000;
+    private $callerId;
     private $maxRetries = 1;
     private $retryTime = 1;
     private $waitTime = 20;
     private $context = 'test-sound';
-    private $extension = 1000;
+    private $extension;
     private $priority = 1;
     private $archive = 'yes';
 
-    private $timeToWait = 60;//sec
+    private $timeToWait = 60;//время ожидания по для прерывания создания файла в oungone
 
-    private $dateToCall;
+    private $dateToCall; // дата для совершения звонка
 
+    private $ssh = false;
     private $connection;
+
+
 
 
     /*
@@ -58,6 +67,9 @@ Archive: yes
         if (isset($config['callerId']) && is_numeric($config['callerId'])) {
             $this->callerId = $config['callerId'];
         }
+        else{
+            $this->callerId = self::CALLERID_ALL;
+        }
 
         if (isset($config['maxRetries']) && is_numeric($config['maxRetries'])) {
             $this->maxRetries = $config['maxRetries'];
@@ -75,90 +87,104 @@ Archive: yes
             $this->context = $config['context'];
         }
 
-        if (isset($config['extension']) && is_numeric($config['extension'])) {
+        /*if (isset($config['extension']) && is_numeric($config['extension'])) {
             $this->extension = $config['extension'];
         }
+        else{
+            $this->extension = self::EXTENSIONS_ALL;
+        }*/
 
         if (isset($config['priority']) && is_numeric($config['priority'])) {
             $this->priority = $config['priority'];
         }
 
-        if (isset($config['$timeToWait']) && is_numeric($config['$timeToWait'])) {
+        if (isset($config['timeToWait']) && is_numeric($config['timeToWait'])) {
             $this->timeToWait = $config['$timeToWait'];
         }
 
-        if (isset($config['dateToCall']) && is_numeric($config['dateToCall'])) {
-            $this->dateToCall = Date('Y-m-d', strtotime($config['priority']));
+        if (isset($config['ssh']) && is_bool($config['ssh'])) {
+            $this->ssh = $config['ssh'];
+        }
+
+        if (isset($config['dateToCall'])) {
+            $this->dateToCall = Date('Y-m-d', strtotime($config['dateToCall']));
         }
         else{
             $this->dateToCall = Date('Y-m-d');
         }
 
-        /*
-        try {
-            echo "try to connect....\n";
-            $this->connect();
+        if($this->ssh){
+            try {
+                echo "try to connect....\n";
+                $this->connect();
+            }
+            catch (Exception $e) {
+                throw new Exception('Cannot connect to server');
+            }
         }
-        catch (Exception $e) {
-            throw new Exception('Cannot connect to server');
-        }
-        */
 
 
     }
 
     public function createCardToCall($phone = false){
+        $result = false;
         $phone = $this->adaptationPhone($phone);
         if(!empty($phone)){
             $file = "";
             $file  = "Channel:".str_replace('#phone#', $phone, $this->channel)."\n"
-                ."Callerid: ".$this->callerId."\n"
+                ."Callerid: ".$this->getCallerId()."\n"
                // ."MaxRetries: ".$this->maxRetries."\n"
                 ."RetryTime: ".$this->retryTime."\n"
                 ."WaitTime: ".$this->waitTime."\n"
                 ."Context: ".$this->context."\n"
                 ."Extension: ".$this->extension."\n"
                 ."Priority: ".$this->priority."\n"
-                ."Archive: ".$this->archive."\n";
+                ."Archive: ".$this->archive."\n"
+                ."#phone".$phone."#date".(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'))."\n";
 
-            //$fileName = $phone.'_'.\Yii::$app->uniqueId.'.call';
-            //$dirName =self::PATH_LOCAL.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
-            $fileName = 'unique_name.call';
-            $dirName =self::PATH_LOCAL;
-            //создаем директорию с датой
-            //var_dump($dirName);die();
+            if($this->ssh){//переносим по ssh
+                $result = $this->sshCreateCard($file, $phone);
+            }
+            else{// создаем в хранилище
+                $result = $this->warehouseCreateCard($file, $phone);
+            }
+        }
 
+        return $result;
+
+
+
+    }
+
+    private function sshCreateCard($file=false, $phone){
+        if(!empty($file)){
+            $fileName = 'date:'.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d')).'phone:'.$phone.'.call';
+            $dirName =self::PATH_LOCAL_SSH.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
             if(!file_exists($dirName)){
                 mkdir($dirName, 0777, true);
             }
-            /*
+            unlink($dirName.'/'.$fileName);
             if(file_put_contents($dirName.'/'.$fileName, $file)){
                 if($this->moveFile($dirName.'/', $fileName)){
                     return true;
                 }
-            }*/
-            $fileExists = file_exists($dirName.'/'.$fileName);
-            $time = time();
-            $currentTime = time();
-            $flagCreate = false;
-            echo "\nwaiting";
-            while ($fileExists==true || ($fileExists==true && $currentTime<($time+$this->timeToWait))){
-                echo '.';
-                $fileExists = file_exists($dirName.'/'.$fileName);
-                $currentTime = time();
-                sleep(1);
-
             }
-            echo "\n";
+        }
+        return false;
+    }
+
+    private function warehouseCreateCard($file=false, $phone){
+        if(!empty($file)){
+            $fileName = 'date:'.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d')).'phone:'.$phone.'.call';
+            $dirName =self::PATH_LOCAL_WAREHOUSE.(!empty($this->dateToCall)?$this->dateToCall:Date('Y-m-d'));
+            if(!file_exists($dirName)){
+                mkdir($dirName, 0777, true);
+            }
             if(file_put_contents($dirName.'/'.$fileName, $file)){
                 return true;
             }
         }
-
         return false;
-
-
-
     }
 
     private function adaptationPhone($phone = false){
@@ -167,7 +193,7 @@ Archive: yes
         //остальные числа на 0
         //возвращаем обработанный телефон
         if(!empty($phone)){
-            $phone = preg_replace('/(\+7)|(|)|-/','',$phone);
+            $phone = preg_replace('/(\+7)|(\()|(\))|(-)|(\s)|(^8)/','',$phone);
             if(intval(substr($phone, 0, 1))==9 && strlen($phone)==10){
                 return '8'.$phone;
             }
@@ -200,7 +226,7 @@ Archive: yes
                     $this->remoteMakeDir(self::PATH_RSERVER);
                 }
 
-                if (!ssh2_scp_send($this->connection, self::PATH_LOCAL . $fileName, self::PATH_RSERVER . $fileName, 0777)) {
+                if (!ssh2_scp_send($this->connection, $filePath . $fileName, self::PATH_RSERVER . $fileName, 0777)) {
                     throw new Exception('File don`t move');
                 } else {
                     return true;
@@ -243,6 +269,27 @@ Archive: yes
         }
         return false;
 
+    }
+
+    private function getCallerId(){
+        if(is_array($this->callerId)){
+            $callerID = next($this->callerId);
+            if(!$callerID){
+                reset($this->callerId);
+                $callerID = current($this->callerId);
+            }
+        }
+        else{
+            if(is_numeric($this->callerId) && in_array($this->callerId, self::CALLERID_ALL)){
+                $callerID = $this->callerId;
+            }
+            else{
+                $this->callerId = self::CALLERID_ALL;
+                $callerID = current($this->callerId);
+            }
+        }
+        $this->extension = $callerID;
+        return $callerID;
     }
 
 
