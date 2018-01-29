@@ -62,7 +62,7 @@ class DesktopController extends Controller{
     public function actionIndex(){
 
         $query = Comments::find()->where(['created_by_user'=>Yii::$app->user->id, 'status'=>1])
-            ->andWhere(['NOT IN', 'action_id', [3,4,8,9]])
+            ->andWhere(['NOT IN', 'action_id', [8,9,13]])
             ->andWhere(['between', 'date', date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')]);
 
 
@@ -98,43 +98,45 @@ class DesktopController extends Controller{
             //записать в сессию
             $client = Clients::getClientToCall();//System::getClientToCall();//Clients::getClientToCall();
 
-            $client->is_being_edited = 1;
-            if($client->save(true)) {
+            if(!empty($client)){
+                $client->is_being_edited = 1;
+                if($client->save(true)) {
 
-                //выбрать из userClients  запись где user=1 и не равен текущену
-                // и если такие то етсь удаляем клиента
-                //если пусто то сохраняем
+                    //выбрать из userClients  запись где user=1 и не равен текущену
+                    // и если такие то етсь удаляем клиента
+                    //если пусто то сохраняем
 
-                $userClientIsset = UsersClients::find()->from('users_clients, users')
-                    ->where(['users_clients.client_id' => $client->id, 'users_clients.status' => 1])
-                    ->andWhere(['!=', 'users_clients.user_id', Yii::$app->user->id])
-                    ->andWhere('users.id = users_clients.user_id')
-                    ->andWhere(['users.status' => 1])
-                    ->all();
-                //if(Yii::$app->user->id != 33235){
-                $flagSaveCurentUser = false;
-                if (!empty($userClientIsset)) {
-                    //$client = false;
-                } else {//TODO проставить статус 0 у того у кого пользователь удалден
-                    $flagSaveCurentUser = true;
-                }
-                if ($flagSaveCurentUser) {
-                    $userClient = UsersClients::find()->where(['client_id' => $client->id, 'status' => 1, 'user_id' => Yii::$app->user->id])->one();
-                    if (empty($userClient)) {
-                        $userClient = new UsersClients();
+                    $userClientIsset = UsersClients::find()->from('users_clients, users')
+                        ->where(['users_clients.client_id' => $client->id, 'users_clients.status' => 1])
+                        ->andWhere(['!=', 'users_clients.user_id', Yii::$app->user->id])
+                        ->andWhere('users.id = users_clients.user_id')
+                        ->andWhere(['users.status' => 1])
+                        ->all();
+                    //if(Yii::$app->user->id != 33235){
+                    $flagSaveCurentUser = false;
+                    if (!empty($userClientIsset)) {
+                        //$client = false;
+                    } else {//TODO проставить статус 0 у того у кого пользователь удалден
+                        $flagSaveCurentUser = true;
                     }
-                    $userClient->user_id = Yii::$app->user->id;
-                    $userClient->client_id = $client->id;
-                    $userClient->status = 1;
-                    if (!$userClient->save(true)) {
-                        $client = false;
+                    if ($flagSaveCurentUser) {
+                        $userClient = UsersClients::find()->where(['client_id' => $client->id, 'status' => 1, 'user_id' => Yii::$app->user->id])->one();
+                        if (empty($userClient)) {
+                            $userClient = new UsersClients();
+                        }
+                        $userClient->user_id = Yii::$app->user->id;
+                        $userClient->client_id = $client->id;
+                        $userClient->status = 1;
+                        if (!$userClient->save(true)) {
+                            $client = false;
+                        }
                     }
-                }
-                //}
+                    //}
 
-            }
-            else{
-                $client = false;
+                }
+                else{
+                    $client = false;
+                }
             }
         }
 
