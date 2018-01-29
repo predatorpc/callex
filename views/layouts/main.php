@@ -47,7 +47,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'Колл-центр v2.01.b',
+        'brandLabel' => 'Колл-центр v2.02.b',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',

@@ -53,6 +53,37 @@ class CallexController extends Controller
         echo "найдено дублей у абонентов: ".$doubleClients."\nУдалено дублей".$double."\nИсправлено номеров: ".$fixPhone;
     }
 
+    public function actionManagerClients(){
+        Clients::updateAll(['next_call'=>NULL, 'next_call_by_user'=>NULL], ['AND', ['status'=>1], ['<', 'next_call', Date('Y-m-d 00:00:00', strtotime('-2 day', time()))]]);
+        $sqlUpdDelUser = "
+        Update `clients`, users
+        set clients.next_call = NULL, 
+            clients.next_call_by_user = NULL
+        WHERE clients.next_call <>0 and 
+                clients.status=1 and 
+        (
+            (
+                users.id = clients.next_call_by_user and 
+                users.status=0
+            ) OR
+            (
+             clients.next_call_by_user IS NULL
+             )
+        )
+        ";
+        $sqlUpdDelByNExtCall = "
+        UPDATE `clients`
+        SET clients.next_call = NULL,
+            clients.next_call_by_user = NULL
+        WHERE clients.next_call <>0 and 
+            clients.status=1 and 
+            clients.next_call < '".Date('Y-m-d 00:00:00', strtotime('-2 day', time()))."'
+        ";
+        \Yii::$app->db->createCommand($sqlUpdDelUser)->execute();
+        //\Yii::$app->db->createCommand($sqlUpdDelByNExtCall)->execute();//равно первой строке
+
+    }
+
     public function actionAutoCall(){
         $testPhones = [
             '+79237042936',
