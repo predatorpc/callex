@@ -62,7 +62,7 @@ class DesktopController extends Controller{
     public function actionIndex(){
 
         $query = Comments::find()->where(['created_by_user'=>Yii::$app->user->id, 'status'=>1])
-            ->andWhere(['NOT IN', 'action_id', [3,4,8,9]])
+            ->andWhere(['NOT IN', 'action_id', [4,8,9]])
             ->andWhere(['between', 'date', date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59')]);
 
 

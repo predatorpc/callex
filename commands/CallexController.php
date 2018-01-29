@@ -54,7 +54,7 @@ class CallexController extends Controller
     }
 
     public function actionManagerClients(){
-        Clients::updateAll(['next_call'=>NULL, 'next_call_by_user'=>NULL], ['AND', ['status'=>1], ['<', 'next_call', Date('Y-m-d 00:00:00', strtotime('-2 day', time()))]]);
+        //Clients::updateAll(['next_call'=>NULL, 'next_call_by_user'=>NULL], ['AND', ['status'=>1], ['<', 'next_call', Date('Y-m-d 00:00:00', strtotime('-2 day', time()))]]);
         $sqlUpdDelUser = "
         Update `clients`, users
         set clients.next_call = NULL, 
@@ -80,7 +80,7 @@ class CallexController extends Controller
             clients.next_call < '".Date('Y-m-d 00:00:00', strtotime('-2 day', time()))."'
         ";
         \Yii::$app->db->createCommand($sqlUpdDelUser)->execute();
-        //\Yii::$app->db->createCommand($sqlUpdDelByNExtCall)->execute();//равно первой строке
+        \Yii::$app->db->createCommand($sqlUpdDelByNExtCall)->execute();//равно первой строке
 
     }
 
