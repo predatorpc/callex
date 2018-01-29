@@ -181,8 +181,14 @@ class DesktopController extends Controller{
                                         (!empty($params['minute'])?abs($params['minute']).' minute':'');
                                     $client->next_call = Date('Y-m-d H:i:s', strtotime($recallTime, time()));
 
+                                    if(!empty($params['date_recall']) && strtotime($params['date_recall'])>time() && strtotime($params['date_recall'])< strtotime('2 month', time()) ){
+                                        $recallTime = strtotime($params['date_recall']);
+                                    }
+                                    else{
+                                        $recallTime = strtotime('30 minute', time());
+                                    }
                                     //$recallTime = (!empty($params['date_recall'])?(strtotime($params['date_recall'])>time()?strtotime($params['date_recall']):strtotime('30 minute', time())) :strtotime('30 minute', time()));
-                                    //$client->next_call = Date('Y-m-d H:i:s', $recallTime);
+                                    $client->next_call = Date('Y-m-d H:i:s', $recallTime);
 
                                     $client->next_call_by_user = Yii::$app->user->id;
                                     $client->is_being_edited = 0;
