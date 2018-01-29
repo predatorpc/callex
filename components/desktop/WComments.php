@@ -46,27 +46,27 @@ class WComments  extends Widget
             // Выбор время;
 
             $template .= '<div class="times-content"><br>';
-//            $template .= DateTimePicker::widget([
-//                'name'=>'Comments[date_recall]',
-//                'options' => ['placeholder' => 'Выберите ...'],
-//                'pluginOptions' => [
-//                    'autoclose'=>true,
-//                    'todayHighlight' => true,
-//                    'format' => 'yyyy-mm-dd H:i',
-//                ]
-//            ]);
-            $template .= '<div class="times-select">';
-            $template .= '<label>День</label>';
-            $template .= Html::dropDownList('Comments[days]', 'null',$days,['prompt' => '-','class'=>'form-control times-select','id'=> 'hours']);
-            $template .= '</div>';
-            $template .= '<div class="times-select">';
-            $template .= '<label>Час</label>';
-            $template .= Html::dropDownList('Comments[hours]', 'null',$hours,['prompt' => '-','class'=>'form-control times-select','id'=> 'hours']);
-            $template .= '</div>';
-            $template .= '<div class="times-select">';
-            $template .= '<label>Минута</label>';
-            $template .= Html::dropDownList('Comments[minute]', 'null', $minutes,['prompt' => '-','class'=>'form-control times-select','id'=> 'minutes']);
-            $template .= '</div>';
+            $template .= DateTimePicker::widget([
+                'name'=>'Comments[date_recall]',
+                'options' => ['placeholder' => 'Выберите ...'],
+                'pluginOptions' => [
+                    'autoclose'=>true,
+                    'todayHighlight' => true,
+                    'format' => 'yyyy-mm-dd H:i',
+                ]
+            ]);
+//            $template .= '<div class="times-select">';
+//            $template .= '<label>День</label>';
+//            $template .= Html::dropDownList('Comments[days]', 'null',$days,['prompt' => '-','class'=>'form-control times-select','id'=> 'hours']);
+//            $template .= '</div>';
+//            $template .= '<div class="times-select">';
+//            $template .= '<label>Час</label>';
+//            $template .= Html::dropDownList('Comments[hours]', 'null',$hours,['prompt' => '-','class'=>'form-control times-select','id'=> 'hours']);
+//            $template .= '</div>';
+//            $template .= '<div class="times-select">';
+//            $template .= '<label>Минута</label>';
+//            $template .= Html::dropDownList('Comments[minute]', 'null', $minutes,['prompt' => '-','class'=>'form-control times-select','id'=> 'minutes']);
+//            $template .= '</div>';
             $template .= '<div class="clear"></div>';
             $template .= '</div>';
 
